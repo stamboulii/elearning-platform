@@ -1,0 +1,311 @@
+erDiagram
+    %% USER MANAGEMENT
+    User ||--o| UserProfile : "has one"
+    User ||--o{ Course : "creates (instructor)"
+    User ||--o{ Enrollment : "enrolls in"
+    User ||--o{ Review : "writes"
+    User ||--o{ Transaction : "makes"
+    User ||--o{ CartItem : "has"
+    User ||--o{ Wishlist : "has"
+    User ||--o{ Discussion : "creates"
+    User ||--o{ DiscussionReply : "posts"
+    User ||--o{ QuizAttempt : "attempts"
+
+    User {
+        uuid id PK
+        string email UK
+        string password
+        string firstName
+        string lastName
+        enum role
+        string profilePicture
+        string bio
+        boolean isActive
+        boolean emailVerified
+        datetime createdAt
+        datetime updatedAt
+        datetime lastLogin
+    }
+
+    UserProfile {
+        uuid id PK
+        uuid userId FK
+        string phoneNumber
+        string country
+        string city
+        datetime dateOfBirth
+        json socialLinks
+        json preferences
+    }
+
+    %% COURSE MANAGEMENT
+    Category ||--o{ Category : "parent/child"
+    Category ||--o{ Course : "contains"
+    
+    Course ||--o{ CourseSection : "has"
+    Course ||--o{ CourseRequirement : "has"
+    Course ||--o{ CourseOutcome : "has"
+    Course ||--o{ Enrollment : "enrolled by"
+    Course ||--o{ Review : "reviewed by"
+    Course ||--o{ Transaction : "purchased in"
+    Course ||--o{ CartItem : "added to cart"
+    Course ||--o{ Wishlist : "added to wishlist"
+    Course ||--o{ Discussion : "discussed in"
+
+    Category {
+        uuid id PK
+        string name UK
+        string slug UK
+        string description
+        string icon
+        int displayOrder
+        uuid parentCategoryId FK
+        datetime createdAt
+    }
+
+    Course {
+        uuid id PK
+        uuid instructorId FK
+        uuid categoryId FK
+        string title
+        string slug UK
+        string shortDescription
+        text fullDescription
+        string thumbnailImage
+        string previewVideo
+        decimal price
+        decimal discountPrice
+        string currency
+        enum level
+        string language
+        enum status
+        int estimatedDuration
+        datetime createdAt
+        datetime updatedAt
+        datetime publishedAt
+    }
+
+    CourseRequirement {
+        uuid id PK
+        uuid courseId FK
+        string requirement
+    }
+
+    CourseOutcome {
+        uuid id PK
+        uuid courseId FK
+        string outcome
+    }
+
+    CourseSection ||--o{ Lesson : "contains"
+
+    CourseSection {
+        uuid id PK
+        uuid courseId FK
+        string title
+        string description
+        int orderNumber
+        datetime createdAt
+    }
+
+    Lesson ||--o| Quiz : "may have"
+    Lesson ||--o{ LessonProgress : "tracked by"
+
+    Lesson {
+        uuid id PK
+        uuid sectionId FK
+        string title
+        enum contentType
+        string contentUrl
+        text content
+        int duration
+        int orderNumber
+        boolean isPreview
+        json resources
+        datetime createdAt
+    }
+
+    %% ENROLLMENT & PROGRESS
+    Enrollment ||--o{ LessonProgress : "tracks"
+    Enrollment ||--o| Certificate : "earns"
+
+    Enrollment {
+        uuid id PK
+        uuid userId FK
+        uuid courseId FK
+        datetime enrolledAt
+        datetime lastAccessed
+        int progressPercentage
+        enum completionStatus
+        datetime completedAt
+        boolean certificateIssued
+    }
+
+    LessonProgress {
+        uuid id PK
+        uuid enrollmentId FK
+        uuid lessonId FK
+        boolean isCompleted
+        int timeSpent
+        int lastPosition
+        datetime completedAt
+    }
+
+    %% PAYMENT
+    Transaction ||--o| CouponUsage : "may use"
+
+    Transaction {
+        uuid id PK
+        uuid userId FK
+        uuid courseId FK
+        decimal amount
+        string currency
+        string paymentMethod
+        string paymentGateway
+        string transactionReference UK
+        enum status
+        datetime createdAt
+        datetime completedAt
+    }
+
+    Coupon ||--o{ CouponUsage : "used in"
+
+    Coupon {
+        uuid id PK
+        string code UK
+        enum discountType
+        decimal discountValue
+        datetime validFrom
+        datetime validUntil
+        int usageLimit
+        int timesUsed
+        json applicableCourses
+        boolean isActive
+        datetime createdAt
+    }
+
+    CouponUsage {
+        uuid id PK
+        uuid couponId FK
+        uuid userId FK
+        uuid transactionId FK
+        datetime usedAt
+    }
+
+    %% SHOPPING
+    CartItem {
+        uuid id PK
+        uuid userId FK
+        uuid courseId FK
+        datetime addedAt
+    }
+
+    Wishlist {
+        uuid id PK
+        uuid userId FK
+        uuid courseId FK
+        datetime addedAt
+    }
+
+    %% REVIEWS
+    Review ||--o{ ReviewResponse : "has"
+
+    Review {
+        uuid id PK
+        uuid courseId FK
+        uuid userId FK
+        int rating
+        text reviewText
+        boolean isApproved
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    ReviewResponse {
+        uuid id PK
+        uuid reviewId FK
+        uuid instructorId FK
+        text responseText
+        datetime createdAt
+    }
+
+    %% QUIZZES
+    Quiz ||--o{ QuizQuestion : "contains"
+    Quiz ||--o{ QuizAttempt : "attempted by"
+
+    Quiz {
+        uuid id PK
+        uuid lessonId FK
+        string title
+        string description
+        int passingScore
+        int timeLimit
+        int attemptsAllowed
+    }
+
+    QuizQuestion ||--o{ QuizAnswer : "answered in"
+
+    QuizQuestion {
+        uuid id PK
+        uuid quizId FK
+        text questionText
+        enum questionType
+        json options
+        json correctAnswer
+        int points
+        int orderNumber
+    }
+
+    QuizAttempt ||--o{ QuizAnswer : "has"
+
+    QuizAttempt {
+        uuid id PK
+        uuid quizId FK
+        uuid userId FK
+        int score
+        int totalPoints
+        boolean passed
+        datetime startedAt
+        datetime completedAt
+    }
+
+    QuizAnswer {
+        uuid id PK
+        uuid attemptId FK
+        uuid questionId FK
+        json userAnswer
+        boolean isCorrect
+        int pointsEarned
+    }
+
+    %% CERTIFICATES
+    Certificate {
+        uuid id PK
+        uuid enrollmentId FK
+        string certificateNumber UK
+        datetime issuedAt
+        string certificateUrl
+    }
+
+    %% DISCUSSIONS
+    Discussion ||--o{ DiscussionReply : "has"
+
+    Discussion {
+        uuid id PK
+        uuid courseId FK
+        uuid lessonId FK
+        uuid userId FK
+        string title
+        text content
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    DiscussionReply {
+        uuid id PK
+        uuid discussionId FK
+        uuid userId FK
+        text content
+        datetime createdAt
+        datetime updatedAt
+    }
