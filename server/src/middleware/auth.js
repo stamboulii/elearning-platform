@@ -1,5 +1,6 @@
 import { verifyToken } from '../utils/jwt.js';
 import authService from '../services/authService.js';
+import bcrypt from 'bcryptjs';
 
 /**
  * Protect routes - Verify JWT token
@@ -78,4 +79,55 @@ export const authorize = (...roles) => {
 
     next();
   };
+};
+
+
+export const checkUpdatePassword = async (req, res, next) => {
+    try {
+        if (!req.data) {
+            req.data = {};
+        }
+        
+        const { oldPassword, password } = req.body;
+        
+        if (!oldPassword || !password) {
+            return res.status(400).json({ 
+                message: "Both current and new passwords are required" 
+            });
+        }
+        
+        if (!req.user.password) {
+            const userPassword = await authService.getUserPassword(req.user.id);
+            
+            if (!userPassword) {
+                return res.status(404).json({ 
+                    message: "User not found" 
+                });
+            }
+            
+            req.user.password = userPassword;
+        }
+        
+        const isMatch = await bcrypt.compare(oldPassword, req.user.password);
+        if (!isMatch) {
+            return res.status(403).json({ 
+                message: "Current password is incorrect" 
+            });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        req.data.password = hashedPassword;
+        next();
+    } catch (error) {
+        console.error('Password check error:', error);
+          if (error.message.includes('Illegal arguments')) {
+            return res.status(500).json({ 
+                message: "Password verification error" 
+            });
+        }
+        
+        next(error);
+    }
 };

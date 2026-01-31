@@ -17,6 +17,15 @@ class AuthService {
   }
 
   /**
+   * Find user by role
+   */
+  async findUserByRole({role}) {
+    return await prisma.user.findMany({
+      where: { role }
+    });
+  }
+
+  /**
    * Find user by ID
    */
   async findUserById(userId) {
@@ -114,6 +123,22 @@ class AuthService {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
+
+  // Service method to get only the user's password hash
+  async getUserPassword(userId) {
+      try {
+          const user = await prisma.user.findUnique({
+              where: { id: userId },
+              select: { password: true }
+          });
+          
+          return user?.password || null;
+      } catch (error) {
+          console.error('Error fetching user password:', error);
+          throw error;
+      }
+  }
+
 }
 
 export default new AuthService();

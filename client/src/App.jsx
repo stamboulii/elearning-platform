@@ -58,6 +58,7 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './components/layout/Header';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import CustomToaster from './components/common/Toaster';
 
 // Pages
 import Home from './pages/Home';
@@ -81,6 +82,9 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminCourses from './pages/admin/Courses';
 import AdminCategories from './pages/admin/Categories';
+import AdminSettings from './pages/admin/Settings';
+import UserSettings from './pages/admin/Settings';
+import WishlistPage from './pages/WishlistPage';
 function App() {
   return (
     <AuthProvider>
@@ -133,6 +137,14 @@ function App() {
               }
             />
 
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'STUDENT', 'INSTRUCTOR']}>
+                  <UserSettings />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Student Routes */}
             <Route
@@ -227,6 +239,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route 
+              path="/wishlist" 
+              element={
+              <ProtectedRoute>
+                <WishlistPage />
+              </ProtectedRoute>} 
+            />
+
 
             {/* 404 */}
             <Route path="*" element={<Navigate to="/" replace />} />

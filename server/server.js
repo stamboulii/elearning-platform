@@ -24,6 +24,7 @@ import uploadRoutes from './src/routes/uploadRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import paymentRoutes from './src/routes/paymentRoutes.js';
 import certificateRoutes from './src/routes/certificateRoutes.js';
+import wishlistRoutes from './src/routes/wishlistRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -75,6 +76,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 
 // Health check

@@ -257,7 +257,7 @@ const AdminDashboard = () => {
             <NavTool icon={<Layers />} label="Categories" link="/admin/categories" color="text-indigo-600" bg="bg-indigo-50" />
             <NavTool icon={<DollarSign />} label="Payments" link="/admin/transactions" color="text-emerald-600" bg="bg-emerald-50" />
             <NavTool icon={<Tag />} label="Coupons" link="/admin/coupons" color="text-rose-600" bg="bg-rose-50" />
-            <NavTool icon={<Settings />} label="Settings" link="/admin/settings" color="text-slate-600" bg="bg-slate-50" />
+            <NavTool icon={<Settings />} label="Settings" link="/settings" color="text-slate-600" bg="bg-slate-50" />
           </div>
         </div>
       </div>

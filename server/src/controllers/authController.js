@@ -301,3 +301,16 @@ export const updateProfileDetails = async (req, res) => {
     });
   }
 };
+
+
+export const updatePassword = async (req, res, next) => {
+    try {
+        const result = await userService.updatePasswordById(
+            req.user.id,
+            req.data.password
+        );
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};

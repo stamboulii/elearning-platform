@@ -34,7 +34,7 @@ class UserService {
             socialLinks: true,
             preferences: true
           }
-        }
+        },
       }
     });
   }
@@ -103,6 +103,38 @@ class UserService {
     });
     return !!user;
   }
+
+  async updatePasswordById (id, password) {
+    try {
+        const result = await prisma.user.update({
+            where: { id },
+            data: { password },
+            select: { id: true, email: true },
+        });
+        if (!result) {
+            throw new RecordNotFoundError("User", id);
+        }
+        return result;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                throw new UniqueValueError(
+                    "User",
+                    error.meta.target,
+                    error.message
+                );
+            } else if (error.code === "P2025") {
+                throw new RecordNotFoundError("User", id);
+            } else {
+                throw error;
+            }
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+            throw new DataValidationError("User", error.message);
+        } else {
+            throw error;
+        }
+      }
+  };
 }
 
 export default new UserService();

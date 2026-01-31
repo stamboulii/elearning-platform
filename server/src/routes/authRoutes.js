@@ -30,9 +30,10 @@ import {
   refreshToken,
   logout,
   updateProfile,
-  updateProfileDetails
+  updateProfileDetails,
+  updatePassword
 } from '../controllers/authController.js';
-import { protect } from '../middleware/auth.js';
+import { protect, checkUpdatePassword } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -339,5 +340,7 @@ router.put('/profile', protect, updateProfile);
  *               $ref: '#/components/schemas/Error'
  */
 router.put('/profile/details', protect, updateProfileDetails);
+
+router.put('/change-password', protect, checkUpdatePassword, updatePassword);
 
 export default router;
