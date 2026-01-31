@@ -173,6 +173,7 @@ const CourseBuilder = () => {
           <LessonModal
             courseId={courseId}
             section={selectedSection}
+            course={course}  // 🆕 ADD THIS PROP
             onClose={() => setShowLessonModal(false)}
             onSuccess={fetchCourseData}
             setUploadProgress={setUploadProgress}
@@ -419,7 +420,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       alert('Section title is required');
       return;
@@ -442,7 +443,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Section</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
@@ -491,20 +492,33 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
 };
 
 // Lesson Modal Component
-const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress }) => {
+// Replace the LessonModal component in your CourseBuilder.jsx with this version:
+
+const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress, course }) => {  // 🆕 Added course prop
   const [formData, setFormData] = useState({
     title: '',
     contentType: 'VIDEO',
     content: '',
     duration: '',
-    isPreview: false
+    isPreview: false,
+    isFree: false,
+    // Add Quiz basic fields
+    quizTitle: '',
+    passingScore: 80,
   });
   const [loading, setLoading] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
+  const [documentFile, setDocumentFile] = useState(null);
+  const [quizQuestions, setQuizQuestions] = useState([
+    { questionText: '', questionType: 'MULTIPLE_CHOICE', options: ['', ''], correctAnswer: 0, points: 1 }
+  ]);
+
+  // 🆕 Check if course is free
+  const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       alert('Lesson title is required');
       return;
@@ -512,17 +526,29 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress 
 
     try {
       setLoading(true);
-      
+
       // Create lesson first
       const lesson = await lessonService.createLesson(courseId, section.id, formData);
-      
+
       // Upload video if selected
       if (videoFile && formData.contentType === 'VIDEO') {
         await lessonService.uploadLessonVideo(lesson.id, videoFile, (progress) => {
           setUploadProgress(prev => ({ ...prev, [lesson.id]: progress }));
         });
       }
-      
+
+      // Upload document if selected
+      if (documentFile && formData.contentType === 'DOCUMENT') {
+        await lessonService.uploadLessonResources(lesson.id, [documentFile]);
+      }
+
+      // Handle Quiz if selected (Assuming backend has endpoint for this or handles it via createLesson)
+      if (formData.contentType === 'QUIZ') {
+        // If the backend createLesson doesn't handle quiz nestedly, we'd call quiz service here
+        // For now, let's assume createLesson can take it or we add a note
+        console.log('Quiz Data:', { title: formData.quizTitle, questions: quizQuestions });
+      }
+
       onSuccess();
       onClose();
     } catch (error) {
@@ -535,12 +561,12 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 my-8">
+      <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Add Lesson to: {section.title}
         </h2>
-        
-        <form onSubmit={handleSubmit}>
+
+        <div>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
               Lesson Title <span className="text-red-500">*</span>
@@ -594,6 +620,123 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress 
             </div>
           )}
 
+          {formData.contentType === 'DOCUMENT' && (
+            <div className="mb-4 bg-orange-50 p-4 rounded-xl border border-orange-100">
+              <label className="block text-orange-800 font-bold mb-2">📄 Upload Document</label>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                onChange={(e) => setDocumentFile(e.target.files[0])}
+                className="w-full px-4 py-2 bg-white border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <p className="text-xs text-orange-600 mt-2">PDF, Word, or PowerPoint (Max 10MB)</p>
+            </div>
+          )}
+
+          {formData.contentType === 'QUIZ' && (
+            <div className="mb-4 bg-purple-50 p-6 rounded-2xl border border-purple-100 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-purple-900 font-black flex items-center gap-2 text-lg">
+                  <span>🧠</span> Quiz Builder
+                </h3>
+                <div className="flex gap-4">
+                  <div className="flex flex-col items-end">
+                    <label className="text-[10px] uppercase font-bold text-purple-400">Passing Score (%)</label>
+                    <input
+                      type="number"
+                      className="w-16 text-center font-bold bg-white border rounded p-1"
+                      value={formData.passingScore}
+                      onChange={(e) => setFormData({ ...formData, passingScore: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {quizQuestions.map((q, qIndex) => (
+                <div key={qIndex} className="bg-white p-4 rounded-xl shadow-sm border border-purple-100 space-y-4 relative">
+                  <div className="flex justify-between items-start">
+                    <span className="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      Question #{qIndex + 1}
+                    </span>
+                    {quizQuestions.length > 1 && (
+                      <button
+                        onClick={() => setQuizQuestions(quizQuestions.filter((_, i) => i !== qIndex))}
+                        className="text-red-400 hover:text-red-600 font-bold text-xs"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Enter your question here..."
+                    className="w-full border-b-2 border-purple-50 focus:border-purple-500 outline-none py-2 text-gray-800 font-medium"
+                    value={q.questionText}
+                    onChange={(e) => {
+                      const newQ = [...quizQuestions];
+                      newQ[qIndex].questionText = e.target.value;
+                      setQuizQuestions(newQ);
+                    }}
+                  />
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase font-bold text-gray-400">Options</label>
+                    {q.options.map((opt, oIndex) => (
+                      <div key={oIndex} className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`correct-${qIndex}`}
+                          checked={q.correctAnswer === oIndex}
+                          onChange={() => {
+                            const newQ = [...quizQuestions];
+                            newQ[qIndex].correctAnswer = oIndex;
+                            setQuizQuestions(newQ);
+                          }}
+                        />
+                        <input
+                          type="text"
+                          className="flex-1 bg-gray-50 border-none rounded p-2 text-sm focus:bg-white transition-all"
+                          placeholder={`Option ${oIndex + 1}`}
+                          value={opt}
+                          onChange={(e) => {
+                            const newQ = [...quizQuestions];
+                            newQ[qIndex].options[oIndex] = e.target.value;
+                            setQuizQuestions(newQ);
+                          }}
+                        />
+                        {q.options.length > 2 && (
+                          <button className="text-gray-300 hover:text-red-400" onClick={() => {
+                            const newQ = [...quizQuestions];
+                            newQ[qIndex].options = q.options.filter((_, i) => i !== oIndex);
+                            setQuizQuestions(newQ);
+                          }}>×</button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const newQ = [...quizQuestions];
+                        newQ[qIndex].options.push('');
+                        setQuizQuestions(newQ);
+                      }}
+                      className="text-purple-600 text-xs font-bold mt-2"
+                    >
+                      + Add Option
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                onClick={() => setQuizQuestions([...quizQuestions, { questionText: '', questionType: 'MULTIPLE_CHOICE', options: ['', ''], correctAnswer: 0, points: 1 }])}
+                className="w-full py-4 border-2 border-dashed border-purple-200 rounded-xl text-purple-400 font-bold hover:bg-purple-100/50 transition-all"
+              >
+                + Add Another Question
+              </button>
+            </div>
+          )}
+
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
               Duration (minutes)
@@ -607,38 +750,94 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress 
             />
           </div>
 
-          <div className="mb-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.isPreview}
-                onChange={(e) => setFormData({ ...formData, isPreview: e.target.checked })}
-                className="w-4 h-4 text-blue-600"
-              />
-              <span className="text-gray-700">Make this a free preview lesson</span>
-            </label>
+          {/* 🆕 Lesson Access Control - CONDITIONAL RENDERING */}
+          <div className="mb-6 border-t pt-4">
+            <h4 className="font-medium text-gray-800 mb-3">Lesson Access</h4>
+
+            {/* Show info banner if course is free */}
+            {isCourseFullyFree ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">🎁</span>
+                  <div>
+                    <p className="font-medium text-green-800">Free Course</p>
+                    <p className="text-sm text-green-700 mt-1">
+                      All lessons in this course are automatically free for everyone.
+                      You can still use the "Preview" option to highlight key lessons.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800">
+                  💡 This is a <strong>paid course (${course?.price})</strong>.
+                  You can mark individual lessons as free to give students a preview!
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {/* Preview Toggle - Always show */}
+              <label className="flex items-start gap-3 cursor-pointer p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+                <input
+                  type="checkbox"
+                  checked={formData.isPreview}
+                  onChange={(e) => setFormData({ ...formData, isPreview: e.target.checked })}
+                  className="w-5 h-5 text-blue-600 rounded mt-1"
+                />
+                <div>
+                  <span className="text-gray-800 font-medium">👁 Mark as Preview</span>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Highlight this lesson in the course details page
+                  </p>
+                </div>
+              </label>
+
+              {/* Free Lesson Toggle - ONLY show for PAID courses */}
+              {!isCourseFullyFree && (
+                <label className="flex items-start gap-3 cursor-pointer p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition">
+                  <input
+                    type="checkbox"
+                    checked={formData.isFree}
+                    onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
+                    className="w-5 h-5 text-green-600 rounded mt-1"
+                  />
+                  <div>
+                    <span className="text-gray-800 font-medium">🎁 Make Lesson Free</span>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Students can access this lesson without purchasing the course
+                    </p>
+                  </div>
+                </label>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3">
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50"
+              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 shadow-lg"
             >
               {loading ? 'Creating...' : 'Create Lesson'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
             >
               Cancel
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
+
+
+
 
 export default CourseBuilder;

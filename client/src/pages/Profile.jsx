@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import authService from '../services/authService';
@@ -430,4 +431,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

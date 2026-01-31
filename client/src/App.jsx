@@ -57,6 +57,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/layout/Header';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 
 // Pages
 import Home from './pages/Home';
@@ -72,10 +73,18 @@ import Profile from './pages/Profile';
 import MyCourses from './pages/instructor/MyCourses';
 import CourseBuilder from './pages/instructor/CourseBuilder';
 import CreateCourse from './pages/instructor/CreateCourse';
+import Checkout from './pages/student/Checkout';
+import CertificateView from './pages/student/CertificateView';
 
+// Admin Pages
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminUsers from './pages/admin/Users';
+import AdminCourses from './pages/admin/Courses';
+import AdminCategories from './pages/admin/Categories';
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <div className="min-h-screen bg-gray-50">
           <Header />
@@ -86,6 +95,44 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/courses" element={<CourseCatalog />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminUsers />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/courses"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminCourses />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/categories"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminCategories />
+                </ProtectedRoute>
+              }
+            />
+
 
             {/* Student Routes */}
             <Route
@@ -109,6 +156,22 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['STUDENT']}>
                   <CoursePlayer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute allowedRoles={['STUDENT']}>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/certificates/:id"
+              element={
+                <ProtectedRoute allowedRoles={['STUDENT']}>
+                  <CertificateView />
                 </ProtectedRoute>
               }
             />

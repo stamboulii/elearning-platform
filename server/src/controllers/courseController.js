@@ -50,7 +50,8 @@ export const getCourses = async (req, res) => {
 // @access  Public
 export const getCourse = async (req, res) => {
   try {
-    const course = await courseService.getCourseById(req.params.id);
+    const userId = req.user ? req.user.id : null
+    const course = await courseService.getCourseById(req.params.id,userId);
 
     res.json({
       success: true,

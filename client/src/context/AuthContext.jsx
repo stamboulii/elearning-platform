@@ -1,113 +1,3 @@
-// /* eslint-disable react-refresh/only-export-components */
-// import { createContext, useContext, useState, useEffect } from 'react';
-// import axios from '../utils/axios';
-
-// const AuthContext = createContext(null);
-
-// // Export the useAuth hook - THIS WAS MISSING!
-// export const useAuth = () => {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth must be used within an AuthProvider');
-//   }
-//   return context;
-// };
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   // Check if user is logged in on mount
-//   useEffect(() => {
-//     checkAuth();
-   
-//   }, []);
-
-//   const checkAuth = async () => {
-//     const token = localStorage.getItem('accessToken');
-    
-//     if (!token) {
-//       setLoading(false);
-//       return;
-//     }
-
-//     try {
-//       const { data } = await axios.get('/auth/me');
-//       setUser(data.data.user);
-//     } catch (error) {
-//       console.error('Auth check failed:', error);
-//       localStorage.removeItem('accessToken');
-//       localStorage.removeItem('refreshToken');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const register = async (userData) => {
-//     try {
-//       const { data } = await axios.post('/auth/register', userData);
-      
-//       // Save tokens
-//       localStorage.setItem('accessToken', data.data.accessToken);
-//       localStorage.setItem('refreshToken', data.data.refreshToken);
-      
-//       // Set user
-//       setUser(data.data.user);
-      
-//       return { success: true };
-//     } catch (error) {
-//       return {
-//         success: false,
-//         message: error.response?.data?.message || 'Registration failed'
-//       };
-//     }
-//   };
-
-//   const login = async (email, password) => {
-//     try {
-//       const { data } = await axios.post('/auth/login', { email, password });
-      
-//       // Save tokens
-//       localStorage.setItem('accessToken', data.data.accessToken);
-//       localStorage.setItem('refreshToken', data.data.refreshToken);
-      
-//       // Set user
-//       setUser(data.data.user);
-      
-//       return { success: true };
-//     } catch (error) {
-//       return {
-//         success: false,
-//         message: error.response?.data?.message || 'Login failed'
-//       };
-//     }
-//   };
-
-//   const logout = async () => {
-//     try {
-//       await axios.post('/auth/logout');
-//     } catch (error) {
-//       console.error('Logout error:', error);
-//     } finally {
-//       // Clear tokens and user regardless of API response
-//       localStorage.removeItem('accessToken');
-//       localStorage.removeItem('refreshToken');
-//       setUser(null);
-//     }
-//   };
-
-//   const value = {
-//     user,
-//     loading,
-//     register,
-//     login,
-//     logout,
-//     isAuthenticated: !!user
-//   };
-
-//   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-// };
-
 import { createContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
 
@@ -119,33 +9,55 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in on mount
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('token');
-        }
+
+      if (!token) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        const userData = await authService.getCurrentUser();
+
+        if (!userData || !userData.role) {
+          throw new Error('Invalid user payload');
+        }
+
+        setUser(userData);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        localStorage.removeItem('token');
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     checkAuth();
   }, []);
 
+  const refreshUser = async () => {
+    try {
+      const userData = await authService.getCurrentUser();
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Refresh user failed:', error);
+    }
+  };
+
   const login = async (email, password) => {
     try {
       const response = await authService.login(email, password);
-      if (response.success && response.user) {
+
+      if (response?.success && response?.user?.role) {
         setUser(response.user);
       }
+
       return response;
     } catch (error) {
-      console.error('Login error:', error);
       return {
         success: false,
         message: error.response?.data?.message || 'Login failed'
@@ -153,39 +65,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
-    try {
-      const response = await authService.register(userData);
-      if (response.success && response.user) {
-        setUser(response.user);
-      }
-      return response;
-    } catch (error) {
-      console.error('Register error:', error);
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Registration failed'
-      };
-    }
-  };
-
   const logout = () => {
     authService.logout();
+    localStorage.removeItem('token');
     setUser(null);
   };
 
-  const updateUser = (userData) => {
-    setUser({ ...user, ...userData });
-  };
-
-  const value = {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    updateUser
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        register: authService.register,
+        refreshUser
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

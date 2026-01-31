@@ -32,12 +32,19 @@ const Header = () => {
             
             {user ? (
               <>
-                <Link 
-                  to={user.role === 'INSTRUCTOR' ? '/instructor/dashboard' : '/student/dashboard'} 
+               <Link
+                  to={
+                    user.role === 'ADMIN'
+                      ? '/admin/dashboard'
+                      : user.role === 'INSTRUCTOR'
+                      ? '/instructor/dashboard'
+                      : '/student/dashboard'
+                  }
                   className="text-gray-700 hover:text-blue-600 transition"
                 >
                   Dashboard
                 </Link>
+
                 
                 {user.role === 'INSTRUCTOR' && (
                   <Link to="/instructor/courses" className="text-gray-700 hover:text-blue-600 transition">

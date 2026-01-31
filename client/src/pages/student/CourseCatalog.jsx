@@ -10,15 +10,6 @@ const CourseCatalog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    fetchCourses();
-  }, [searchQuery, selectedCategory, sortBy]);
-
   const fetchData = async () => {
     try {
       const [coursesData, categoriesData] = await Promise.all([
@@ -33,23 +24,30 @@ const CourseCatalog = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchData();
+  }, []);
+const fetchCourses = async () => {
+  try {
+    setLoading(true);
 
-  const fetchCourses = async () => {
-    try {
-      setLoading(true);
-      const filters = {};
-      if (selectedCategory) filters.category = selectedCategory;
-      if (sortBy) filters.sortBy = sortBy;
-      if (searchQuery) filters.search = searchQuery;
+    const filters = {};
+    if (selectedCategory) filters.category = selectedCategory;
+    if (sortBy) filters.sortBy = sortBy;
+    if (searchQuery) filters.search = searchQuery;
 
-      const data = await courseService.getAllCourses(filters);
-      setCourses(data.data?.courses || data || []);
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await courseService.getAllCourses(filters);
+    setCourses(data.data?.courses || data || []);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchCourses();
+}, [searchQuery, selectedCategory, sortBy]);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -64,6 +64,7 @@ class AuthService {
         firstName,
         lastName,
         role: role || 'STUDENT',
+        profilePicture: `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=0D8ABC&color=fff&size=512`,
         profile: {
           create: {}
         }

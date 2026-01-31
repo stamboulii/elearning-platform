@@ -13,17 +13,18 @@ class UserService {
     return await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        profilePicture: true,
-        bio: true,
-        emailVerified: true,
-        isActive: true,
         createdAt: true,
         lastLogin: true,
+        xp: true,
+        level: true,
+        badges: {
+          include: {
+            badge: true
+          },
+          orderBy: {
+            awardedAt: 'desc'
+          }
+        },
         profile: {
           select: {
             phoneNumber: true,

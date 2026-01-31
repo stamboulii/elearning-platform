@@ -23,7 +23,7 @@ const InstructorDashboard = () => {
       setLoading(true);
       const data = await courseService.getInstructorCourses();
       setCourses(data);
-      
+
       // Calculate stats
       const stats = {
         totalCourses: data.length,
@@ -105,7 +105,7 @@ const InstructorDashboard = () => {
         {/* Recent Courses */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Recent Courses</h2>
-          
+
           {courses.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 mb-4">You haven't created any courses yet</p>
@@ -143,7 +143,7 @@ const StatCard = ({ title, value, icon, color }) => (
 
 const CourseRow = ({ course }) => (
   <Link
-    to={`/instructor/courses/${course.id}`}
+    to={`/instructor/courses/${course.id}/builder`}
     className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition"
   >
     <div className="flex items-center gap-4">
@@ -155,9 +155,8 @@ const CourseRow = ({ course }) => (
       <div>
         <h3 className="font-semibold text-gray-800">{course.title}</h3>
         <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-          <span className={`px-2 py-1 rounded ${
-            course.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-          }`}>
+          <span className={`px-2 py-1 rounded ${course.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+            }`}>
             {course.status}
           </span>
           <span>👥 {course._count.enrollments} students</span>

@@ -1,4 +1,6 @@
 import prisma from '../config/database.js';
+import gamificationService from './gamificationService.js';
+import certificateService from './certificateService.js';
 
 class ProgressService {
   // Mark lesson as complete
@@ -33,6 +35,16 @@ class ProgressService {
       throw new Error('Not enrolled in this course');
     }
 
+    // Check if lesson was already completed to avoid double XP
+    const existingProgress = await prisma.lessonProgress.findUnique({
+      where: {
+        enrollmentId_lessonId: {
+          enrollmentId: enrollment.id,
+          lessonId
+        }
+      }
+    });
+
     // Create or update lesson progress
     const progress = await prisma.lessonProgress.upsert({
       where: {
@@ -53,8 +65,13 @@ class ProgressService {
       }
     });
 
+    // Award XP only if it's the first time completing this lesson
+    if (!existingProgress || !existingProgress.isCompleted) {
+      await gamificationService.awardXP(userId, 50, 'LESSON_COMPLETED', enrollment.id);
+    }
+
     // Update overall course progress
-    await this.updateCourseProgress(enrollment.id);
+    await this.updateCourseProgress(enrollment.id, userId);
 
     return progress;
   }
@@ -123,7 +140,7 @@ class ProgressService {
   }
 
   // Calculate and update course progress percentage
-  async updateCourseProgress(enrollmentId) {
+  async updateCourseProgress(enrollmentId, userId) {
     const enrollment = await prisma.enrollment.findUnique({
       where: { id: enrollmentId },
       include: {
@@ -163,10 +180,17 @@ class ProgressService {
     const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
 
     // Check if course is completed
+    const becameCompleted = progressPercentage === 100 && enrollment.completionStatus !== 'COMPLETED';
     const completionStatus = progressPercentage === 100 ? 'COMPLETED' : 'IN_PROGRESS';
     const completedAt = progressPercentage === 100 && !enrollment.completedAt
       ? new Date()
       : enrollment.completedAt;
+
+    // Award bonus XP for course completion
+    if (becameCompleted && userId) {
+      await gamificationService.awardXP(userId, 500, 'COURSE_COMPLETED', enrollment.id);
+      await certificateService.issueCertificate(enrollment.id);
+    }
 
     // Update enrollment
     return await prisma.enrollment.update({
@@ -296,7 +320,7 @@ class ProgressService {
     });
 
     // Recalculate course progress
-    await this.updateCourseProgress(enrollment.id);
+    await this.updateCourseProgress(enrollment.id, userId);
 
     return progress;
   }

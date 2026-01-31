@@ -2,23 +2,37 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // import { useAuth } from '../../context/AuthContext';
 import { useAuth } from '../../hooks/useAuth';
+
 const Login = () => {
   const navigate = useNavigate();
   const { login, user, loading } = useAuth();
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (!loading && user) {
-      const redirectPath = user.role === 'INSTRUCTOR' || user.role === 'ADMIN' 
-        ? '/instructor/dashboard' 
-        : '/student/dashboard';
-      navigate(redirectPath, { replace: true });
-    }
-  }, [user, loading, navigate]);
-  
+  // Redirect if already logged in (ROLE-BASED)
+useEffect(() => {
+  if (loading || !user) return;
+
+  switch (user.role) {
+    case 'STUDENT':
+      navigate('/student/dashboard', { replace: true });
+      break;
+
+    case 'INSTRUCTOR':
+      navigate('/instructor/dashboard', { replace: true });
+      break;
+
+    case 'ADMIN':
+      navigate('/admin/dashboard', { replace: true });
+      break;
+
+    default:
+      navigate('/', { replace: true });
+  }
+}, [user, loading, navigate]);
+
+
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +40,7 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setError('');
   };
@@ -40,17 +54,9 @@ const Login = () => {
 
     setIsSubmitting(false);
 
-    if (result.success) {
-      // Redirect based on user role
-      const userRole = result.user?.role;
-      if (userRole === 'INSTRUCTOR' || userRole === 'ADMIN') {
-        navigate('/instructor/dashboard');
-      } else if (userRole === 'STUDENT') {
-        navigate('/student/dashboard');
-      } else {
-        navigate('/');
-      }
-    } else {
+    // ❗ NO NAVIGATION HERE
+    // Navigation happens ONLY via useEffect after user state updates
+    if (!result.success) {
       setError(result.message || 'Login failed. Please check your credentials.');
     }
   };
