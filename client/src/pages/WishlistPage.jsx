@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Clock, Users, Star, BookOpen, Eye, X, ChevronRight, Play, Sparkles } from 'lucide-react';
+import { Heart, Clock, Users, Star, BookOpen, Eye, X, ChevronRight, Sparkles, ShoppingCart, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import toast from '../utils/toast';
 
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
+  const [cartStatus, setCartStatus] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [addingToCart, setAddingToCart] = useState({});
+  const [removingFromCart, setRemovingFromCart] = useState({});
   
   const fetchWishlist = async (pageNum = 1) => {
     try {
@@ -24,11 +27,52 @@ const WishlistPage = () => {
       
       setHasMore(data.hasMore);
       setPage(pageNum);
+      
+      // Check cart status for all courses in wishlist
+      checkCartStatusForWishlist(data.items);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
       toast.error('Failed to load favorites');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const checkCartStatusForWishlist = async (items) => {
+    try {
+      // Check cart status for each course in parallel
+      const statusPromises = items.map(async (item) => {
+        try {
+          const response = await api.get(`/cart/check/${item.courseId}`);
+          return {
+            courseId: item.courseId,
+            isInCart: response.data.success ? response.data.data.isInCart : false,
+            cartItemId: response.data.success ? response.data.data.cartItemId : null
+          };
+        } catch (error) {
+          console.error(`Error checking cart status for course ${item.courseId}:`, error);
+          return {
+            courseId: item.courseId,
+            isInCart: false,
+            cartItemId: null
+          };
+        }
+      });
+
+      const statuses = await Promise.all(statusPromises);
+      
+      // Convert to object for easy lookup
+      const statusObject = {};
+      statuses.forEach(status => {
+        statusObject[status.courseId] = {
+          isInCart: status.isInCart,
+          cartItemId: status.cartItemId
+        };
+      });
+      
+      setCartStatus(prev => ({ ...prev, ...statusObject }));
+    } catch (error) {
+      console.error('Error checking cart statuses:', error);
     }
   };
 
@@ -41,15 +85,105 @@ const WishlistPage = () => {
       await api.delete(`/wishlist/${courseId}`);
       setWishlist(prev => prev.filter(item => item.courseId !== courseId));
       toast.success('Removed from favorites');
+      window.dispatchEvent(new Event('favorites-updated'));
     } catch (error) {
       console.error('Error removing from wishlist:', error);
       toast.error('Failed to remove from favorites');
     }
   };
 
+  const handleAddToCart = async (courseId) => {
+    try {
+      setAddingToCart(prev => ({ ...prev, [courseId]: true }));
+      
+      const response = await api.post('/cart', { courseId });
+      
+      if (response.data.success) {
+        const { action } = response.data.data;
+        
+        if (action === 'added' || action === 'enrolled') {
+          toast.success(action === 'enrolled' ? 'Enrolled in free course!' : 'Added to cart');
+          
+          setCartStatus(prev => ({
+            ...prev,
+            [courseId]: { 
+              isInCart: true, 
+              cartItemId: response.data.data.cartItem?.id || null 
+            }
+          }));
+          
+          if (action === 'enrolled') {
+            setWishlist(prev => prev.filter(item => item.courseId !== courseId));
+          }
+        }
+        
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Failed to add to cart');
+      }
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [courseId]: false }));
+    }
+  };
+
+  const handleRemoveFromCart = async (courseId) => {
+    try {
+      setRemovingFromCart(prev => ({ ...prev, [courseId]: true }));
+      
+      // First, get the cart item ID for this course
+      const cartStatusResponse = await api.get(`/cart/check/${courseId}`);
+      
+      if (cartStatusResponse.data.success && cartStatusResponse.data.data.cartItemId) {
+        // Remove from cart using cart item ID
+        await api.delete(`/cart/${cartStatusResponse.data.data.cartItemId}`);
+        
+        // Update cart status for this course
+        setCartStatus(prev => ({
+          ...prev,
+          [courseId]: { isInCart: false, cartItemId: null }
+        }));
+        
+        toast.success('Removed from cart');
+        window.dispatchEvent(new Event('cart-updated'));
+      } else {
+        toast.error('Course not found in cart');
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Failed to remove from cart');
+      }
+    } finally {
+      setRemovingFromCart(prev => ({ ...prev, [courseId]: false }));
+    }
+  };
+
+  const handleCartToggle = async (courseId) => {
+    // If course is already in cart, remove it. Otherwise, add it.
+    if (cartStatus[courseId]?.isInCart) {
+      await handleRemoveFromCart(courseId);
+    } else {
+      await handleAddToCart(courseId);
+    }
+  };
+
   const formatPrice = (price) => {
     if (price === 0) return 'Free';
     return `$${parseFloat(price).toFixed(2)}`;
+  };
+
+  // Check if course is in cart
+  const isCourseInCart = (courseId) => {
+    return cartStatus[courseId]?.isInCart || false;
   };
 
   if (isLoading && wishlist.length === 0) {
@@ -98,154 +232,216 @@ const WishlistPage = () => {
         {wishlist.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {wishlist.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group"
-                >
-                  {/* Course Image */}
-                  <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200">
-                    {item.course.thumbnailImage ? (
-                      <>
-                        <img
-                          src={item.course.thumbnailImage}
-                          alt={item.course.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                      </>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="w-16 h-16 text-slate-300" />
+              {wishlist.map((item) => {
+                const isInCart = isCourseInCart(item.courseId);
+                const isLoading = addingToCart[item.courseId] || removingFromCart[item.courseId];
+                
+                return (
+                  <div 
+                    key={item.id} 
+                    className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group"
+                  >
+                    {/* Course Image */}
+                    <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200">
+                      {item.course.thumbnailImage ? (
+                        <>
+                          <img
+                            src={item.course.thumbnailImage}
+                            alt={item.course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <BookOpen className="w-16 h-16 text-slate-300" />
+                        </div>
+                      )}
+                      
+                      {/* Favorite Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className="px-3 py-1.5 bg-rose-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1">
+                          <Heart className="w-3 h-3 fill-current" />
+                          Saved
+                        </span>
                       </div>
-                    )}
-                    
-                    {/* Favorite Badge */}
-                    <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1.5 bg-rose-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1">
-                        <Heart className="w-3 h-3 fill-current" />
-                        Saved
-                      </span>
+
+                      {/* Cart Badge (if in cart) */}
+                      {isInCart && (
+                        <div className="absolute top-3 right-3">
+                          <span className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1">
+                            <ShoppingCart className="w-3 h-3 fill-current" />
+                            In Cart
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Price Badge */}
+                      <div className="absolute bottom-3 left-3">
+                        <span className="px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-sm font-black text-slate-900 shadow-lg">
+                          {item.course.isFree ? 'Free' : formatPrice(item.course.price)}
+                        </span>
+                      </div>
+
+                      {/* Quick Remove from Wishlist - Only on hover */}
+                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleRemoveFromWishlist(item.courseId)}
+                          className="p-2 bg-white/95 backdrop-blur-sm rounded-lg hover:bg-rose-50 hover:text-rose-600 transition-all shadow-lg"
+                          title="Remove from favorites"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Price Badge */}
-                    <div className="absolute bottom-3 left-3">
-                      <span className="px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-sm font-black text-slate-900 shadow-lg">
-                        {item.course.isFree ? 'Free' : formatPrice(item.course.price)}
-                      </span>
-                    </div>
+                    {/* Course Info */}
+                    <div className="p-6">
+                      <Link to={`/courses/${item.course.id}`}>
+                        <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                          {item.course.title}
+                        </h3>
+                      </Link>
 
-                    {/* Quick Action Overlay */}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => handleRemoveFromWishlist(item.courseId)}
-                        className="p-2.5 bg-white/95 backdrop-blur-sm rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-all shadow-lg"
-                        title="Remove from favorites"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+                      <p className="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[40px]">
+                        {item.course.shortDescription}
+                      </p>
 
-                  {/* Course Info */}
-                  <div className="p-6">
-                    <Link to={`/courses/${item.course.id}`}>
-                      <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                        {item.course.title}
-                      </h3>
-                    </Link>
+                      {/* Instructor */}
+                      {item.course.instructor && (
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex-shrink-0">
+                            {item.course.instructor.profilePicture ? (
+                              <img 
+                                src={item.course.instructor.profilePicture} 
+                                alt={item.course.instructor.firstName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs text-white font-bold">
+                                {item.course.instructor.firstName?.charAt(0) || 'I'}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-sm text-slate-600 truncate">
+                            {item.course.instructor.firstName} {item.course.instructor.lastName}
+                          </span>
+                        </div>
+                      )}
 
-                    <p className="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[40px]">
-                      {item.course.shortDescription}
-                    </p>
+                      {/* Stats */}
+                      <div className="flex items-center justify-between text-sm text-slate-500 mb-6">
+                        <div className="flex items-center gap-3">
+                          {/* Rating */}
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 text-amber-500 fill-current" />
+                            <span className="font-semibold">{item.course.avgRating || 0}</span>
+                          </div>
 
-                    {/* Instructor */}
-                    {item.course.instructor && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex-shrink-0">
-                          {item.course.instructor.profilePicture ? (
-                            <img 
-                              src={item.course.instructor.profilePicture} 
-                              alt={item.course.instructor.firstName}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs text-white font-bold">
-                              {item.course.instructor.firstName?.charAt(0) || 'I'}
+                          {/* Enrollments */}
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4 text-slate-400" />
+                            <span>{item.course.enrollmentsCount || 0}</span>
+                          </div>
+
+                          {/* Duration */}
+                          {item.course.estimatedDuration && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4 text-slate-400" />
+                              <span>{item.course.estimatedDuration}h</span>
                             </div>
                           )}
                         </div>
-                        <span className="text-sm text-slate-600 truncate">
-                          {item.course.instructor.firstName} {item.course.instructor.lastName}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Stats */}
-                    <div className="flex items-center justify-between text-sm text-slate-500 mb-6">
-                      <div className="flex items-center gap-3">
-                        {/* Rating */}
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-amber-500 fill-current" />
-                          <span className="font-semibold">{item.course.avgRating || 0}</span>
-                        </div>
-
-                        {/* Enrollments */}
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4 text-slate-400" />
-                          <span>{item.course.enrollmentsCount || 0}</span>
-                        </div>
-
-                        {/* Duration */}
-                        {item.course.estimatedDuration && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4 text-slate-400" />
-                            <span>{item.course.estimatedDuration}h</span>
-                          </div>
+                        
+                        {/* Level */}
+                        {item.course.level && (
+                          <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg capitalize">
+                            {item.course.level}
+                          </span>
                         )}
                       </div>
-                      
-                      {/* Level */}
-                      {item.course.level && (
-                        <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg capitalize">
-                          {item.course.level}
-                        </span>
-                      )}
-                    </div>
 
-                    {/* Enhanced Action Buttons */}
-                    <div className="flex items-center gap-3 pt-5 border-t border-slate-100">
-                      <Link
-                        to={`/courses/${item.course.id}`}
-                        className="flex-1 group/view relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all py-3 px-4 text-center shadow-lg shadow-indigo-200 hover:shadow-xl"
-                      >
-                        <span className="relative z-10 flex items-center justify-center gap-2">
-                          <Eye className="w-4 h-4" />
+                      {/* Action Buttons */}
+                      <div className="pt-5 border-t border-slate-100 space-y-3">
+                        {/* Main Action Button */}
+                        {!item.course.isFree ? (
+                          isInCart ? (
+                            // Already in cart - show "Go to Cart" and small remove option
+                            <>
+                              <Link
+                                to="/cart"
+                                className="w-full group/cart relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all py-3 px-4 text-center shadow-lg shadow-emerald-200 hover:shadow-xl flex items-center justify-center gap-2"
+                              >
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                  <ShoppingCart className="w-4 h-4" />
+                                  Go to Cart
+                                  <ChevronRight className="w-4 h-4" />
+                                </span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-emerald-700 to-teal-700 translate-y-full group-hover/cart:translate-y-0 transition-transform duration-300"></span>
+                              </Link>
+                              
+                              {/* Small remove from cart link */}
+                              <button
+                                onClick={() => handleCartToggle(item.courseId)}
+                                disabled={isLoading}
+                                className="w-full text-center text-sm text-slate-500 hover:text-rose-600 font-medium py-1 transition-colors disabled:opacity-50"
+                              >
+                                {isLoading ? 'Removing...' : 'Remove from cart'}
+                              </button>
+                            </>
+                          ) : (
+                            // Not in cart - show "Add to Cart"
+                            <button
+                              onClick={() => handleCartToggle(item.courseId)}
+                              disabled={isLoading}
+                              className="w-full group/cart relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all py-3 px-4 text-center shadow-lg shadow-emerald-200 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <span className="relative z-10 flex items-center justify-center gap-2">
+                                {isLoading ? (
+                                  <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Adding...
+                                  </>
+                                ) : (
+                                  <>
+                                    <ShoppingCart className="w-4 h-4" />
+                                    Add to Cart
+                                  </>
+                                )}
+                              </span>
+                              <span className="absolute inset-0 bg-gradient-to-r from-emerald-700 to-teal-700 translate-y-full group-hover/cart:translate-y-0 transition-transform duration-300"></span>
+                            </button>
+                          )
+                        ) : (
+                          // Free course - show enroll button
+                          <Link
+                            to={`/courses/${item.course.id}`}
+                            className="w-full group/enroll relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all py-3 px-4 text-center shadow-lg shadow-emerald-200 hover:shadow-xl flex items-center justify-center gap-2"
+                          >
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                              <BookOpen className="w-4 h-4" />
+                              Enroll Free
+                            </span>
+                            <span className="absolute inset-0 bg-gradient-to-r from-emerald-700 to-teal-700 translate-y-full group-hover/enroll:translate-y-0 transition-transform duration-300"></span>
+                          </Link>
+                        )}
+                      </div>
+
+                      {/* Quick Preview Button */}
+                      <div className="mt-4">
+                        <Link
+                          to={`/courses/${item.course.id}`}
+                          className="w-full py-2.5 text-sm text-slate-500 hover:text-indigo-600 font-medium rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 group/preview"
+                        >
+                          <Eye className="w-4 h-4 group-hover/preview:text-indigo-600" />
                           View Details
-                        </span>
-                        <span className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 translate-y-full group-hover/view:translate-y-0 transition-transform duration-300"></span>
-                      </Link>
-                      
-                      <button
-                        onClick={() => handleRemoveFromWishlist(item.courseId)}
-                        className="group/remove p-3 bg-slate-100 text-slate-600 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-all border border-slate-200 hover:border-rose-200"
-                        title="Remove from favorites"
-                      >
-                        <X className="w-5 h-5 group-hover/remove:scale-110 transition-transform" />
-                      </button>
-                    </div>
-
-                    {/* Quick Preview Button */}
-                    <div className="mt-4">
-                      <button className="w-full py-2.5 text-sm text-slate-500 hover:text-indigo-600 font-medium rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 group/preview">
-                        <Play className="w-4 h-4 group-hover/preview:text-indigo-600" />
-                        Preview Course
-                        <ChevronRight className="w-4 h-4 group-hover/preview:translate-x-1 transition-transform" />
-                      </button>
+                          <ChevronRight className="w-4 h-4 group-hover/preview:translate-x-1 transition-transform" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Load More */}

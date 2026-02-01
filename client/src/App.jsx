@@ -85,6 +85,8 @@ import AdminCategories from './pages/admin/Categories';
 import AdminSettings from './pages/admin/Settings';
 import UserSettings from './pages/admin/Settings';
 import WishlistPage from './pages/WishlistPage';
+import CartPage from './pages/CartPage';
+import CouponManager from './pages/admin/CouponManager';
 function App() {
   return (
     <AuthProvider>
@@ -243,9 +245,26 @@ function App() {
             <Route 
               path="/wishlist" 
               element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['STUDENT']}>
                 <WishlistPage />
               </ProtectedRoute>} 
+            />
+
+            <Route 
+              path="/cart" 
+              element={
+              <ProtectedRoute allowedRoles={['STUDENT']}>
+                <CartPage />
+              </ProtectedRoute>} 
+            />
+
+            <Route
+              path="/admin/coupons"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <CouponManager />
+                </ProtectedRoute>
+              }
             />
 
 
