@@ -12,22 +12,22 @@ const WishlistPage = () => {
   const [hasMore, setHasMore] = useState(false);
   const [addingToCart, setAddingToCart] = useState({});
   const [removingFromCart, setRemovingFromCart] = useState({});
-  
+
   const fetchWishlist = async (pageNum = 1) => {
     try {
       setIsLoading(true);
       const response = await api.get(`/wishlist?page=${pageNum}&limit=12`);
       const data = response.data.data;
-      
+
       if (pageNum === 1) {
         setWishlist(data.items);
       } else {
         setWishlist(prev => [...prev, ...data.items]);
       }
-      
+
       setHasMore(data.hasMore);
       setPage(pageNum);
-      
+
       // Check cart status for all courses in wishlist
       checkCartStatusForWishlist(data.items);
     } catch (error) {
@@ -60,7 +60,7 @@ const WishlistPage = () => {
       });
 
       const statuses = await Promise.all(statusPromises);
-      
+
       // Convert to object for easy lookup
       const statusObject = {};
       statuses.forEach(status => {
@@ -69,7 +69,7 @@ const WishlistPage = () => {
           cartItemId: status.cartItemId
         };
       });
-      
+
       setCartStatus(prev => ({ ...prev, ...statusObject }));
     } catch (error) {
       console.error('Error checking cart statuses:', error);
@@ -95,33 +95,36 @@ const WishlistPage = () => {
   const handleAddToCart = async (courseId) => {
     try {
       setAddingToCart(prev => ({ ...prev, [courseId]: true }));
-      
+
       const response = await api.post('/cart', { courseId });
-      
+
       if (response.data.success) {
-        const { action } = response.data.data;
-        
+        const responseData = response.data.data;
+        // Support both normalized {action, cartItem} and old direct cartItem responses
+        const action = responseData?.action || 'added';
+        const cartItem = responseData?.cartItem || (action === 'added' ? responseData : null);
+
         if (action === 'added' || action === 'enrolled') {
           toast.success(action === 'enrolled' ? 'Enrolled in free course!' : 'Added to cart');
-          
+
           setCartStatus(prev => ({
             ...prev,
-            [courseId]: { 
-              isInCart: true, 
-              cartItemId: response.data.data.cartItem?.id || null 
+            [courseId]: {
+              isInCart: true,
+              cartItemId: cartItem?.id || null
             }
           }));
-          
+
           if (action === 'enrolled') {
             setWishlist(prev => prev.filter(item => item.courseId !== courseId));
           }
         }
-        
+
         window.dispatchEvent(new Event('cart-updated'));
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      
+
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -135,20 +138,20 @@ const WishlistPage = () => {
   const handleRemoveFromCart = async (courseId) => {
     try {
       setRemovingFromCart(prev => ({ ...prev, [courseId]: true }));
-      
+
       // First, get the cart item ID for this course
       const cartStatusResponse = await api.get(`/cart/check/${courseId}`);
-      
+
       if (cartStatusResponse.data.success && cartStatusResponse.data.data.cartItemId) {
         // Remove from cart using cart item ID
         await api.delete(`/cart/${cartStatusResponse.data.data.cartItemId}`);
-        
+
         // Update cart status for this course
         setCartStatus(prev => ({
           ...prev,
           [courseId]: { isInCart: false, cartItemId: null }
         }));
-        
+
         toast.success('Removed from cart');
         window.dispatchEvent(new Event('cart-updated'));
       } else {
@@ -156,7 +159,7 @@ const WishlistPage = () => {
       }
     } catch (error) {
       console.error('Error removing from cart:', error);
-      
+
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -235,10 +238,10 @@ const WishlistPage = () => {
               {wishlist.map((item) => {
                 const isInCart = isCourseInCart(item.courseId);
                 const isLoading = addingToCart[item.courseId] || removingFromCart[item.courseId];
-                
+
                 return (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.id}
                     className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group"
                   >
                     {/* Course Image */}
@@ -257,7 +260,7 @@ const WishlistPage = () => {
                           <BookOpen className="w-16 h-16 text-slate-300" />
                         </div>
                       )}
-                      
+
                       {/* Favorite Badge */}
                       <div className="absolute top-3 left-3">
                         <span className="px-3 py-1.5 bg-rose-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-1">
@@ -312,8 +315,8 @@ const WishlistPage = () => {
                         <div className="flex items-center gap-2 mb-4">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex-shrink-0">
                             {item.course.instructor.profilePicture ? (
-                              <img 
-                                src={item.course.instructor.profilePicture} 
+                              <img
+                                src={item.course.instructor.profilePicture}
                                 alt={item.course.instructor.firstName}
                                 className="w-full h-full object-cover"
                               />
@@ -352,7 +355,7 @@ const WishlistPage = () => {
                             </div>
                           )}
                         </div>
-                        
+
                         {/* Level */}
                         {item.course.level && (
                           <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg capitalize">
@@ -379,7 +382,7 @@ const WishlistPage = () => {
                                 </span>
                                 <span className="absolute inset-0 bg-gradient-to-r from-emerald-700 to-teal-700 translate-y-full group-hover/cart:translate-y-0 transition-transform duration-300"></span>
                               </Link>
-                              
+
                               {/* Small remove from cart link */}
                               <button
                                 onClick={() => handleCartToggle(item.courseId)}
@@ -487,7 +490,7 @@ const WishlistPage = () => {
                 Browse Courses
                 <ChevronRight className="w-5 h-5 group-hover/browse:translate-x-1 transition-transform" />
               </Link>
-              
+
               <Link
                 to="/courses?filter=popular"
                 className="inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all"
@@ -496,7 +499,7 @@ const WishlistPage = () => {
                 View Popular
               </Link>
             </div>
-            
+
             {/* Quick Categories */}
             <div className="mt-12 pt-8 border-t border-slate-100">
               <p className="text-sm font-medium text-slate-500 mb-4">Quick categories to explore:</p>

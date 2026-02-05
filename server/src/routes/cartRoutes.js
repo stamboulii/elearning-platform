@@ -18,6 +18,11 @@ const router = express.Router();
 // @access  Private
 router.post('/', protect, addToCart);
 
+// @route   DELETE /api/cart/clear
+// @desc    Clear entire cart
+// @access  Private
+router.delete('/clear', protect, clearCart);
+
 // @route   DELETE /api/cart/:cartItemId
 // @desc    Remove item from cart by cart item ID
 // @access  Private

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, X, Heart, BookOpen, ChevronRight, Sparkles, CreditCard, Trash2, Star, Users, Clock, Tag, Percent, DollarSign } from 'lucide-react';
 import api from '../services/api';
 import toast from '../utils/toast';
+import ConfirmModal from '../components/common/ConfirmModal';
 
 const CartPage = () => {
   const [cart, setCart] = useState({ items: [], summary: {}, itemCount: 0 });
@@ -13,6 +14,8 @@ const CartPage = () => {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [clearingCart, setClearingCart] = useState(false);
   const navigate = useNavigate();
 
   const fetchCart = async () => {
@@ -20,7 +23,7 @@ const CartPage = () => {
       setIsLoading(true);
       const response = await api.get('/cart');
       setCart(response.data.data);
-      
+
       // Check if there's an applied coupon in the response
       if (response.data.data.appliedCoupon) {
         setAppliedCoupon(response.data.data.appliedCoupon);
@@ -41,18 +44,18 @@ const CartPage = () => {
   const handleRemoveFromCart = async (cartItemId) => {
     try {
       setRemovingItems(prev => ({ ...prev, [cartItemId]: true }));
-      
+
       await api.delete(`/cart/${cartItemId}`);
-      
+
       setCart(prev => ({
         ...prev,
         items: prev.items.filter(item => item.id !== cartItemId),
         itemCount: prev.itemCount - 1
       }));
-      
+
       toast.success('Removed from cart');
       window.dispatchEvent(new Event('cart-updated'));
-      
+
       // Refresh cart to recalculate totals
       fetchCart();
     } catch (error) {
@@ -66,20 +69,20 @@ const CartPage = () => {
   const handleMoveToWishlist = async (cartItemId) => {
     try {
       setMovingToWishlist(prev => ({ ...prev, [cartItemId]: true }));
-      
+
       // Move to wishlist
       await api.post('/cart/move-to-wishlist', { cartItemIds: [cartItemId] });
-      
+
       setCart(prev => ({
         ...prev,
         items: prev.items.filter(item => item.id !== cartItemId),
         itemCount: prev.itemCount - 1
       }));
-      
+
       toast.success('Moved to favorites');
       window.dispatchEvent(new Event('cart-updated'));
       window.dispatchEvent(new Event('favorites-updated'));
-      
+
       // Refresh cart to recalculate totals
       fetchCart();
     } catch (error) {
@@ -91,12 +94,9 @@ const CartPage = () => {
   };
 
   const handleClearCart = async () => {
-    if (!window.confirm('Are you sure you want to clear your cart?')) {
-      return;
-    }
-
     try {
-      await api.delete('/cart/clear');
+      setClearingCart(true);
+      await api.delete('/cart');
       setCart({ items: [], summary: {}, itemCount: 0 });
       setAppliedCoupon(null);
       setCouponCode('');
@@ -106,6 +106,9 @@ const CartPage = () => {
     } catch (error) {
       console.error('Error clearing cart:', error);
       toast.error('Failed to clear cart');
+    } finally {
+      setClearingCart(false);
+      setShowClearModal(false);
     }
   };
 
@@ -117,7 +120,7 @@ const CartPage = () => {
 
     try {
       setApplyingCoupon(true);
-      
+
       // Prepare cart data for coupon validation
       const cartData = {
         code: couponCode,
@@ -128,10 +131,10 @@ const CartPage = () => {
         })),
         cartTotal: parseFloat(cart.summary.subtotal || 0)
       };
-      
+
       // Apply coupon to cart
       const response = await api.post('/coupons/apply', cartData);
-      
+
       if (response.data.success) {
         // Update the cart state with new totals
         setCart(prev => ({
@@ -142,15 +145,15 @@ const CartPage = () => {
             total: response.data.data.finalTotal
           }
         }));
-        
+
         setAppliedCoupon(response.data.data.coupon);
         setCouponDiscount(response.data.data.discountAmount);
-        
+
         toast.success('Coupon applied successfully!');
       }
     } catch (error) {
       console.error('Error applying coupon:', error);
-      
+
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -183,7 +186,7 @@ const CartPage = () => {
       toast.error('Your cart is empty');
       return;
     }
-    
+
     // Pass coupon info to checkout if available
     const checkoutData = {
       cartItems: cart.items,
@@ -195,10 +198,10 @@ const CartPage = () => {
         discountValue: appliedCoupon.discountValue
       } : null
     };
-    
+
     // Store in sessionStorage or pass as state
     sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
-    
+
     navigate('/checkout');
   };
 
@@ -265,7 +268,7 @@ const CartPage = () => {
 
             {cart.items.length > 0 && (
               <button
-                onClick={handleClearCart}
+                onClick={() => setShowClearModal(true)}
                 className="hidden sm:flex items-center gap-2 px-4 py-2.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors font-semibold border border-rose-200 hover:border-rose-300"
               >
                 <Trash2 className="w-4 h-4" />
@@ -627,6 +630,19 @@ const CartPage = () => {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        onConfirm={handleClearCart}
+        title="Clear Shopping Cart?"
+        message="Are you sure you want to remove all items from your cart? This action cannot be undone."
+        confirmText="Yes, Clear Cart"
+        cancelText="Keep Items"
+        type="danger"
+        isLoading={clearingCart}
+      />
     </div>
   );
 };

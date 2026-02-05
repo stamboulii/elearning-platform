@@ -20,6 +20,7 @@ export const addToCart = async (req, res) => {
         success: true,
         message: 'Enrolled in free course',
         data: {
+          action: 'enrolled',
           enrollment: result.enrollment,
           cartItem: null,
         },
@@ -29,7 +30,10 @@ export const addToCart = async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Course added to cart',
-      data: result.cartItem,
+      data: {
+        action: 'added',
+        cartItem: result.cartItem
+      },
     });
   } catch (error) {
     console.error('Add to cart error:', error);

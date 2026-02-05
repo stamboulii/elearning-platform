@@ -13,6 +13,7 @@ const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+  const [isInCart, setIsInCart] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -25,10 +26,14 @@ const CourseDetail = () => {
       const courseData = await courseService.getCourse(id);
       setCourse(courseData);
 
-      // Check enrollment status if user is logged in
+      // Check enrollment and cart status if user is logged in
       if (user) {
-        const enrollmentData = await enrollmentService.checkEnrollment(id);
+        const [enrollmentData, cartData] = await Promise.all([
+          enrollmentService.checkEnrollment(id),
+          api.get(`/cart/check/${id}`)
+        ]);
         setEnrollmentStatus(enrollmentData);
+        setIsInCart(cartData.data?.success ? cartData.data.data.isInCart : false);
       }
     } catch (error) {
       console.error('Error fetching course:', error);
@@ -58,6 +63,12 @@ const CourseDetail = () => {
   const handleEnroll = async () => {
     if (!user) {
       navigate('/login', { state: { from: `/courses/${id}` } });
+      return;
+    }
+
+    // If course is already in cart, redirect to cart page
+    if (isInCart) {
+      navigate('/cart');
       return;
     }
 
@@ -134,7 +145,7 @@ const CourseDetail = () => {
               onClick={handleEnroll}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition transform active:scale-95 shadow-md"
             >
-              {enrollmentStatus?.isEnrolled ? 'Go to Course' : (course.isFree || course.price === 0) ? 'Enroll Now' : 'Buy Now'}
+              {enrollmentStatus?.isEnrolled ? 'Go to Course' : isInCart ? 'Go to Cart' : (course.isFree || course.price === 0) ? 'Enroll Now' : 'Buy Now'}
             </button>
           </div>
         </div>
@@ -193,7 +204,7 @@ const CourseDetail = () => {
                     disabled={enrolling}
                     className="w-full bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-lg hover:bg-blue-700 transition-all transform active:scale-95 shadow-xl shadow-blue-900/40 whitespace-nowrap min-w-[200px]"
                   >
-                    {enrolling ? '...' : enrollmentStatus?.isEnrolled ? 'Go to Course' : (course.isFree || course.price === 0) ? 'Enroll Free' : 'Buy Now'}
+                    {enrolling ? '...' : enrollmentStatus?.isEnrolled ? 'Go to Course' : isInCart ? 'Go to Cart' : (course.isFree || course.price === 0) ? 'Enroll Free' : 'Buy Now'}
                   </button>
                   {!enrollmentStatus?.isEnrolled && freeLessonsCount > 0 && (
                     <button
