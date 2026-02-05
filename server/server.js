@@ -4,12 +4,9 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/config/swagger.js';
+import dotenv from 'dotenv';
 
-// Only load dotenv in development (when NOT in Docker)
-if (process.env.NODE_ENV !== 'production' && !process.env.DOCKER_ENV) {
-  const dotenv = await import('dotenv');
-  dotenv.config({ override: true });
-}
+dotenv.config();
 
 // Import cloudinary config AFTER env vars are loaded
 import './src/config/cloudinary.js';

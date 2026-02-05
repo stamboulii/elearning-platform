@@ -5,19 +5,19 @@ const PaymentCancelPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center">
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-12">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-lg border border-slate-100 dark:border-slate-800 p-12">
           {/* Cancel Icon */}
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-amber-100 rounded-full mb-8">
-            <XCircle className="w-14 h-14 text-amber-600" />
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-8">
+            <XCircle className="w-14 h-14 text-amber-600 dark:text-amber-500" />
           </div>
 
           {/* Cancel Message */}
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-4">
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">
             Payment Cancelled
           </h1>
-          <p className="text-xl text-slate-600 mb-8">
+          <p className="text-xl text-slate-600 dark:text-slate-400 mb-8">
             Your payment was cancelled. No charges were made to your account.
           </p>
 
@@ -33,7 +33,7 @@ const PaymentCancelPage = () => {
 
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all"
+              className="inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
             >
               <Home className="w-5 h-5" />
               Back to Home
@@ -41,10 +41,10 @@ const PaymentCancelPage = () => {
           </div>
 
           {/* Help Text */}
-          <div className="mt-8 pt-8 border-t border-slate-200">
-            <p className="text-sm text-slate-500">
+          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+            <p className="text-sm text-slate-500 dark:text-slate-500">
               Need help? Contact our support team at{' '}
-              <a href="mailto:support@example.com" className="text-indigo-600 hover:underline">
+              <a href="mailto:support@example.com" className="text-indigo-600 dark:text-indigo-400 hover:underline transition-colors">
                 support@example.com
               </a>
             </p>

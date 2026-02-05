@@ -208,7 +208,8 @@ const options = {
       { name: 'Lessons', description: 'Lesson management' },
       { name: 'Enrollments', description: 'Course enrollment operations' },
       { name: 'Progress', description: 'Learning progress tracking' },
-      { name: 'Upload', description: 'File upload operations' }
+      { name: 'Upload', description: 'File upload operations' },
+      { name: 'Admin - Enrollments', description: 'Administrative enrollment management' }
     ]
   },
   apis: ['./src/routes/*.js'] // Path to the API routes

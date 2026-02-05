@@ -41,7 +41,7 @@ const Profile = () => {
         phoneNumber: userData.profile?.phoneNumber || '',
         country: userData.profile?.country || '',
         city: userData.profile?.city || '',
-        dateOfBirth: userData.profile?.dateOfBirth 
+        dateOfBirth: userData.profile?.dateOfBirth
           ? new Date(userData.profile.dateOfBirth).toISOString().split('T')[0]
           : ''
       });
@@ -77,7 +77,7 @@ const Profile = () => {
       };
 
       const response = await api.put('/auth/profile', userUpdateData);
-      
+
       // Update profile details if provided
       if (formData.phoneNumber || formData.country || formData.city || formData.dateOfBirth) {
         try {
@@ -96,12 +96,12 @@ const Profile = () => {
       // Refresh user data
       const updatedUser = await authService.getCurrentUser();
       setUser(updatedUser);
-      
+
       // Update auth context
       if (updateUser) {
         updateUser(updatedUser);
       }
-      
+
       setSuccess('Profile updated successfully!');
       setEditing(false);
     } catch (error) {
@@ -136,7 +136,7 @@ const Profile = () => {
 
       setUser(prev => ({ ...prev, profilePicture: response.data.data.url }));
       setSuccess('Profile picture updated successfully!');
-      
+
       // Refresh auth context
       window.location.reload();
     } catch (error) {
@@ -150,41 +150,41 @@ const Profile = () => {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'ADMIN':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300';
       case 'INSTRUCTOR':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case 'STUDENT':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-300';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Profile not found</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Profile not found</h1>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your account information and preferences</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">My Profile</h1>
+          <p className="text-slate-600 dark:text-slate-400">Manage your account information and preferences</p>
         </div>
 
         {/* Error/Success Messages */}
@@ -200,14 +200,14 @@ const Profile = () => {
         )}
 
         {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 mb-6">
           <div className="flex items-start gap-6">
             {/* Profile Picture */}
             <div className="relative">
               <img
                 src={user.profilePicture || 'https://via.placeholder.com/150'}
                 alt={`${user.firstName} ${user.lastName}`}
-                className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-800"
               />
               {editing && (
                 <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition">
@@ -225,16 +225,16 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                   {user.firstName} {user.lastName}
                 </h2>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(user.role)}`}>
                   {user.role}
                 </span>
               </div>
-              <p className="text-gray-600 mb-4">{user.email}</p>
+              <p className="text-slate-600 dark:text-slate-400 mb-4">{user.email}</p>
               {user.bio && !editing && (
-                <p className="text-gray-700">{user.bio}</p>
+                <p className="text-slate-700 dark:text-slate-300">{user.bio}</p>
               )}
             </div>
 
@@ -252,13 +252,13 @@ const Profile = () => {
 
         {/* Edit Form */}
         {editing && (
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Edit Profile Information</h3>
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Edit Profile Information</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* First Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   First Name
                 </label>
                 <input
@@ -267,13 +267,13 @@ const Profile = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* Last Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Last Name
                 </label>
                 <input
@@ -282,27 +282,27 @@ const Profile = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* Email (Read-only) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   disabled
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                  className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-500"
                 />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Email cannot be changed</p>
               </div>
 
               {/* Phone Number */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Phone Number
                 </label>
                 <input
@@ -310,13 +310,13 @@ const Profile = () => {
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* Country */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Country
                 </label>
                 <input
@@ -324,13 +324,13 @@ const Profile = () => {
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   City
                 </label>
                 <input
@@ -338,13 +338,13 @@ const Profile = () => {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
 
               {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Date of Birth
                 </label>
                 <input
@@ -352,14 +352,14 @@ const Profile = () => {
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             {/* Bio */}
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Bio
               </label>
               <textarea
@@ -367,7 +367,7 @@ const Profile = () => {
                 value={formData.bio}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900 dark:text-white"
                 placeholder="Tell us about yourself..."
               />
             </div>
@@ -389,7 +389,7 @@ const Profile = () => {
                   setSuccess('');
                   fetchUserProfile();
                 }}
-                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition"
+                className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition"
               >
                 Cancel
               </button>
@@ -399,26 +399,26 @@ const Profile = () => {
 
         {/* Account Info */}
         {!editing && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Account Information</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Account Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-600">Member since:</span>
-                <span className="ml-2 font-medium text-gray-800">
+                <span className="text-slate-600 dark:text-slate-400">Member since:</span>
+                <span className="ml-2 font-medium text-slate-800 dark:text-slate-200">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {user.lastLogin && (
                 <div>
-                  <span className="text-gray-600">Last login:</span>
-                  <span className="ml-2 font-medium text-gray-800">
+                  <span className="text-slate-600 dark:text-slate-400">Last login:</span>
+                  <span className="ml-2 font-medium text-slate-800 dark:text-slate-200">
                     {new Date(user.lastLogin).toLocaleDateString()}
                   </span>
                 </div>
               )}
               <div>
-                <span className="text-gray-600">Email verified:</span>
-                <span className={`ml-2 font-medium ${user.emailVerified ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-slate-600 dark:text-slate-400">Email verified:</span>
+                <span className={`ml-2 font-medium ${user.emailVerified ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {user.emailVerified ? 'Yes' : 'No'}
                 </span>
               </div>

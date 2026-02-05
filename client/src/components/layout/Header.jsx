@@ -82,7 +82,7 @@ const Header = () => {
 
     // Custom event listener for favorite updates
     window.addEventListener('favorites-updated', handleFavoriteUpdate);
-    
+
     return () => {
       window.removeEventListener('favorites-updated', handleFavoriteUpdate);
     };
@@ -98,7 +98,7 @@ const Header = () => {
 
     // Custom event listener for cart updates
     window.addEventListener('cart-updated', handleCartUpdate);
-    
+
     return () => {
       window.removeEventListener('cart-updated', handleCartUpdate);
     };
@@ -174,31 +174,31 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-50 shadow-sm transition-colors duration-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:shadow-xl group-hover:scale-105 transition-all">
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-black text-slate-900 tracking-tight hidden sm:block">
+            <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tight hidden sm:block">
               E-Learning
             </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-8">
-            <Link 
-              to="/courses" 
-              className="text-slate-700 hover:text-indigo-600 transition-colors font-semibold flex items-center gap-2 group"
+            <Link
+              to="/courses"
+              className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold flex items-center gap-2 group"
             >
               <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
               Courses
             </Link>
-            
+
             {user && (
               <Link
                 to={getDashboardLink()}
-                className="text-slate-700 hover:text-indigo-600 transition-colors font-semibold flex items-center gap-2 group"
+                className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold flex items-center gap-2 group"
               >
                 <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 Dashboard
@@ -206,9 +206,9 @@ const Header = () => {
             )}
 
             {user?.role === 'INSTRUCTOR' && (
-              <Link 
-                to="/instructor/courses" 
-                className="text-slate-700 hover:text-indigo-600 transition-colors font-semibold flex items-center gap-2 group"
+              <Link
+                to="/instructor/courses"
+                className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold flex items-center gap-2 group"
               >
                 My Courses
               </Link>
@@ -224,11 +224,11 @@ const Header = () => {
                     {/* Cart Icon */}
                     <Link
                       to="/cart"
-                      className="relative p-2.5 rounded-xl hover:bg-slate-50 transition-colors group hidden sm:block"
+                      className="relative p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group hidden sm:block"
                       title="Shopping Cart"
                       onClick={refreshCartCount}
                     >
-                      <ShoppingCart className="w-5 h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+                      <ShoppingCart className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                       {!loadingCartCount && cartCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                           {cartCount > 9 ? '9+' : cartCount}
@@ -244,11 +244,11 @@ const Header = () => {
                     {/* Wishlist Icon */}
                     <Link
                       to="/wishlist"
-                      className="relative p-2.5 rounded-xl hover:bg-slate-50 transition-colors group hidden sm:block"
+                      className="relative p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group hidden sm:block"
                       title="Favorites"
                       onClick={refreshFavoriteCount}
                     >
-                      <Heart className="w-5 h-5 text-slate-600 group-hover:text-rose-600 transition-colors" />
+                      <Heart className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors" />
                       {!loadingFavoriteCount && favoriteCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                           {favoriteCount > 9 ? '9+' : favoriteCount}
@@ -265,10 +265,10 @@ const Header = () => {
 
                 {/* Notifications Icon */}
                 <button
-                  className="relative p-2.5 rounded-xl hover:bg-slate-50 transition-colors group hidden sm:block"
+                  className="relative p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group hidden sm:block"
                   title="Notifications"
                 >
-                  <Bell className="w-5 h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+                  <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
                   <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
                 </button>
 
@@ -276,7 +276,7 @@ const Header = () => {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all group"
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                   >
                     <div className="relative">
                       <img
@@ -284,20 +284,20 @@ const Header = () => {
                         alt={user.firstName}
                         className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 group-hover:border-indigo-300 transition-colors"
                       />
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                     </div>
-                    <span className="text-slate-700 font-semibold hidden xl:block">{user.firstName}</span>
+                    <span className="text-slate-700 dark:text-slate-200 font-semibold hidden xl:block">{user.firstName}</span>
                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform hidden xl:block ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Dropdown Menu */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                       {/* User Info */}
-                      <div className="px-4 pb-3 border-b border-slate-100">
-                        <p className="font-bold text-slate-900">{user.firstName} {user.lastName}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{user.email}</p>
-                        <span className="inline-block mt-2 px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-100">
+                      <div className="px-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+                        <p className="font-bold text-slate-900 dark:text-white">{user.firstName} {user.lastName}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user.email}</p>
+                        <span className="inline-block mt-2 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-lg border border-indigo-100 dark:border-indigo-800">
                           {user.role === 'ADMIN' ? 'Admin' : user.role === 'INSTRUCTOR' ? 'Instructor' : 'Student'}
                         </span>
                       </div>
@@ -306,22 +306,22 @@ const Header = () => {
                       <div className="py-2">
                         <Link
                           to="/profile"
-                          className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors group"
+                          className="flex items-center gap-3 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-                            <User className="w-4 h-4 text-blue-600" />
+                          <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-800/50 transition-colors">
+                            <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                           </div>
                           <span className="font-semibold">Profile</span>
                         </Link>
-                        
+
                         <Link
                           to="/settings"
-                          className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors group"
+                          className="flex items-center gap-3 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-200 transition-colors">
-                            <Settings className="w-4 h-4 text-slate-600" />
+                          <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors">
+                            <Settings className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                           </div>
                           <span className="font-semibold">Settings</span>
                         </Link>
@@ -331,14 +331,14 @@ const Header = () => {
                           <>
                             <Link
                               to="/cart"
-                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors group sm:hidden"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group sm:hidden"
                               onClick={() => {
                                 setIsUserMenuOpen(false);
                                 refreshCartCount();
                               }}
                             >
-                              <div className="p-2 bg-indigo-50 rounded-lg group-hover:bg-indigo-100 transition-colors">
-                                <ShoppingCart className="w-4 h-4 text-indigo-600" />
+                              <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg group-hover:bg-indigo-100 dark:group-hover:bg-indigo-800/50 transition-colors">
+                                <ShoppingCart className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                               </div>
                               <span className="font-semibold">Cart</span>
                               {!loadingCartCount && cartCount > 0 && (
@@ -351,14 +351,14 @@ const Header = () => {
                             {/* Wishlist in dropdown for mobile/small screens */}
                             <Link
                               to="/wishlist"
-                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:bg-slate-50 transition-colors group sm:hidden"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group sm:hidden"
                               onClick={() => {
                                 setIsUserMenuOpen(false);
                                 refreshFavoriteCount();
                               }}
                             >
-                              <div className="p-2 bg-rose-50 rounded-lg group-hover:bg-rose-100 transition-colors">
-                                <Heart className="w-4 h-4 text-rose-600" />
+                              <div className="p-2 bg-rose-50 dark:bg-rose-900/30 rounded-lg group-hover:bg-rose-100 dark:group-hover:bg-rose-800/50 transition-colors">
+                                <Heart className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                               </div>
                               <span className="font-semibold">Favorites</span>
                               {!loadingFavoriteCount && favoriteCount > 0 && (
@@ -372,13 +372,13 @@ const Header = () => {
                       </div>
 
                       {/* Logout */}
-                      <div className="pt-2 border-t border-slate-100">
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
                         <button
                           onClick={handleLogout}
-                          className="flex items-center gap-3 px-4 py-2.5 text-rose-600 hover:bg-rose-50 transition-colors w-full group"
+                          className="flex items-center gap-3 px-4 py-2.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors w-full group"
                         >
-                          <div className="p-2 bg-rose-50 rounded-lg group-hover:bg-rose-100 transition-colors">
-                            <LogOut className="w-4 h-4 text-rose-600" />
+                          <div className="p-2 bg-rose-50 dark:bg-rose-900/30 rounded-lg group-hover:bg-rose-100 dark:group-hover:bg-rose-800/50 transition-colors">
+                            <LogOut className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                           </div>
                           <span className="font-semibold">Logout</span>
                         </button>
@@ -389,9 +389,9 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link 
-                  to="/login" 
-                  className="hidden sm:block text-slate-700 hover:text-indigo-600 transition-colors font-semibold px-4 py-2"
+                <Link
+                  to="/login"
+                  className="hidden sm:block text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold px-4 py-2"
                 >
                   Login
                 </Link>
@@ -407,7 +407,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-xl hover:bg-slate-50 transition-colors"
+              className="lg:hidden p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               {isMenuOpen ? (
                 <X className="w-6 h-6 text-slate-700" />
@@ -420,35 +420,35 @@ const Header = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden py-6 border-t border-slate-100 animate-in slide-in-from-top duration-200">
+          <div className="lg:hidden py-6 border-t border-slate-100 dark:border-slate-800 animate-in slide-in-from-top duration-200">
             <div className="space-y-2">
               <Link
                 to="/courses"
-                className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <BookOpen className="w-5 h-5" />
                 Courses
               </Link>
-              
+
               {user ? (
                 <>
                   <Link
                     to={getDashboardLink()}
-                    className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <LayoutDashboard className="w-5 h-5" />
+                    <LayoutDashboard className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                     Dashboard
                   </Link>
 
                   {user.role === 'INSTRUCTOR' && (
                     <Link
                       to="/instructor/courses"
-                      className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                      className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <BookOpen className="w-5 h-5" />
+                      <BookOpen className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                       My Courses
                     </Link>
                   )}
@@ -457,13 +457,13 @@ const Header = () => {
                     <>
                       <Link
                         to="/cart"
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                         onClick={() => {
                           setIsMenuOpen(false);
                           refreshCartCount();
                         }}
                       >
-                        <ShoppingCart className="w-5 h-5" />
+                        <ShoppingCart className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                         Cart
                         {!loadingCartCount && cartCount > 0 && (
                           <span className="ml-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-black rounded-full px-2 py-0.5">
@@ -479,13 +479,13 @@ const Header = () => {
 
                       <Link
                         to="/wishlist"
-                        className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                         onClick={() => {
                           setIsMenuOpen(false);
                           refreshFavoriteCount();
                         }}
                       >
-                        <Heart className="w-5 h-5" />
+                        <Heart className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                         Favorites
                         {!loadingFavoriteCount && favoriteCount > 0 && (
                           <span className="ml-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs font-black rounded-full px-2 py-0.5">
@@ -501,29 +501,29 @@ const Header = () => {
                     </>
                   )}
 
-                  <div className="my-3 border-t border-slate-100"></div>
+                  <div className="my-3 border-t border-slate-100 dark:border-slate-800"></div>
 
                   <Link
                     to="/profile"
-                    className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <User className="w-5 h-5" />
+                    <User className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                     Profile
                   </Link>
 
                   <Link
                     to="/settings"
-                    className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Settings className="w-5 h-5" />
+                    <Settings className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                     Settings
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors w-full font-semibold"
+                    className="flex items-center gap-3 px-4 py-3 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-colors w-full font-semibold"
                   >
                     <LogOut className="w-5 h-5" />
                     Logout
@@ -533,7 +533,7 @@ const Header = () => {
                 <>
                   <Link
                     to="/login"
-                    className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login

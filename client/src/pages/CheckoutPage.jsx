@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  CreditCard, 
-  ShoppingBag, 
-  Lock, 
-  CheckCircle, 
+import {
+  CreditCard,
+  ShoppingBag,
+  Lock,
+  CheckCircle,
   AlertCircle,
   Loader,
   DollarSign,
@@ -81,7 +81,7 @@ const CheckoutPage = () => {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      
+
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -98,10 +98,10 @@ const CheckoutPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex items-center justify-center">
         <div className="text-center">
           <Loader className="w-12 h-12 text-indigo-600 animate-spin mx-auto mb-4" />
-          <p className="text-slate-600">Loading checkout...</p>
+          <p className="text-slate-600 dark:text-slate-400">Loading checkout...</p>
         </div>
       </div>
     );
@@ -112,15 +112,15 @@ const CheckoutPage = () => {
   }
 
   const subtotal = parseFloat(checkoutData.cartTotal || 0);
-  const couponDiscount = checkoutData.appliedCoupon 
+  const couponDiscount = checkoutData.appliedCoupon
     ? (checkoutData.appliedCoupon.discountType === 'PERCENTAGE'
-        ? (subtotal * parseFloat(checkoutData.appliedCoupon.discountValue)) / 100
-        : parseFloat(checkoutData.appliedCoupon.discountValue))
+      ? (subtotal * parseFloat(checkoutData.appliedCoupon.discountValue)) / 100
+      : parseFloat(checkoutData.appliedCoupon.discountValue))
     : 0;
   const total = subtotal - couponDiscount;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
@@ -129,10 +129,10 @@ const CheckoutPage = () => {
               <ShoppingBag className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Checkout
               </h1>
-              <p className="text-slate-500 mt-1 font-medium">
+              <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 Complete your purchase
               </p>
             </div>
@@ -143,8 +143,8 @@ const CheckoutPage = () => {
           {/* Left Column - Order Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Payment Method Selection */}
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                 Payment Method
               </h2>
 
@@ -152,9 +152,9 @@ const CheckoutPage = () => {
                 {/* Stripe Payment */}
                 <label className={`
                   flex items-center gap-4 p-6 rounded-2xl border-2 cursor-pointer transition-all
-                  ${paymentMethod === 'stripe' 
-                    ? 'border-indigo-600 bg-indigo-50' 
-                    : 'border-slate-200 hover:border-slate-300'}
+                  ${paymentMethod === 'stripe'
+                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}
                 `}>
                   <input
                     type="radio"
@@ -167,11 +167,11 @@ const CheckoutPage = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <CreditCard className="w-6 h-6 text-indigo-600" />
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-slate-900 dark:text-white">
                         Credit/Debit Card
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Pay securely with Stripe. All major cards accepted.
                     </p>
                   </div>
@@ -180,9 +180,9 @@ const CheckoutPage = () => {
               </div>
 
               {/* Security Notice */}
-              <div className="mt-6 p-4 bg-slate-50 rounded-xl flex items-start gap-3">
-                <Lock className="w-5 h-5 text-slate-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-slate-600">
+              <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-start gap-3">
+                <Lock className="w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-slate-600 dark:text-slate-400">
                   <p className="font-semibold mb-1">Secure Payment</p>
                   <p>
                     Your payment information is encrypted and secure. We never store your card details.
@@ -192,8 +192,8 @@ const CheckoutPage = () => {
             </div>
 
             {/* Course List */}
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                 Order Items ({checkoutData.cartItems.length})
               </h2>
 
@@ -201,7 +201,7 @@ const CheckoutPage = () => {
                 {checkoutData.cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 p-4 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors"
+                    className="flex gap-4 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors"
                   >
                     <div className="w-24 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl overflow-hidden flex-shrink-0">
                       {item.thumbnailImage ? (
@@ -218,10 +218,10 @@ const CheckoutPage = () => {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-slate-900 mb-1 line-clamp-1">
+                      <h3 className="font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">
                         {item.title}
                       </h3>
-                      <p className="text-sm text-slate-500 line-clamp-1">
+                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1">
                         {item.instructor?.name || 'Unknown Instructor'}
                       </p>
                     </div>
@@ -244,13 +244,13 @@ const CheckoutPage = () => {
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 sticky top-24">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 sticky top-24">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                 Order Summary
               </h2>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-slate-400">
                   <span>Subtotal</span>
                   <span className="font-semibold">{formatPrice(subtotal)}</span>
                 </div>
@@ -265,9 +265,9 @@ const CheckoutPage = () => {
                   </div>
                 )}
 
-                <div className="pt-4 border-t border-slate-200">
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                   <div className="flex justify-between">
-                    <span className="text-lg font-bold text-slate-900">Total</span>
+                    <span className="text-lg font-bold text-slate-900 dark:text-white">Total</span>
                     <span className="text-2xl font-black text-indigo-600">
                       {formatPrice(total)}
                     </span>
@@ -297,16 +297,16 @@ const CheckoutPage = () => {
               </button>
 
               {/* Benefits */}
-              <div className="pt-6 border-t border-slate-100 space-y-3">
-                <div className="flex items-center gap-3 text-sm text-slate-600">
+              <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
                   <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   <span>30-Day Money-Back Guarantee</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
                   <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   <span>Lifetime Access to Courses</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-600">
+                <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
                   <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                   <span>Certificate of Completion</span>
                 </div>

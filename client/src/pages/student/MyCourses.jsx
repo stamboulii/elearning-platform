@@ -58,40 +58,40 @@ const MyCourses = () => {
   // ---- Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
             My Courses
           </h1>
-          <p className="text-gray-600">
+          <p className="text-slate-500 dark:text-slate-400 font-medium">
             Manage and continue your enrolled courses
           </p>
         </header>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 mb-8">
           <div className="flex flex-wrap gap-4">
             <input
               type="text"
               placeholder="Search courses..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="flex-1 min-w-[200px] px-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             />
 
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             >
               <option value="ALL">All Courses</option>
               <option value="IN_PROGRESS">In Progress</option>
@@ -121,19 +121,19 @@ const MyCourses = () => {
 // ----------------------------------------------------------------
 
 const EmptyState = ({ hasEnrollments }) => (
-  <div className="bg-white rounded-lg shadow-md p-12 text-center">
+  <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-12 text-center">
     {hasEnrollments ? (
-      <p className="text-gray-500 text-lg">
+      <p className="text-slate-500 dark:text-slate-400 text-lg font-medium">
         No courses match your filters
       </p>
     ) : (
       <>
-        <p className="text-gray-500 text-lg mb-4">
+        <p className="text-slate-500 dark:text-slate-400 text-lg mb-4 font-medium">
           You haven't enrolled in any courses yet
         </p>
         <Link
           to="/courses"
-          className="text-blue-600 hover:text-blue-700 font-medium"
+          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold"
         >
           Browse available courses →
         </Link>
@@ -152,7 +152,7 @@ const EnrollmentCard = ({ enrollment }) => {
   const completed = enrollment.completionStatus === 'COMPLETED';
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-lg transition-all duration-300 group">
       <Link to={`/student/courses/${course.id}/learn`}>
         <div className="relative">
           <img
@@ -161,11 +161,10 @@ const EnrollmentCard = ({ enrollment }) => {
             className="w-full h-48 object-cover"
           />
           <span
-            className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
-              completed
-                ? 'bg-green-600 text-white'
-                : 'bg-yellow-500 text-white'
-            }`}
+            className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${completed
+                ? 'bg-emerald-500 text-white'
+                : 'bg-amber-500 text-white'
+              }`}
           >
             {completed ? 'Completed' : 'In Progress'}
           </span>
@@ -174,33 +173,32 @@ const EnrollmentCard = ({ enrollment }) => {
 
       <div className="p-6">
         <Link to={`/student/courses/${course.id}/learn`}>
-          <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition">
+          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             {course.title}
           </h3>
         </Link>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 line-clamp-2 font-medium">
           {course.shortDescription}
         </p>
 
         {/* Progress */}
-        <div className="mb-4">
-          <div className="flex justify-between text-sm text-gray-600 mb-1">
-            <span>Progress</span>
+        <div className="mb-6">
+          <div className="flex justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">
+            <span className="uppercase tracking-wider">Progress</span>
             <span>{progress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 shadow-inner">
             <div
-              className={`h-2 rounded-full transition-all ${
-                completed ? 'bg-green-600' : 'bg-blue-600'
-              }`}
+              className={`h-2 rounded-full transition-all duration-500 ${completed ? 'bg-emerald-500' : 'bg-indigo-600 dark:bg-indigo-500'
+                }`}
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
         {enrollment.lastAccessed && (
-          <p className="text-xs text-gray-500 mb-4">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mb-6 font-medium italic">
             Last accessed:{' '}
             {new Date(enrollment.lastAccessed).toLocaleDateString()}
           </p>
@@ -208,7 +206,7 @@ const EnrollmentCard = ({ enrollment }) => {
 
         <Link
           to={`/student/courses/${course.id}/learn`}
-          className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+          className="block w-full bg-indigo-600 dark:bg-indigo-500 text-white text-center py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all font-bold shadow-lg shadow-indigo-100 dark:shadow-none hover:shadow-indigo-200"
         >
           {completed ? 'Review Course' : 'Continue Learning'}
         </Link>

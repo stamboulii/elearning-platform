@@ -91,12 +91,13 @@ import CheckoutPage from './pages/CheckoutPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
 import TransactionManager from './pages/admin/TransactionManager';
+import AdminEnrollments from './pages/admin/Enrollments';
 function App() {
   return (
     <AuthProvider>
       <Toaster position="top-right" reverseOrder={false} />
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
           <Header />
           <Routes>
             {/* Public Routes */}
@@ -139,6 +140,15 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
                   <AdminCategories />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/enrollments"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminEnrollments />
                 </ProtectedRoute>
               }
             />
@@ -246,20 +256,20 @@ function App() {
               }
             />
 
-            <Route 
-              path="/wishlist" 
+            <Route
+              path="/wishlist"
               element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <WishlistPage />
-              </ProtectedRoute>} 
+                <ProtectedRoute allowedRoles={['STUDENT']}>
+                  <WishlistPage />
+                </ProtectedRoute>}
             />
 
-            <Route 
-              path="/cart" 
+            <Route
+              path="/cart"
               element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <CartPage />
-              </ProtectedRoute>} 
+                <ProtectedRoute allowedRoles={['STUDENT']}>
+                  <CartPage />
+                </ProtectedRoute>}
             />
 
             <Route
@@ -279,7 +289,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/checkout" element={ <ProtectedRoute allowedRoles={['STUDENT']}> <CheckoutPage /> </ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute allowedRoles={['STUDENT']}> <CheckoutPage /> </ProtectedRoute>} />
             <Route path="/payment/success" element={<ProtectedRoute allowedRoles={['STUDENT']}> <PaymentSuccessPage /> </ProtectedRoute>} />
             <Route path="/payment/cancel" element={<ProtectedRoute allowedRoles={['STUDENT']}> <PaymentCancelPage /> </ProtectedRoute>} />
 

@@ -512,18 +512,18 @@ const CoursePlayer = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Course not found</p>
-          <Link to="/courses" className="text-blue-600 hover:underline">
+          <p className="text-slate-600 dark:text-slate-400 mb-4">Course not found</p>
+          <Link to="/courses" className="text-indigo-600 dark:text-indigo-400 hover:underline">
             Back to Courses
           </Link>
         </div>
@@ -536,20 +536,20 @@ const CoursePlayer = () => {
   const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       {/* HEADER */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+      <div className="bg-white dark:bg-slate-900 shadow-sm border-b dark:border-slate-800 sticky top-0 z-20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center flex-wrap gap-4">
             <div className="flex-1 min-w-0">
-              <Link to={`/courses/${courseId}`} className="text-blue-600 hover:underline inline-block mb-1">
+              <Link to={`/courses/${courseId}`} className="text-indigo-600 dark:text-indigo-400 hover:underline inline-block mb-1">
                 ← Back to Course
               </Link>
-              <h1 className="text-xl font-bold truncate">{course.title}</h1>
+              <h1 className="text-xl font-bold truncate text-slate-900 dark:text-white">{course.title}</h1>
 
               {/* Access Status Banner */}
               {!enrollment && !isCourseOwner && !isCourseFullyFree && (
-                <div className="mt-2 inline-flex items-center gap-2 bg-orange-50 border border-orange-200 text-orange-800 px-3 py-1 rounded-lg text-sm">
+                <div className="mt-2 inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-400 px-3 py-1 rounded-lg text-sm">
                   <span>👁</span>
                   <span>Preview mode - Only free lessons accessible</span>
                   <Link to={`/courses/${courseId}`} className="underline font-medium">
@@ -562,10 +562,10 @@ const CoursePlayer = () => {
             {enrollment && (
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-gray-600">Progress: {overallProgress}%</div>
-                  <div className="w-48 bg-gray-200 rounded-full h-2">
+                  <div className="text-sm text-slate-500 dark:text-slate-400">Progress: {overallProgress}%</div>
+                  <div className="w-48 bg-slate-200 dark:bg-slate-800 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all"
+                      className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full transition-all"
                       style={{ width: `${overallProgress}%` }}
                     />
                   </div>
@@ -574,7 +574,7 @@ const CoursePlayer = () => {
                 {overallProgress === 100 && enrollment.certificate && (
                   <Link
                     to={`/student/certificates/${enrollment.certificate.id}`}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-bold text-sm shadow-lg shadow-green-100 flex items-center gap-2"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition font-bold text-sm shadow-lg shadow-emerald-100 dark:shadow-none flex items-center gap-2"
                   >
                     📜 Certificate
                   </Link>
@@ -587,12 +587,12 @@ const CoursePlayer = () => {
 
       <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* SIDEBAR */}
-        <div className="lg:col-span-1 bg-white rounded-lg shadow-md p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-          <h2 className="font-bold mb-4 sticky top-0 bg-white py-2 border-b">Course Content</h2>
+        <div className="lg:col-span-1 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+          <h2 className="font-bold mb-4 sticky top-0 bg-white dark:bg-slate-900 py-2 border-b dark:border-slate-800 text-slate-800 dark:text-white z-10">Course Content</h2>
 
           {sections.map((section, sectionIndex) => (
             <div key={section.id} className="mb-4">
-              <h3 className="text-sm font-semibold mb-2 text-gray-700 px-2">
+              <h3 className="text-sm font-semibold mb-2 text-slate-500 dark:text-slate-400 px-2">
                 Section {sectionIndex + 1}: {section.title}
               </h3>
 
@@ -605,41 +605,41 @@ const CoursePlayer = () => {
                     <button
                       key={lesson.id}
                       onClick={() => handleLessonClick(lesson)}
-                      className={`w-full text-left p-3 rounded transition ${current
-                        ? 'bg-blue-100 border-l-4 border-blue-600'
+                      className={`w-full text-left p-3 rounded-xl transition ${current
+                        ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-4 border-indigo-600 dark:border-indigo-400'
                         : locked
-                          ? 'bg-gray-50 opacity-60 hover:opacity-80'
-                          : 'hover:bg-gray-50 border-l-4 border-transparent'
+                          ? 'bg-slate-50 dark:bg-slate-800/50 opacity-60 hover:opacity-80'
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent'
                         }`}
                     >
                       <div className="flex items-center gap-2">
                         {locked ? (
-                          <span className="text-gray-400 text-lg">🔒</span>
+                          <span className="text-slate-400 dark:text-slate-600 text-lg">🔒</span>
                         ) : lesson.isPreview ? (
-                          <span className="text-blue-600 text-lg">👁</span>
+                          <span className="text-indigo-600 dark:text-indigo-400 text-lg">👁</span>
                         ) : lesson.isFree ? (
-                          <span className="text-green-600 text-lg">🎁</span>
+                          <span className="text-emerald-500 dark:text-emerald-400 text-lg">🎁</span>
                         ) : (
-                          <span className="text-green-600 text-lg">▶</span>
+                          <span className="text-emerald-500 dark:text-emerald-400 text-lg">▶</span>
                         )}
-                        <span className={`flex-1 text-sm ${locked ? 'text-gray-500' : 'text-gray-800'}`}>
+                        <span className={`flex-1 text-sm ${locked ? 'text-slate-500 dark:text-slate-500' : 'text-slate-800 dark:text-slate-200 font-medium'}`}>
                           {lesson.title}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 mt-1 ml-6">
                         {lesson.isPreview && (
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                          <span className="text-[10px] uppercase tracking-wider bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">
                             👁 Preview
                           </span>
                         )}
                         {lesson.isFree && !lesson.isPreview && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+                          <span className="text-[10px] uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
                             🎁 Free
                           </span>
                         )}
                         {lesson.duration && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
                             {lesson.duration} min
                           </span>
                         )}
@@ -653,20 +653,20 @@ const CoursePlayer = () => {
         </div>
 
         {/* PLAYER */}
-        <div className="lg:col-span-3 bg-white rounded-lg shadow-md p-6">
+        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
           {currentLesson ? (
             <>
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
                   <div className="flex items-center gap-2 mt-2">
                     {currentLesson.isPreview && (
-                      <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                      <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 dark:border-indigo-800">
                         👁 Preview Lesson
                       </span>
                     )}
                     {currentLesson.isFree && !currentLesson.isPreview && (
-                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                      <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 dark:border-emerald-800">
                         🎁 Free Lesson
                       </span>
                     )}
@@ -675,13 +675,13 @@ const CoursePlayer = () => {
               </div>
 
               {isLessonLocked(currentLesson) ? (
-                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
                   <div className="mb-4 text-6xl">🔒</div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">This lesson is locked</h3>
-                  <p className="text-gray-600 mb-6">Enroll in the course to access this content</p>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">This lesson is locked</h3>
+                  <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">Enroll in the course to access this content</p>
                   <Link
                     to={`/courses/${courseId}`}
-                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                    className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
                   >
                     View Course & Enroll
                   </Link>
@@ -708,14 +708,14 @@ const CoursePlayer = () => {
                   )}
 
                   {currentLesson.contentType === 'TEXT' && (
-                    <div className="prose max-w-none mb-6 whitespace-pre-line">
+                    <div className="prose dark:prose-invert max-w-none mb-6 whitespace-pre-line text-slate-700 dark:text-slate-300">
                       {currentLesson.content}
                     </div>
                   )}
 
                   {currentLesson.contentType === 'QUIZ' && (
-                    <div className="p-6 bg-yellow-50 rounded-lg mb-6">
-                      <p className="text-gray-700">Quiz content will be displayed here</p>
+                    <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
+                      <p className="text-amber-800 dark:text-amber-400 font-medium">Quiz content will be displayed here</p>
                     </div>
                   )}
 
@@ -724,25 +724,25 @@ const CoursePlayer = () => {
                       {!isCompleted ? (
                         <button
                           onClick={handleCompleteLesson}
-                          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
+                          className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
                         >
                           ✓ Mark as Complete
                         </button>
                       ) : (
-                        <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-lg">
-                          <span>✓</span>
-                          <span className="font-medium">Completed</span>
+                        <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
+                          <span className="font-bold">✓</span>
+                          <span className="font-black text-sm uppercase tracking-wider">Completed</span>
                         </div>
                       )}
                     </>
                   ) : (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-                      <p className="text-blue-800">
+                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
+                      <p className="text-indigo-800 dark:text-indigo-400 font-medium">
                         💡 <strong>Enjoying this lesson?</strong> Enroll in the course to track your progress and access all lessons!
                       </p>
                       <Link
                         to={`/courses/${courseId}`}
-                        className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                        className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
                       >
                         Enroll Now
                       </Link>
@@ -752,8 +752,8 @@ const CoursePlayer = () => {
               )}
             </>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Select a lesson to begin</p>
+            <div className="text-center py-16">
+              <p className="text-slate-500 dark:text-slate-400 font-medium italic">Select a lesson to begin</p>
             </div>
           )}
         </div>

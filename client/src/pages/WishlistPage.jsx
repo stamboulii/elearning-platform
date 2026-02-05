@@ -191,18 +191,18 @@ const WishlistPage = () => {
 
   if (isLoading && wishlist.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="animate-pulse">
             <div className="h-12 bg-slate-200 rounded-2xl w-64 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                  <div className="h-48 bg-slate-200 rounded-xl mb-4"></div>
+                <div key={i} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4">
+                  <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-xl mb-4"></div>
                   <div className="space-y-2">
-                    <div className="h-5 bg-slate-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                    <div className="h-3 bg-slate-200 rounded w-2/3"></div>
+                    <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+                    <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/2"></div>
+                    <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
                   </div>
                 </div>
               ))}
@@ -214,7 +214,7 @@ const WishlistPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
@@ -223,8 +223,8 @@ const WishlistPage = () => {
               <Heart className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Favorites</h1>
-              <p className="text-slate-500 mt-1 font-medium">
+              <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">My Favorites</h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 {wishlist.length} course{wishlist.length !== 1 ? 's' : ''} saved for later
               </p>
             </div>
@@ -242,7 +242,7 @@ const WishlistPage = () => {
                 return (
                   <div
                     key={item.id}
-                    className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group"
+                    className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl dark:hover:border-slate-700 hover:-translate-y-1 transition-all group"
                   >
                     {/* Course Image */}
                     <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200">
@@ -301,12 +301,12 @@ const WishlistPage = () => {
                     {/* Course Info */}
                     <div className="p-6">
                       <Link to={`/courses/${item.course.id}`}>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {item.course.title}
                         </h3>
                       </Link>
 
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[40px]">
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 min-h-[40px]">
                         {item.course.shortDescription}
                       </p>
 
@@ -326,7 +326,7 @@ const WishlistPage = () => {
                               </div>
                             )}
                           </div>
-                          <span className="text-sm text-slate-600 truncate">
+                          <span className="text-sm text-slate-600 dark:text-slate-300 truncate">
                             {item.course.instructor.firstName} {item.course.instructor.lastName}
                           </span>
                         </div>
@@ -343,14 +343,14 @@ const WishlistPage = () => {
 
                           {/* Enrollments */}
                           <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4 text-slate-400" />
+                            <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                             <span>{item.course.enrollmentsCount || 0}</span>
                           </div>
 
                           {/* Duration */}
                           {item.course.estimatedDuration && (
                             <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4 text-slate-400" />
+                              <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                               <span>{item.course.estimatedDuration}h</span>
                             </div>
                           )}
@@ -358,14 +358,14 @@ const WishlistPage = () => {
 
                         {/* Level */}
                         {item.course.level && (
-                          <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg capitalize">
+                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg capitalize">
                             {item.course.level}
                           </span>
                         )}
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="pt-5 border-t border-slate-100 space-y-3">
+                      <div className="pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
                         {/* Main Action Button */}
                         {!item.course.isFree ? (
                           isInCart ? (
@@ -387,7 +387,7 @@ const WishlistPage = () => {
                               <button
                                 onClick={() => handleCartToggle(item.courseId)}
                                 disabled={isLoading}
-                                className="w-full text-center text-sm text-slate-500 hover:text-rose-600 font-medium py-1 transition-colors disabled:opacity-50"
+                                className="w-full text-center text-sm text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium py-1 transition-colors disabled:opacity-50"
                               >
                                 {isLoading ? 'Removing...' : 'Remove from cart'}
                               </button>
@@ -434,9 +434,9 @@ const WishlistPage = () => {
                       <div className="mt-4">
                         <Link
                           to={`/courses/${item.course.id}`}
-                          className="w-full py-2.5 text-sm text-slate-500 hover:text-indigo-600 font-medium rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 group/preview"
+                          className="w-full py-2.5 text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 group/preview"
                         >
-                          <Eye className="w-4 h-4 group-hover/preview:text-indigo-600" />
+                          <Eye className="w-4 h-4 group-hover/preview:text-indigo-600 dark:group-hover/preview:text-indigo-400" />
                           View Details
                           <ChevronRight className="w-4 h-4 group-hover/preview:translate-x-1 transition-transform" />
                         </Link>
@@ -453,7 +453,7 @@ const WishlistPage = () => {
                 <button
                   onClick={() => fetchWishlist(page + 1)}
                   disabled={isLoading}
-                  className="group/loadmore px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 transition-all shadow-sm hover:shadow-md"
+                  className="group/loadmore px-8 py-3.5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-700 dark:hover:text-indigo-300 transition-all shadow-sm hover:shadow-md"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
@@ -501,14 +501,14 @@ const WishlistPage = () => {
             </div>
 
             {/* Quick Categories */}
-            <div className="mt-12 pt-8 border-t border-slate-100">
-              <p className="text-sm font-medium text-slate-500 mb-4">Quick categories to explore:</p>
+            <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">Quick categories to explore:</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {['Web Development', 'Data Science', 'Business', 'Design', 'Marketing', 'Photography'].map((category) => (
                   <Link
                     key={category}
                     to={`/courses?category=${encodeURIComponent(category)}`}
-                    className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                    className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
                     {category}
                   </Link>

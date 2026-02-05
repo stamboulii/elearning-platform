@@ -219,27 +219,27 @@ const CartPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="animate-pulse">
             <div className="h-12 bg-slate-200 rounded-2xl w-64 mb-6"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                  <div key={i} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                     <div className="flex gap-4">
                       <div className="h-24 w-32 bg-slate-200 rounded-xl"></div>
                       <div className="flex-1 space-y-2">
-                        <div className="h-5 bg-slate-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                        <div className="h-3 bg-slate-200 rounded w-2/3"></div>
+                        <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-3/4"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/2"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-64"></div>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 h-64"></div>
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
@@ -259,8 +259,8 @@ const CartPage = () => {
                 <ShoppingCart className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Shopping Cart</h1>
-                <p className="text-slate-500 mt-1 font-medium">
+                <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Shopping Cart</h1>
+                <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
                   {cart.itemCount} course{cart.itemCount !== 1 ? 's' : ''} in your cart
                 </p>
               </div>
@@ -269,7 +269,7 @@ const CartPage = () => {
             {cart.items.length > 0 && (
               <button
                 onClick={() => setShowClearModal(true)}
-                className="hidden sm:flex items-center gap-2 px-4 py-2.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors font-semibold border border-rose-200 hover:border-rose-300"
+                className="hidden sm:flex items-center gap-2 px-4 py-2.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors font-semibold border border-rose-200 dark:border-rose-900/50 hover:border-rose-300 dark:hover:border-rose-800"
               >
                 <Trash2 className="w-4 h-4" />
                 Clear Cart
@@ -286,7 +286,7 @@ const CartPage = () => {
               {cart.items.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg transition-all group"
+                  className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-lg dark:hover:border-slate-700 transition-all group"
                 >
                   <div className="p-6">
                     <div className="flex gap-6">
@@ -311,12 +311,12 @@ const CartPage = () => {
                       {/* Course Info */}
                       <div className="flex-1 min-w-0">
                         <Link to={`/courses/${item.courseId}`}>
-                          <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
                             {item.title}
                           </h3>
                         </Link>
 
-                        <p className="text-sm text-slate-500 mb-3 line-clamp-2">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">
                           {item.shortDescription}
                         </p>
 
@@ -336,7 +336,7 @@ const CartPage = () => {
                                 </div>
                               )}
                             </div>
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-slate-600 dark:text-slate-300">
                               {item.instructor.name}
                             </span>
                           </div>
@@ -349,11 +349,11 @@ const CartPage = () => {
                             <span className="font-semibold">{item.avgRating || 0}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Users className="w-4 h-4 text-slate-400" />
+                            <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                             <span>{item.totalStudents || 0}</span>
                           </div>
                           {item.level && (
-                            <span className="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg capitalize">
+                            <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg capitalize">
                               {item.level}
                             </span>
                           )}
@@ -364,7 +364,7 @@ const CartPage = () => {
                           <button
                             onClick={() => handleMoveToWishlist(item.id, item.courseId)}
                             disabled={movingToWishlist[item.id]}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-semibold disabled:opacity-50"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors font-semibold disabled:opacity-50"
                           >
                             {movingToWishlist[item.id] ? (
                               <>
@@ -382,7 +382,7 @@ const CartPage = () => {
                           <button
                             onClick={() => handleRemoveFromCart(item.id)}
                             disabled={removingItems[item.id]}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors font-semibold disabled:opacity-50"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-semibold disabled:opacity-50"
                           >
                             {removingItems[item.id] ? (
                               <>
@@ -404,7 +404,7 @@ const CartPage = () => {
                         <div className="text-right">
                           {item.discountPrice && item.price !== item.discountPrice ? (
                             <>
-                              <div className="text-2xl font-black text-indigo-600">
+                              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
                                 {formatPrice(item.currentPrice)}
                               </div>
                               <div className="text-sm text-slate-400 line-through">
@@ -412,7 +412,7 @@ const CartPage = () => {
                               </div>
                             </>
                           ) : (
-                            <div className="text-2xl font-black text-slate-900">
+                            <div className="text-2xl font-black text-slate-900 dark:text-white">
                               {formatPrice(item.currentPrice)}
                             </div>
                           )}
@@ -421,7 +421,7 @@ const CartPage = () => {
                         <button
                           onClick={() => handleRemoveFromCart(item.id)}
                           disabled={removingItems[item.id]}
-                          className="p-2 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-colors group/remove"
+                          className="p-2 text-slate-400 dark:text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors group/remove"
                           title="Remove from cart"
                         >
                           <X className="w-5 h-5 group-hover/remove:scale-110 transition-transform" />
@@ -435,11 +435,11 @@ const CartPage = () => {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 sticky top-24">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Order Summary</h2>
+              <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 sticky top-24">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Order Summary</h2>
 
                 <div className="space-y-4 mb-6">
-                  <div className="flex items-center justify-between text-slate-600">
+                  <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                     <span>Subtotal ({cart.itemCount} items)</span>
                     <span className="font-semibold">{formatPrice(cart.summary.subtotal || 0)}</span>
                   </div>
@@ -464,15 +464,15 @@ const CartPage = () => {
                   )}
 
                   {parseFloat(cart.summary.tax || 0) > 0 && (
-                    <div className="flex items-center justify-between text-slate-600">
+                    <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                       <span>Tax</span>
                       <span className="font-semibold">{formatPrice(cart.summary.tax || 0)}</span>
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-slate-200">
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-slate-900">Total</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">Total</span>
                       <span className="text-2xl font-black text-indigo-600">
                         {formatPrice(calculateTotalWithCoupon())}
                       </span>
@@ -481,31 +481,31 @@ const CartPage = () => {
                 </div>
 
                 {/* ====== COUPON INPUT SECTION ====== */}
-                <div className="mb-6 pt-6 border-t border-slate-100">
+                <div className="mb-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                   {appliedCoupon ? (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-emerald-100 rounded-lg">
-                            <Tag className="w-4 h-4 text-emerald-600" />
+                          <div className="p-1.5 bg-emerald-100 dark:bg-emerald-800 rounded-lg">
+                            <Tag className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           </div>
                           <div>
-                            <span className="font-semibold text-emerald-700">
+                            <span className="font-semibold text-emerald-700 dark:text-emerald-300">
                               Coupon Applied
                             </span>
-                            <div className="text-sm text-emerald-600 font-mono">
+                            <div className="text-sm text-emerald-600 dark:text-emerald-400 font-mono">
                               {appliedCoupon.code}
                             </div>
                           </div>
                         </div>
                         <button
                           onClick={handleRemoveCoupon}
-                          className="text-sm text-emerald-600 hover:text-emerald-800 font-medium"
+                          className="text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-200 font-medium"
                         >
                           Remove
                         </button>
                       </div>
-                      <div className="text-sm text-emerald-600">
+                      <div className="text-sm text-emerald-600 dark:text-emerald-400">
                         {appliedCoupon.discountType === 'PERCENTAGE' ? (
                           <div className="flex items-center gap-1">
                             <Percent className="w-3 h-3" />
@@ -528,7 +528,7 @@ const CartPage = () => {
                           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                           placeholder="Enter coupon code"
                           onKeyPress={(e) => e.key === 'Enter' && handleApplyCoupon()}
-                          className="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                          className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm text-slate-900 dark:text-white"
                         />
                         <button
                           onClick={handleApplyCoupon}
@@ -566,16 +566,16 @@ const CartPage = () => {
 
                 <Link
                   to="/courses"
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 text-slate-700 hover:bg-slate-50 rounded-xl transition-colors font-semibold"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
                 >
                   <BookOpen className="w-5 h-5" />
                   Continue Shopping
                 </Link>
 
                 {/* Trust Badges */}
-                <div className="mt-8 pt-6 border-t border-slate-100">
-                  <div className="text-center text-sm text-slate-500 space-y-2">
-                    <p className="font-semibold text-slate-700">✓ 30-Day Money-Back Guarantee</p>
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                  <div className="text-center text-sm text-slate-500 dark:text-slate-400 space-y-2">
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">✓ 30-Day Money-Back Guarantee</p>
                     <p>✓ Lifetime Access</p>
                     <p>✓ Certificate of Completion</p>
                   </div>
@@ -585,18 +585,26 @@ const CartPage = () => {
           </div>
         ) : (
           // Empty Cart State
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-16 text-center max-w-2xl mx-auto">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full mb-8">
-              <ShoppingCart className="w-12 h-12 text-indigo-400" />
+          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 p-16 text-center max-w-2xl mx-auto transition-all duration-500 hover:shadow-2xl dark:hover:border-slate-700">
+            <div className="relative mb-10">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 blur-3xl rounded-full"></div>
+              <div className="relative inline-flex items-center justify-center w-28 h-28 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-[2rem] shadow-inner mb-2 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
+                <ShoppingCart className="w-14 h-14 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center animate-bounce">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+              </div>
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-4">Your cart is empty</h3>
-            <p className="text-slate-500 mb-8 text-lg max-w-md mx-auto">
+
+            <h3 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Your cart is empty</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-10 text-lg max-w-md mx-auto leading-relaxed font-medium">
               Looks like you haven't added any courses to your cart yet. Start exploring and find your next learning adventure!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+            <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <Link
                 to="/courses"
-                className="group/browse inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl"
+                className="group/browse inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-xl hover:-translate-y-1 active:scale-95"
               >
                 <BookOpen className="w-5 h-5 group-hover/browse:scale-110 transition-transform" />
                 Browse Courses
@@ -605,22 +613,24 @@ const CartPage = () => {
 
               <Link
                 to="/wishlist"
-                className="inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-white border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all"
+                className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all hover:-translate-y-1 active:scale-95 shadow-sm"
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-5 h-5 text-rose-500" />
                 View Favorites
               </Link>
             </div>
 
             {/* Quick Categories */}
-            <div className="mt-12 pt-8 border-t border-slate-100">
-              <p className="text-sm font-medium text-slate-500 mb-4">Popular categories:</p>
-              <div className="flex flex-wrap gap-2 justify-center">
+            <div className="mt-16 pt-10 border-t border-slate-100 dark:border-slate-800">
+              <p className="text-sm font-bold text-slate-400 dark:text-slate-500 mb-6 uppercase tracking-widest">
+                Discover something new:
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center">
                 {['Web Development', 'Data Science', 'Business', 'Design', 'Marketing', 'Photography'].map((category) => (
                   <Link
                     key={category}
                     to={`/courses?category=${encodeURIComponent(category)}`}
-                    className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 hover:text-slate-900 transition-colors"
+                    className="px-5 py-2.5 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 text-sm font-bold rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-800 transition-all active:scale-95"
                   >
                     {category}
                   </Link>

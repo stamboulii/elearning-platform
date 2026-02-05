@@ -108,10 +108,10 @@ const CourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white text-blue-600">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950 text-blue-600 dark:text-indigo-400 transition-colors duration-300">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
-          <p className="font-medium animate-pulse">Loading amazing content...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 dark:border-indigo-500 mb-4"></div>
+          <p className="font-medium animate-pulse text-slate-600 dark:text-slate-400">Loading amazing content...</p>
         </div>
       </div>
     );
@@ -126,20 +126,20 @@ const CourseDetail = () => {
     sum + (section.lessons?.filter(l => l.isPreview || l.isFree).length || 0), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 pb-20">
       {/* Sticky Purchase Bar */}
-      <div className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transform transition-transform duration-300 ${showStickyBar ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div className={`fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-lg z-50 transform transition-transform duration-300 ${showStickyBar ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="font-bold text-gray-900 line-clamp-1 max-w-[300px]">{course.title}</h2>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+            <h2 className="font-bold text-gray-900 dark:text-white line-clamp-1 max-w-[300px]">{course.title}</h2>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
               <span className="text-yellow-400">★</span>
               <span className="font-bold">{course.averageRating?.toFixed(1)}</span>
             </div>
           </div>
           <div className="flex items-center gap-6">
             <div className="hidden md:block">
-              <span className="text-2xl font-bold text-gray-900">${course.discountPrice || course.price}</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">${course.discountPrice || course.price}</span>
             </div>
             <button
               onClick={handleEnroll}
@@ -270,12 +270,12 @@ const CourseDetail = () => {
 
             {/* What you'll learn */}
             {course.outcomes?.length > 0 && (
-              <section className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">What you'll learn</h2>
+              <section className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What you'll learn</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   {course.outcomes.map((outcome, idx) => (
-                    <div key={idx} className="flex gap-3 text-gray-700">
-                      <span className="text-blue-600 font-bold shrink-0">✓</span>
+                    <div key={idx} className="flex gap-3 text-gray-700 dark:text-slate-300">
+                      <span className="text-blue-600 dark:text-indigo-400 font-bold shrink-0">✓</span>
                       <span className="text-sm md:text-base">{outcome.outcome}</span>
                     </div>
                   ))}
@@ -286,8 +286,8 @@ const CourseDetail = () => {
             {/* Course Content (Curriculum) */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Course Content</h2>
-                <div className="text-sm text-gray-500 font-medium">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Course Content</h2>
+                <div className="text-sm text-gray-500 dark:text-slate-400 font-medium">
                   {course.sections?.length} sections • {totalLessons} lessons • {Math.floor(totalDuration / 60)}h {totalDuration % 60}m total length
                 </div>
               </div>
@@ -295,16 +295,16 @@ const CourseDetail = () => {
             </section>
 
             {/* Description Tab & Review Mix */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="flex border-b">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 overflow-hidden">
+              <div className="flex border-b dark:border-slate-800">
                 <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} label="Overview" />
                 <TabButton active={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} label="Reviews" />
               </div>
               <div className="p-8">
                 {activeTab === 'overview' && (
-                  <div className="prose prose-blue max-w-none">
-                    <h3 className="text-xl font-bold mb-4">Description</h3>
-                    <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  <div className="prose prose-blue dark:prose-invert max-w-none">
+                    <h3 className="text-xl font-bold mb-4 dark:text-white">Description</h3>
+                    <div className="text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
                       {course.fullDescription || course.shortDescription}
                     </div>
                   </div>
@@ -343,8 +343,8 @@ const HeroStat = ({ icon, text }) => (
 );
 
 const TrustGrid = () => (
-  <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-    <h4 className="font-bold text-gray-900 border-b pb-4">This course includes:</h4>
+  <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm space-y-6">
+    <h4 className="font-bold text-gray-900 dark:text-white border-b dark:border-slate-800 pb-4">This course includes:</h4>
     <div className="space-y-4">
       <FeatureIconBox icon="📱" text="Access on Mobile & TV" />
       <FeatureIconBox icon="♾️" text="Full Lifetime Access" />
@@ -355,8 +355,8 @@ const TrustGrid = () => (
 );
 
 const FeatureIconBox = ({ icon, text }) => (
-  <div className="flex items-center gap-3 text-sm text-gray-600 group">
-    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+  <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-slate-400 group">
+    <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-indigo-900/30 transition-colors">
       <span className="text-lg">{icon}</span>
     </div>
     <span className="font-medium">{text}</span>
@@ -367,7 +367,7 @@ const FeatureIconBox = ({ icon, text }) => (
 const TabButton = ({ active, onClick, label }) => (
   <button
     onClick={onClick}
-    className={`px-8 py-4 font-bold transition-all relative ${active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
+    className={`px-8 py-4 font-bold transition-all relative ${active ? 'text-blue-600 dark:text-indigo-400' : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
       }`}
   >
     {label}
@@ -388,29 +388,29 @@ const CurriculumTab = ({ sections }) => {
   return (
     <div className="space-y-1">
       {sections.map((section, idx) => (
-        <div key={section.id} className="bg-white border border-gray-200 overflow-hidden first:rounded-t-xl last:rounded-b-xl">
+        <div key={section.id} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 overflow-hidden first:rounded-t-xl last:rounded-b-xl">
           <button
             onClick={() => toggleSection(section.id)}
-            className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition text-left"
+            className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-slate-800 transition text-left"
           >
             <div className="flex items-center gap-4">
-              <span className={`transition-transform duration-200 ${expandedSections.includes(section.id) ? 'rotate-180' : ''}`}>▼</span>
-              <h3 className="font-bold text-gray-800">
+              <span className={`transition-transform duration-200 ${expandedSections.includes(section.id) ? 'rotate-180' : ''} dark:text-slate-400`}>▼</span>
+              <h3 className="font-bold text-gray-800 dark:text-white">
                 {section.title}
               </h3>
             </div>
-            <span className="text-sm text-gray-500 font-medium">
+            <span className="text-sm text-gray-500 dark:text-slate-400 font-medium">
               {section.lessons?.length || 0} lessons
             </span>
           </button>
 
           {expandedSections.includes(section.id) && (
-            <div className="divide-y divide-gray-100 border-t border-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-slate-800 border-t border-gray-100 dark:border-slate-800">
               {section.lessons?.map((lesson, lIdx) => (
-                <div key={lesson.id} className="flex items-center justify-between p-4 pl-14 hover:bg-gray-50/80">
+                <div key={lesson.id} className="flex items-center justify-between p-4 pl-14 hover:bg-gray-50/80 dark:hover:bg-slate-800/50">
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-400 text-xs w-4">{lIdx + 1}</span>
-                    <span className="text-sm md:text-base text-gray-700">{lesson.title}</span>
+                    <span className="text-gray-400 dark:text-slate-500 text-xs w-4">{lIdx + 1}</span>
+                    <span className="text-sm md:text-base text-gray-700 dark:text-slate-300">{lesson.title}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     {lesson.isPreview && (
@@ -434,11 +434,11 @@ const ReviewsTab = ({ reviews, courseId }) => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-8 mb-10 pb-10 border-b border-gray-100">
+      <div className="flex items-center gap-8 mb-10 pb-10 border-b border-gray-100 dark:border-slate-800">
         <div className="text-center">
-          <div className="text-6xl font-black text-blue-600 mb-2">{avg.toFixed(1)}</div>
+          <div className="text-6xl font-black text-blue-600 dark:text-indigo-500 mb-2">{avg.toFixed(1)}</div>
           <div className="flex text-yellow-500 text-sm mb-1">★★★★★</div>
-          <div className="text-xs font-bold text-gray-500 uppercase">Course Rating</div>
+          <div className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Course Rating</div>
         </div>
         <div className="flex-1 space-y-2">
           {[5, 4, 3, 2, 1].map(star => {
@@ -446,11 +446,11 @@ const ReviewsTab = ({ reviews, courseId }) => {
             const perc = reviews?.length ? (count / reviews.length) * 100 : 0;
             return (
               <div key={star} className="flex items-center gap-3 text-sm">
-                <div className="w-12 text-gray-600 font-medium">{star} stars</div>
-                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gray-500 rounded-full" style={{ width: `${perc}%` }}></div>
+                <div className="w-12 text-gray-600 dark:text-slate-400 font-medium">{star} stars</div>
+                <div className="flex-1 h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-gray-500 dark:bg-slate-500 rounded-full" style={{ width: `${perc}%` }}></div>
                 </div>
-                <div className="w-8 text-gray-400 text-xs">{Math.round(perc)}%</div>
+                <div className="w-8 text-gray-400 dark:text-slate-500 text-xs">{Math.round(perc)}%</div>
               </div>
             );
           })}
@@ -459,17 +459,17 @@ const ReviewsTab = ({ reviews, courseId }) => {
 
       <div className="space-y-6">
         {reviews?.map(review => (
-          <div key={review.id} className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
+          <div key={review.id} className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition">
             <img src={review.user?.profilePicture || 'https://via.placeholder.com/40'} className="w-10 h-10 rounded-full object-cover" />
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1">
-                <h4 className="font-bold text-gray-900">{review.user?.firstName} {review.user?.lastName}</h4>
-                <span className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</span>
+                <h4 className="font-bold text-gray-900 dark:text-white">{review.user?.firstName} {review.user?.lastName}</h4>
+                <span className="text-xs text-gray-400 dark:text-slate-500">{new Date(review.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex text-yellow-500 text-[10px] mb-2">
                 {[...Array(5)].map((_, i) => <span key={i}>{i < review.rating ? '★' : '☆'}</span>)}
               </div>
-              <p className="text-gray-700 text-sm leading-relaxed">{review.reviewText}</p>
+              <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed">{review.reviewText}</p>
             </div>
           </div>
         ))}
@@ -480,20 +480,20 @@ const ReviewsTab = ({ reviews, courseId }) => {
 
 // Instructor Info Component
 const InstructorInfo = ({ instructor }) => (
-  <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
-    <h2 className="text-2xl font-bold mb-8">Instructor</h2>
+  <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800">
+    <h2 className="text-2xl font-bold dark:text-white mb-8">Instructor</h2>
     <div className="flex flex-col md:flex-row gap-8 items-start">
       <div className="shrink-0 flex flex-col items-center">
-        <img src={instructor?.profilePicture || 'https://via.placeholder.com/120'} className="w-32 h-32 rounded-full object-cover mb-4 ring-4 ring-blue-50" />
+        <img src={instructor?.profilePicture || 'https://via.placeholder.com/120'} className="w-32 h-32 rounded-full object-cover mb-4 ring-4 ring-blue-50 dark:ring-slate-800" />
         <div className="text-center space-y-1">
-          <div className="text-sm font-bold text-gray-900">4.8 Instructor Rating</div>
-          <div className="text-sm text-gray-500 font-medium">1,240 Reviews</div>
-          <div className="text-sm text-gray-500 font-medium">10,500 Students</div>
+          <div className="text-sm font-bold text-gray-900 dark:text-white">4.8 Instructor Rating</div>
+          <div className="text-sm text-gray-500 dark:text-slate-400 font-medium">1,240 Reviews</div>
+          <div className="text-sm text-gray-500 dark:text-slate-400 font-medium">10,500 Students</div>
         </div>
       </div>
       <div>
-        <h3 className="text-xl font-bold text-blue-600 mb-4">{instructor?.firstName} {instructor?.lastName}</h3>
-        <div className="text-gray-700 leading-relaxed text-sm md:text-base">
+        <h3 className="text-xl font-bold text-blue-600 dark:text-indigo-400 mb-4">{instructor?.firstName} {instructor?.lastName}</h3>
+        <div className="text-gray-700 dark:text-slate-300 leading-relaxed text-sm md:text-base">
           {instructor?.bio || "Expert instructor with years of industry experience. Passionate about teaching and helping students achieve their career goals."}
         </div>
       </div>
@@ -503,8 +503,8 @@ const InstructorInfo = ({ instructor }) => (
 
 // Course Features Component
 const CourseFeatures = ({ totalLessons, totalDuration }) => (
-  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
-    <h3 className="font-bold text-gray-900">Experience our platform</h3>
+  <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-6">
+    <h3 className="font-bold text-gray-900 dark:text-white">Experience our platform</h3>
     <div className="space-y-4">
       <FeatureItem icon="🎓" text="Professional Certificate" />
       <FeatureItem icon="💬" text="Instructor Support Pool" />
@@ -516,8 +516,8 @@ const CourseFeatures = ({ totalLessons, totalDuration }) => (
 
 // Helper Components
 const FeatureItem = ({ icon, text }) => (
-  <div className="flex items-center gap-3 text-sm text-gray-700 font-medium">
-    <span className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm">
+  <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-slate-300 font-medium">
+    <span className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-slate-800 flex items-center justify-center text-blue-600 dark:text-indigo-400 shadow-sm">
       {icon}
     </span>
     {text}

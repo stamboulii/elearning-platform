@@ -131,14 +131,14 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
         <div className="container mx-auto px-4">
@@ -180,7 +180,7 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-white border-b">
+      <section className="py-12 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <StatItem number="10,000+" label="Students" />
@@ -195,10 +195,10 @@ const Home = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
               Explore Top Categories
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
               Find the right course for you from our wide range of categories
             </p>
           </div>
@@ -221,20 +221,20 @@ const Home = () => {
       </section>
 
       {/* Featured Courses Section */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-16 bg-slate-50 dark:bg-slate-900/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
               Featured Courses
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
               Explore our most popular courses taught by expert instructors
             </p>
           </div>
 
           {featuredCourses.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">No courses available yet</p>
+              <p className="text-slate-500 dark:text-slate-400">No courses available yet</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -290,8 +290,8 @@ const Home = () => {
 // Stat Item Component
 const StatItem = ({ number, label }) => (
   <div>
-    <div className="text-3xl font-bold text-blue-600 mb-2">{number}</div>
-    <div className="text-gray-600">{label}</div>
+    <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">{number}</div>
+    <div className="text-slate-600 dark:text-slate-400">{label}</div>
   </div>
 );
 
@@ -302,11 +302,11 @@ const CategoryCard = ({ category }) => {
   return (
     <div
       onClick={() => navigate(`/courses?category=${category.id}`)}
-      className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer text-center"
+      className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-lg transition cursor-pointer text-center group"
     >
       <div className="text-4xl mb-3">{category.icon || '📚'}</div>
-      <h3 className="font-semibold text-gray-800 mb-2">{category.name}</h3>
-      <p className="text-sm text-gray-600">
+      <h3 className="font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{category.name}</h3>
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         {category._count?.courses || 0} courses
       </p>
     </div>
@@ -320,7 +320,7 @@ const CourseCard = ({ course }) => {
   return (
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
-      className="bg-white rounded-lg shadow-md hover:shadow-xl transition cursor-pointer overflow-hidden"
+      className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-xl transition cursor-pointer overflow-hidden group"
     >
       <img
         src={course.thumbnailImage || 'https://via.placeholder.com/400x225'}
@@ -328,28 +328,28 @@ const CourseCard = ({ course }) => {
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
-        <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 h-12">
+        <h3 className="font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 h-12 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
           {course.title}
         </h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">
           {course.instructor?.firstName} {course.instructor?.lastName}
         </p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <span className="text-yellow-500">⭐</span>
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               {course.averageRating?.toFixed(1) || '0.0'}
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-500 dark:text-slate-500">
               ({course.totalReviews || 0})
             </span>
           </div>
-          <div className="text-lg font-bold text-blue-600">
+          <div className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
             ${course.discountPrice || course.price}
           </div>
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
-          <span className="bg-gray-100 px-2 py-1 rounded">{course.level}</span>
+        <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
+          <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">{course.level}</span>
           <span>👥 {course.totalEnrollments || 0} students</span>
         </div>
       </div>

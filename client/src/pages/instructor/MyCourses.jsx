@@ -11,7 +11,7 @@ const MyCourses = () => {
   const [filter, setFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-    
+
   useEffect(() => {
     fetchCourses();
   }, []); // Empty dependency array is fine here
@@ -78,24 +78,24 @@ const MyCourses = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">My Courses</h1>
-            <p className="text-gray-600">Manage and track your courses</p>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">My Courses</h1>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">Manage and track your courses</p>
           </div>
           <Link
             to="/instructor/courses/create"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+            className="bg-indigo-600 dark:bg-indigo-500 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all font-bold shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-indigo-300 active:scale-95"
           >
             + Create New Course
           </Link>
@@ -107,31 +107,31 @@ const MyCourses = () => {
             title="Total Courses"
             value={courses.length}
             icon="📚"
-            color="bg-blue-500"
+            color="bg-indigo-500 dark:bg-indigo-600"
           />
           <StatCard
             title="Published"
             value={courses.filter(c => c.status === 'PUBLISHED').length}
             icon="✅"
-            color="bg-green-500"
+            color="bg-emerald-500 dark:bg-emerald-600"
           />
           <StatCard
             title="Drafts"
             value={courses.filter(c => c.status === 'DRAFT').length}
             icon="📝"
-            color="bg-yellow-500"
+            color="bg-amber-500 dark:bg-amber-600"
           />
           <StatCard
             title="Total Students"
             value={courses.reduce((sum, c) => sum + c._count.enrollments, 0)}
             icon="👥"
-            color="bg-purple-500"
+            color="bg-purple-500 dark:bg-purple-600"
           />
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 mb-8 transition-colors duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Search */}
             <div className="md:col-span-1">
               <input
@@ -139,7 +139,7 @@ const MyCourses = () => {
                 placeholder="Search courses..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all shadow-inner"
               />
             </div>
 
@@ -148,7 +148,7 @@ const MyCourses = () => {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all shadow-inner appearance-none cursor-pointer"
               >
                 <option value="ALL">All Status</option>
                 <option value="PUBLISHED">Published</option>
@@ -162,7 +162,7 @@ const MyCourses = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all shadow-inner appearance-none cursor-pointer"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -175,12 +175,12 @@ const MyCourses = () => {
 
         {/* Courses List */}
         {sortedCourses.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-16 text-center max-w-2xl mx-auto transition-all duration-300">
+            <div className="text-7xl mb-6">📚</div>
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3">
               {searchQuery || filter !== 'ALL' ? 'No courses found' : 'No courses yet'}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">
               {searchQuery || filter !== 'ALL'
                 ? 'Try adjusting your filters or search query'
                 : 'Create your first course to get started'}
@@ -188,7 +188,7 @@ const MyCourses = () => {
             {!searchQuery && filter === 'ALL' && (
               <Link
                 to="/instructor/courses/create"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+                className="inline-block bg-indigo-600 dark:bg-indigo-500 text-white px-10 py-4 rounded-2xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all font-black shadow-lg shadow-indigo-200 dark:shadow-none active:scale-95"
               >
                 Create Your First Course
               </Link>
@@ -212,14 +212,14 @@ const MyCourses = () => {
 
 // Stat Card Component
 const StatCard = ({ title, value, icon, color }) => (
-  <div className="bg-white rounded-lg shadow-md p-6">
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-3xl">{icon}</span>
-      <span className={`${color} text-white text-lg px-4 py-1 rounded-full font-bold`}>
+  <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 transition-all duration-300 hover:shadow-md">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-4xl">{icon}</span>
+      <span className={`${color} text-white text-base px-4 py-1 rounded-full font-black shadow-sm`}>
         {value}
       </span>
     </div>
-    <h3 className="text-gray-600 font-medium">{title}</h3>
+    <h3 className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] tracking-widest">{title}</h3>
   </div>
 );
 
@@ -234,7 +234,7 @@ const CourseCard = ({ course, onDelete }) => {
   useEffect(() => {
     const fetchStats = async () => {
       if (course.status !== 'PUBLISHED') return;
-      
+
       try {
         const response = await enrollmentService.getCourseStats(course.id);
         setStats(response);
@@ -249,99 +249,100 @@ const CourseCard = ({ course, onDelete }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-700';
+        return 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800';
       case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-700';
+        return 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800';
       case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400';
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all duration-500 overflow-hidden group">
       <div className="flex flex-col md:flex-row">
         {/* Thumbnail */}
-        <div className="md:w-64 h-48 md:h-auto relative">
+        <div className="md:w-72 h-48 md:h-auto relative overflow-hidden">
           <img
             src={course.thumbnailImage || 'https://via.placeholder.com/400x300'}
             alt={course.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
-          <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(course.status)}`}>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${getStatusColor(course.status)}`}>
             {course.status}
           </span>
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-6">
-          <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 p-8">
+          <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h3 
-                className="text-xl font-bold text-gray-800 mb-2 hover:text-blue-600 cursor-pointer"
+              <h3
+                className="text-2xl font-black text-slate-900 dark:text-white mb-2 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors tracking-tight"
                 onClick={() => navigate(`/instructor/courses/${course.id}`)}
               >
                 {course.title}
               </h3>
-              <p className="text-gray-600 text-sm line-clamp-2">{course.shortDescription}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 font-medium leading-relaxed">{course.shortDescription}</p>
             </div>
 
             {/* Menu Button */}
-            <div className="relative ml-4">
+            <div className="relative ml-6">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
+                className="p-2.5 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
               >
-                <svg className="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                 </svg>
               </button>
 
               {/* Dropdown Menu */}
               {showMenu && (
                 <>
-                  <div 
-                    className="fixed inset-0 z-10" 
+                  <div
+                    className="fixed inset-0 z-10"
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
+                  <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl py-3 z-20 border border-slate-100 dark:border-slate-700 backdrop-blur-xl transition-all duration-300 animate-in fade-in zoom-in-95 origin-top-right">
                     <button
                       onClick={() => {
                         navigate(`/instructor/courses/${course.id}`);
                         setShowMenu(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="flex items-center gap-3 w-full text-left px-5 py-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors font-bold text-sm"
                     >
-                      View Details
+                      <span>👁️</span> View Details
                     </button>
                     <button
                       onClick={() => {
                         navigate(`/instructor/courses/${course.id}/builder`);
                         setShowMenu(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="flex items-center gap-3 w-full text-left px-5 py-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors font-bold text-sm"
                     >
-                      Edit Content
+                      <span>🛠️</span> Edit Content
                     </button>
                     <button
                       onClick={() => {
                         navigate(`/instructor/courses/${course.id}/edit`);
                         setShowMenu(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="flex items-center gap-3 w-full text-left px-5 py-3 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors font-bold text-sm"
                     >
-                      Edit Info
+                      <span>✏️</span> Edit Info
                     </button>
-                    <hr className="my-2" />
+                    <div className="h-px bg-slate-100 dark:bg-slate-700 my-2 mx-5" />
                     <button
                       onClick={() => {
                         onDelete(course.id, course.title);
                         setShowMenu(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                      className="flex items-center gap-3 w-full text-left px-5 py-3 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors font-bold text-sm"
                     >
-                      Delete
+                      <span>🗑️</span> Delete Course
                     </button>
                   </div>
                 </>
@@ -360,23 +361,23 @@ const CourseCard = ({ course, onDelete }) => {
 
           {/* Additional Stats for Published Courses */}
           {course.status === 'PUBLISHED' && stats && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center gap-6 text-sm">
+            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 transition-colors">
+              <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Completed:</span>
-                  <span className="font-semibold text-green-600">
+                  <span className="text-slate-400 dark:text-slate-500 underline decoration-emerald-500/30">Completed</span>
+                  <span className="text-emerald-600 dark:text-emerald-400">
                     {stats.completedEnrollments}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600">In Progress:</span>
-                  <span className="font-semibold text-blue-600">
+                  <span className="text-slate-400 dark:text-slate-500 underline decoration-indigo-500/30">In Progress</span>
+                  <span className="text-indigo-600 dark:text-indigo-400">
                     {stats.inProgressEnrollments}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Avg Progress:</span>
-                  <span className="font-semibold text-purple-600">
+                  <span className="text-slate-400 dark:text-slate-500 underline decoration-purple-500/30">Avg Progress</span>
+                  <span className="text-purple-600 dark:text-purple-400">
                     {stats.averageProgress}%
                   </span>
                 </div>
@@ -385,16 +386,16 @@ const CourseCard = ({ course, onDelete }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-4">
+          <div className="flex gap-4 mt-8">
             <button
               onClick={() => navigate(`/instructor/courses/${course.id}/builder`)}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium text-sm"
+              className="flex-1 bg-indigo-600 dark:bg-indigo-500 text-white py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all font-bold shadow-lg shadow-indigo-100 dark:shadow-none hover:shadow-indigo-200 active:scale-[0.98]"
             >
               Manage Content
             </button>
             <button
               onClick={() => navigate(`/instructor/courses/${course.id}`)}
-              className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition font-medium text-sm"
+              className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-bold active:scale-[0.98]"
             >
               View Analytics
             </button>
@@ -407,10 +408,10 @@ const CourseCard = ({ course, onDelete }) => {
 
 // Stat Item Component
 const StatItem = ({ icon, label, value }) => (
-  <div className="text-center">
-    <div className="text-2xl mb-1">{icon}</div>
-    <div className="text-xs text-gray-600 mb-1">{label}</div>
-    <div className="font-semibold text-gray-800">{value}</div>
+  <div className="text-center p-3 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100/50 dark:border-slate-800/50 transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+    <div className="text-2xl mb-1.5">{icon}</div>
+    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">{label}</div>
+    <div className="font-black text-slate-900 dark:text-white text-sm">{value}</div>
   </div>
 );
 

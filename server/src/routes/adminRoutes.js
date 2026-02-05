@@ -148,4 +148,58 @@ router.patch(
   adminController.rejectCourse
 );
 
+/**
+ * @swagger
+ * /admin/enrollments:
+ *   get:
+ *     summary: Get all enrollments (Admin only)
+ *     tags: [Admin - Enrollments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: courseId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [IN_PROGRESS, COMPLETED]
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ */
+router.get(
+  '/enrollments',
+  protect,
+  authorize('ADMIN'),
+  adminController.getAllEnrollments
+);
+
+/**
+ * @swagger
+ * /admin/enrollments/{id}:
+ *   delete:
+ *     summary: Revoke an enrollment (Admin only)
+ *     tags: [Admin - Enrollments]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete(
+  '/enrollments/:id',
+  protect,
+  authorize('ADMIN'),
+  adminController.revokeEnrollment
+);
+
 export default router;

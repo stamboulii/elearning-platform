@@ -46,6 +46,16 @@ class AdminController {
     const course = await adminService.rejectCourse(req.params.id, req.body.reason);
     res.json({ success: true, data: { course } });
   }
+
+  async getAllEnrollments(req, res) {
+    const data = await adminService.getAllEnrollments(req.query);
+    res.json({ success: true, data });
+  }
+
+  async revokeEnrollment(req, res) {
+    await adminService.deleteEnrollment(req.params.id);
+    res.json({ success: true, message: 'Enrollment revoked successfully' });
+  }
 }
 
 export default new AdminController();

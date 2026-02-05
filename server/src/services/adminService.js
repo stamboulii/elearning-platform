@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 class AdminService {
   async getAllUsers({ search, role, status, page = 1, limit = 20 }) {
@@ -288,6 +287,75 @@ class AdminService {
       where: { id },
       data: { status: 'ARCHIVED' }
     });
+  }
+
+  // Enrollment Management
+  async getAllEnrollments({ search, courseId, status, page = 1, limit = 20 }) {
+    const validStatuses = ['IN_PROGRESS', 'COMPLETED'];
+    
+    const where = {
+      ...(courseId && courseId !== '' && { courseId }),
+      ...(status && validStatuses.includes(status) && { completionStatus: status }),
+      ...(search && search.trim() !== '' && {
+        OR: [
+          { user: { firstName: { contains: search, mode: 'insensitive' } } },
+          { user: { lastName: { contains: search, mode: 'insensitive' } } },
+          { user: { email: { contains: search, mode: 'insensitive' } } },
+          { course: { title: { contains: search, mode: 'insensitive' } } }
+        ]
+      })
+    };
+
+    const skip = (page - 1) * limit;
+
+    try {
+      const [enrollments, total] = await Promise.all([
+        prisma.enrollment.findMany({
+          where,
+          skip,
+          take: Number(limit),
+          orderBy: { enrolledAt: 'desc' },
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                profilePicture: true
+              }
+            },
+            course: {
+              select: {
+                id: true,
+                title: true,
+                instructor: {
+                  select: {
+                    firstName: true,
+                    lastName: true
+                  }
+                }
+              }
+            }
+          }
+        }),
+        prisma.enrollment.count({ where })
+      ]);
+
+      return {
+        enrollments,
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: Number(page)
+      };
+    } catch (error) {
+      console.error('Error in getAllEnrollments service:', error);
+      throw error;
+    }
+  }
+
+  async deleteEnrollment(id) {
+    return prisma.enrollment.delete({ where: { id } });
   }
 }
 

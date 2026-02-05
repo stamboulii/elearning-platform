@@ -81,7 +81,11 @@ const adminService = {
 
   // Enrollment Management
   getAllEnrollments: async (filters = {}) => {
-    const params = new URLSearchParams(filters).toString();
+    // Filter out undefined or null values
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v != null)
+    );
+    const params = new URLSearchParams(cleanFilters).toString();
     const response = await api.get(`/admin/enrollments?${params}`);
     return response.data;
   },
