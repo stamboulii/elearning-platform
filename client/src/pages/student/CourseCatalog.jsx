@@ -217,6 +217,8 @@ import {
   Zap
 } from 'lucide-react';
 
+
+
 const CourseCatalog = () => {
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -225,9 +227,9 @@ const CourseCatalog = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [favorites, setFavorites] = useState({});
-
   const { user } = useAuth();
   const isAuthenticated = !!user;
+  
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -545,6 +547,7 @@ const CourseCatalog = () => {
 };
 
 const CourseCard = ({ course, isFavorite, onToggleFavorite, isAuthenticated }) => {
+  const { user } = useAuth();
   const courseStats = useMemo(() => {
     const hash = (str) => {
       let hash = 0;
@@ -610,6 +613,7 @@ const CourseCard = ({ course, isFavorite, onToggleFavorite, isAuthenticated }) =
         )}
 
         {/* Favorite Button */}
+        {isAuthenticated && user?.role === 'STUDENT' && (
         <div className="absolute top-3 right-3 flex gap-2">
           <button
             onClick={(e) => onToggleFavorite(course.id, e)}
@@ -628,6 +632,7 @@ const CourseCard = ({ course, isFavorite, onToggleFavorite, isAuthenticated }) =
             <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
         </div>
+        )}
 
         {/* Discount Badge */}
         {course.discountPrice && (

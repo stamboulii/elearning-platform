@@ -9,7 +9,7 @@ const CourseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrollmentStatus, setEnrollmentStatus] = useState(null);
@@ -57,7 +57,7 @@ const CourseDetail = () => {
     try {
       setEnrolling(true);
       await enrollmentService.enrollInCourse(id);
-      alert('Successfully enrolled in course!');
+      toast.success('Successfully enrolled in course!');
       navigate(`/student/courses/${id}/learn`);
     } catch (error) {
       console.error('Error enrolling:', error);
@@ -83,12 +83,12 @@ const CourseDetail = () => {
     return null;
   }
 
-  const totalLessons = course.sections?.reduce((sum, section) => 
+  const totalLessons = course.sections?.reduce((sum, section) =>
     sum + (section.lessons?.length || 0), 0
   ) || 0;
 
-  const totalDuration = course.sections?.reduce((sum, section) => 
-    sum + (section.lessons?.reduce((lessonSum, lesson) => 
+  const totalDuration = course.sections?.reduce((sum, section) =>
+    sum + (section.lessons?.reduce((lessonSum, lesson) =>
       lessonSum + (lesson.duration || 0), 0
     ) || 0), 0
   ) || 0;
@@ -108,7 +108,7 @@ const CourseDetail = () => {
               </div>
               <h1 className="text-4xl font-bold mb-4">{course.title}</h1>
               <p className="text-xl text-gray-300 mb-6">{course.shortDescription}</p>
-              
+
               {/* Stats */}
               <div className="flex items-center gap-6 mb-6 flex-wrap">
                 <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ const CourseDetail = () => {
 
             {/* Right Sidebar - Course Card */}
             <div className="lg:col-span-1">
-              <CourseCard 
+              <CourseCard
                 course={course}
                 enrollmentStatus={enrollmentStatus}
                 onEnroll={handleEnroll}
@@ -306,11 +306,10 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
 const TabButton = ({ active, onClick, label }) => (
   <button
     onClick={onClick}
-    className={`px-6 py-3 font-medium transition ${
-      active
+    className={`px-6 py-3 font-medium transition ${active
         ? 'text-blue-600 border-b-2 border-blue-600'
         : 'text-gray-600 hover:text-gray-800'
-    }`}
+      }`}
   >
     {label}
   </button>

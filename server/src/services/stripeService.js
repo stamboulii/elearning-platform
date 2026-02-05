@@ -14,21 +14,44 @@ class StripeService {
    * @param {number} totalAmount - Total amount to charge
    * @returns {object} Stripe session
    */
-  async createCheckoutSession(transactionId, user, items, totalAmount) {
+  async createCheckoutSession(transactionId, user, items, totalAmount, couponInfo = null) {
     try {
-      // Prepare line items for Stripe
-      const lineItems = items.map(item => ({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: item.course.title,
-            description: item.course.shortDescription || '',
-            images: item.course.thumbnailImage ? [item.course.thumbnailImage] : [],
+      // If coupon is applied, create a single line item with the discounted total
+      // Otherwise, create individual line items for each course
+
+      let lineItems;
+
+      if (couponInfo) {
+        // Single line item with coupon-adjusted total
+        const courseNames = items.map(item => item.course.title).join(', ');
+        const coursesText = items.length > 1 ? `${items.length} Courses` : items[0].course.title;
+
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: coursesText,
+              description: `${courseNames.substring(0, 200)}${courseNames.length > 200 ? '...' : ''} (Coupon ${couponInfo.code} applied: -$${couponInfo.discount.toFixed(2)})`,
+            },
+            unit_amount: Math.round(parseFloat(totalAmount) * 100), // Use final total
           },
-          unit_amount: Math.round(parseFloat(item.currentPrice) * 100), // Convert to cents
-        },
-        quantity: 1,
-      }));
+          quantity: 1,
+        }];
+      } else {
+        // Individual line items for each course
+        lineItems = items.map(item => ({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.course.title,
+              description: item.course.shortDescription || '',
+              images: item.course.thumbnailImage ? [item.course.thumbnailImage] : [],
+            },
+            unit_amount: Math.round(parseFloat(item.currentPrice) * 100), // Convert to cents
+          },
+          quantity: 1,
+        }));
+      }
 
       // Create Stripe Checkout Session
       const session = await stripe.checkout.sessions.create({
@@ -42,6 +65,7 @@ class StripeService {
         metadata: {
           transactionId: transactionId,
           userId: user.id,
+          couponCode: couponInfo?.code || null,
         },
       });
 

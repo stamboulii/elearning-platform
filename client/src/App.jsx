@@ -92,6 +92,7 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
 import TransactionManager from './pages/admin/TransactionManager';
 import AdminEnrollments from './pages/admin/Enrollments';
+import InstructorCourseDetail from './pages/instructor/CourseDetail';
 function App() {
   return (
     <AuthProvider>
@@ -245,6 +246,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/instructor/courses/:courseId"
+              element={
+                <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
+                  <InstructorCourseDetail />
+                </ProtectedRoute>
+              }
+            />
+            
 
             {/* Common Protected Routes */}
             <Route

@@ -82,6 +82,7 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error('Checkout error:', error);
 
+
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -111,13 +112,9 @@ const CheckoutPage = () => {
     return null;
   }
 
-  const subtotal = parseFloat(checkoutData.cartTotal || 0);
-  const couponDiscount = checkoutData.appliedCoupon
-    ? (checkoutData.appliedCoupon.discountType === 'PERCENTAGE'
-      ? (subtotal * parseFloat(checkoutData.appliedCoupon.discountValue)) / 100
-      : parseFloat(checkoutData.appliedCoupon.discountValue))
-    : 0;
-  const total = subtotal - couponDiscount;
+  const subtotal = parseFloat(checkoutData.subtotal || checkoutData.cartTotal || 0);
+  const couponDiscount = parseFloat(checkoutData.couponDiscount || 0);
+  const total = parseFloat(checkoutData.cartTotal || subtotal);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 py-12">
@@ -153,8 +150,8 @@ const CheckoutPage = () => {
                 <label className={`
                   flex items-center gap-4 p-6 rounded-2xl border-2 cursor-pointer transition-all
                   ${paymentMethod === 'stripe'
-                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'}
+                    ? 'border-indigo-600 bg-indigo-50'
+                    : 'border-slate-200 hover:border-slate-300'}
                 `}>
                   <input
                     type="radio"

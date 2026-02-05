@@ -190,7 +190,9 @@ const CartPage = () => {
     // Pass coupon info to checkout if available
     const checkoutData = {
       cartItems: cart.items,
-      cartTotal: cart.summary.total,
+      subtotal: cart.summary.subtotal,      // Original subtotal before coupon
+      cartTotal: cart.summary.total,        // Final total after coupon
+      couponDiscount: couponDiscount,       // Discount amount already calculated
       appliedCoupon: appliedCoupon ? {
         id: appliedCoupon.id,
         code: appliedCoupon.code,
@@ -211,10 +213,14 @@ const CartPage = () => {
 
   // Calculate total with coupon
   const calculateTotalWithCoupon = () => {
+    // Use the total from cart summary if coupon is applied
+    if (appliedCoupon && cart.summary.total) {
+      return parseFloat(cart.summary.total);
+    }
+    // Otherwise calculate from subtotal
     const subtotal = parseFloat(cart.summary.subtotal || 0);
     const tax = parseFloat(cart.summary.tax || 0);
-    const total = subtotal + tax - couponDiscount;
-    return total > 0 ? total : 0;
+    return subtotal + tax;
   };
 
   if (isLoading) {

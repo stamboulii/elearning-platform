@@ -26,6 +26,7 @@ import cartRoutes from './src/routes/cartRoutes.js';
 import couponRoutes from './src/routes/couponRoutes.js';
 import checkoutRoutes from './src/routes/checkoutRoutes.js';
 import transactionRoutes from './src/routes/transactionRoutes.js';
+import instructorAnalyticsRoutes from './src/routes/Instructoranalyticsroutes.js';  
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -82,6 +83,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/instructor-analytics', instructorAnalyticsRoutes);
 
 
 // Health check

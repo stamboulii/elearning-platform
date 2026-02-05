@@ -33,8 +33,10 @@ const PaymentSuccessPage = () => {
       if (response.data.success) {
         setPaymentData(response.data.data);
 
+
         // Clear checkout data from session storage
         sessionStorage.removeItem('checkoutData');
+
 
         // Dispatch event to update cart count
         window.dispatchEvent(new Event('cart-updated'));
@@ -106,30 +108,10 @@ const PaymentSuccessPage = () => {
             Thank you for your purchase. Your courses are now available.
           </p>
 
-          {/* Payment Details */}
-          {paymentData && (
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-8">
-              <div className="grid grid-cols-2 gap-4 text-left">
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Courses Enrolled</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {paymentData.enrollments || 0}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Transactions</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {paymentData.transactions || 0}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate('/courses/my-courses')}
+              onClick={() => navigate('/student/courses')}
               className="group/courses inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl"
             >
               <BookOpen className="w-5 h-5 group-hover/courses:scale-110 transition-transform" />
