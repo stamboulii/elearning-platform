@@ -383,7 +383,7 @@ const CourseCatalog = () => {
               </div>
             </div>
             
-            {isAuthenticated && (
+            {isAuthenticated && user?.role === 'STUDENT' && (
               <Link
                 to="/wishlist"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all font-medium shadow-sm group"

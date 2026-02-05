@@ -87,6 +87,10 @@ import UserSettings from './pages/admin/Settings';
 import WishlistPage from './pages/WishlistPage';
 import CartPage from './pages/CartPage';
 import CouponManager from './pages/admin/CouponManager';
+import CheckoutPage from './pages/CheckoutPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentCancelPage from './pages/PaymentCancelPage';
+import TransactionManager from './pages/admin/TransactionManager';
 function App() {
   return (
     <AuthProvider>
@@ -173,14 +177,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
+            {/* <Route
               path="/checkout"
               element={
                 <ProtectedRoute allowedRoles={['STUDENT']}>
                   <Checkout />
                 </ProtectedRoute>
               }
-            />
+            /> */}
             <Route
               path="/student/certificates/:id"
               element={
@@ -266,6 +270,18 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/admin/transactions"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <TransactionManager />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/checkout" element={ <ProtectedRoute allowedRoles={['STUDENT']}> <CheckoutPage /> </ProtectedRoute>} />
+            <Route path="/payment/success" element={<ProtectedRoute allowedRoles={['STUDENT']}> <PaymentSuccessPage /> </ProtectedRoute>} />
+            <Route path="/payment/cancel" element={<ProtectedRoute allowedRoles={['STUDENT']}> <PaymentCancelPage /> </ProtectedRoute>} />
 
 
             {/* 404 */}

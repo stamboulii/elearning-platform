@@ -30,7 +30,7 @@
   "multer-storage-cloudinary": "^4.0.0",
   "nodemailer": "^7.0.12",
   "prisma": "^6.19.1",
-  "stripe": "^20.1.0",
+  "stripe": "^20.3.0",
   "swagger-jsdoc": "^6.2.8",
   "swagger-ui-express": "^5.0.1",
   "uuid": "^13.0.0"

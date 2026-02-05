@@ -27,6 +27,8 @@ import certificateRoutes from './src/routes/certificateRoutes.js';
 import wishlistRoutes from './src/routes/wishlistRoutes.js';
 import cartRoutes from './src/routes/cartRoutes.js';
 import couponRoutes from './src/routes/couponRoutes.js';
+import checkoutRoutes from './src/routes/checkoutRoutes.js';
+import transactionRoutes from './src/routes/transactionRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -81,6 +83,8 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 
 // Health check
