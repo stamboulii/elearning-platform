@@ -74,8 +74,6 @@ app.use(cors({
   maxAge: 600 // Cache preflight requests for 10 minutes
 }));
 
-// Ensure OPTIONS requests are handled
-app.options('*', cors());
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
