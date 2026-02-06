@@ -387,7 +387,7 @@ const InstructorDashboard = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch existing course data
       const coursesData = await courseService.getInstructorCourses();
       setCourses(coursesData);
@@ -492,33 +492,33 @@ const InstructorDashboard = () => {
           <StatCard
             title="Total Courses"
             value={stats.totalCourses}
-            icon={<BookOpen className="w-6 h-6 text-blue-600" />}
-            bgColor="bg-blue-50"
-            borderColor="border-blue-100"
+            icon={<BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+            bgColor="bg-blue-50 dark:bg-blue-900/30"
+            borderColor="border-blue-100 dark:border-blue-800"
             trend="All courses"
           />
           <StatCard
             title="Published"
             value={stats.publishedCourses}
-            icon={<CheckCircle className="w-6 h-6 text-emerald-600" />}
-            bgColor="bg-emerald-50"
-            borderColor="border-emerald-100"
+            icon={<CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
+            bgColor="bg-emerald-50 dark:bg-emerald-900/30"
+            borderColor="border-emerald-100 dark:border-emerald-800"
             trend="Live courses"
           />
           <StatCard
             title="Drafts"
             value={stats.draftCourses}
-            icon={<FileText className="w-6 h-6 text-amber-600" />}
-            bgColor="bg-amber-50"
-            borderColor="border-amber-100"
+            icon={<FileText className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
+            bgColor="bg-amber-50 dark:bg-amber-900/30"
+            borderColor="border-amber-100 dark:border-amber-800"
             trend="In progress"
           />
           <StatCard
             title="Total Students"
             value={stats.totalStudents}
-            icon={<Users className="w-6 h-6 text-purple-600" />}
-            bgColor="bg-purple-50"
-            borderColor="border-purple-100"
+            icon={<Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
+            bgColor="bg-purple-50 dark:bg-purple-900/30"
+            borderColor="border-purple-100 dark:border-purple-800"
             trend="Enrolled"
           />
         </div>
@@ -529,32 +529,32 @@ const InstructorDashboard = () => {
             <RevenueCard
               title="Total Revenue"
               value={formatCurrency(revenueAnalytics.totalRevenue)}
-              icon={<DollarSign className="w-6 h-6 text-emerald-600" />}
-              bgColor="bg-emerald-50"
+              icon={<DollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
+              bgColor="bg-emerald-50 dark:bg-emerald-900/30"
               trend={`${revenueAnalytics.paidEnrollments} paid`}
               trendUp={true}
             />
             <RevenueCard
               title="Pending Revenue"
               value={formatCurrency(revenueAnalytics.pendingRevenue)}
-              icon={<Clock className="w-6 h-6 text-amber-600" />}
-              bgColor="bg-amber-50"
+              icon={<Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
+              bgColor="bg-amber-50 dark:bg-amber-900/30"
               trend={`${revenueAnalytics.pendingEnrollments} pending`}
               trendUp={false}
             />
             <RevenueCard
               title="Paid Enrollments"
               value={revenueAnalytics.paidEnrollments}
-              icon={<CheckCircle className="w-6 h-6 text-blue-600" />}
-              bgColor="bg-blue-50"
+              icon={<CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+              bgColor="bg-blue-50 dark:bg-blue-900/30"
               trend="Completed"
               trendUp={true}
             />
             <RevenueCard
               title="Total Enrollments"
               value={revenueAnalytics.totalEnrollments}
-              icon={<Users className="w-6 h-6 text-purple-600" />}
-              bgColor="bg-purple-50"
+              icon={<Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
+              bgColor="bg-purple-50 dark:bg-purple-900/30"
               trend="All time"
               trendUp={true}
             />
@@ -575,28 +575,30 @@ const InstructorDashboard = () => {
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={revenueAnalytics.monthlyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="month" 
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="opacity-30" />
+                  <XAxis
+                    dataKey="month"
                     stroke="#64748b"
-                    tick={{ fill: '#64748b' }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#64748b"
-                    tick={{ fill: '#64748b' }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '0.75rem'
+                      backgroundColor: 'rgb(15 23 42)',
+                      border: '1px solid rgb(30 41 59)',
+                      borderRadius: '1rem',
+                      color: '#fff'
                     }}
+                    itemStyle={{ color: '#fff' }}
                   />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="revenue" 
-                    stroke="#6366f1" 
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#6366f1"
                     strokeWidth={3}
                     dot={{ fill: '#6366f1', r: 5 }}
                     activeDot={{ r: 8 }}
@@ -618,25 +620,27 @@ const InstructorDashboard = () => {
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topCourses}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="title" 
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="opacity-30" />
+                  <XAxis
+                    dataKey="title"
                     stroke="#64748b"
-                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    tick={{ fill: '#64748b', fontSize: 11 }}
                     angle={-45}
                     textAnchor="end"
                     height={100}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#64748b"
-                    tick={{ fill: '#64748b' }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '0.75rem'
+                      backgroundColor: 'rgb(15 23 42)',
+                      border: '1px solid rgb(30 41 59)',
+                      borderRadius: '1rem',
+                      color: '#fff'
                     }}
+                    itemStyle={{ color: '#fff' }}
                   />
                   <Legend />
                   <Bar dataKey="revenue" fill="#6366f1" radius={[8, 8, 0, 0]} />
@@ -658,25 +662,27 @@ const InstructorDashboard = () => {
             </div>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={enrollmentStats}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis 
-                  dataKey="courseTitle" 
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="opacity-30" />
+                <XAxis
+                  dataKey="courseTitle"
                   stroke="#64748b"
                   tick={{ fill: '#64748b', fontSize: 11 }}
                   angle={-45}
                   textAnchor="end"
                   height={120}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#64748b"
-                  tick={{ fill: '#64748b' }}
+                  tick={{ fill: '#64748b', fontSize: 12 }}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '0.75rem'
+                    backgroundColor: 'rgb(15 23 42)',
+                    border: '1px solid rgb(30 41 59)',
+                    borderRadius: '1rem',
+                    color: '#fff'
                   }}
+                  itemStyle={{ color: '#fff' }}
                 />
                 <Legend />
                 <Bar dataKey="paidEnrollments" fill="#10b981" name="Paid" radius={[8, 8, 0, 0]} />
@@ -857,8 +863,8 @@ const CourseRow = ({ course }) => {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Status Badge */}
           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${course.status === 'PUBLISHED'
-              ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-              : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+            : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
             }`}>
             {course.status === 'PUBLISHED' ? (
               <>
