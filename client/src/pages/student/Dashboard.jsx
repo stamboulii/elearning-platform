@@ -278,6 +278,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import enrollmentService from '../../services/enrollmentService';
 import {
@@ -298,6 +299,7 @@ import {
 } from 'lucide-react';
 
 const StudentDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -341,7 +343,7 @@ const StudentDashboard = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
-          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Loading your dashboard...</p>
+          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -380,13 +382,13 @@ const StudentDashboard = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h1 className="text-3xl font-extrabold tracking-tight">
-                      Welcome back, {user?.firstName}!
+                      {t('student.dashboard.welcome', { name: user?.firstName })}
                     </h1>
                     <Sparkles className="w-6 h-6 text-yellow-300" />
                   </div>
                   <p className="text-indigo-100 font-semibold flex items-center gap-2">
                     <Trophy className="w-4 h-4" />
-                    Level {currentLevel} Scholar
+                    {t('student.dashboard.level_scholar', { level: currentLevel })}
                   </p>
                 </div>
               </div>
@@ -394,7 +396,7 @@ const StudentDashboard = () => {
               {/* XP Progress */}
               <div className="w-full lg:w-auto lg:min-w-[320px]">
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-xs font-bold uppercase tracking-widest text-indigo-200">XP Progress</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-indigo-200">{t('student.dashboard.xp_progress')}</span>
                   <span className="text-sm font-black text-yellow-300 flex items-center gap-1">
                     <Zap className="w-4 h-4" />
                     {xpInCurrentLevel} / 1000 XP
@@ -408,7 +410,7 @@ const StudentDashboard = () => {
                 </div>
                 <p className="text-xs text-indigo-200 mt-2 text-right font-medium flex items-center justify-end gap-1">
                   <Target className="w-3 h-3" />
-                  {xpToNextLevel} XP until level {currentLevel + 1}
+                  {t('student.dashboard.xp_until_level', { xp: xpToNextLevel, level: currentLevel + 1 })}
                 </p>
               </div>
             </div>
@@ -418,36 +420,36 @@ const StudentDashboard = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
-            title="Total Courses"
+            title={t('student.dashboard.stats.total_courses')}
             value={stats.totalCourses}
             icon={<BookOpen className="w-6 h-6 text-blue-600" />}
             bgColor="bg-blue-50"
             borderColor="border-blue-100"
-            trend="Enrolled"
+            trend={t('course.status.in_progress')}
           />
           <StatCard
-            title="In Progress"
+            title={t('student.dashboard.stats.in_progress')}
             value={stats.inProgressCourses}
             icon={<PlayCircle className="w-6 h-6 text-amber-600" />}
             bgColor="bg-amber-50"
             borderColor="border-amber-100"
-            trend="Active"
+            trend={t('course.status.in_progress')}
           />
           <StatCard
-            title="Completed"
+            title={t('student.dashboard.stats.completed')}
             value={stats.completedCourses}
             icon={<CheckCircle className="w-6 h-6 text-emerald-600" />}
             bgColor="bg-emerald-50"
             borderColor="border-emerald-100"
-            trend="Finished"
+            trend={t('course.status.completed')}
           />
           <StatCard
-            title="Avg Progress"
+            title={t('student.dashboard.stats.avg_progress')}
             value={`${stats.averageProgress}%`}
             icon={<TrendingUp className="w-6 h-6 text-purple-600" />}
             bgColor="bg-purple-50"
             borderColor="border-purple-100"
-            trend="Overall"
+            trend={t('admin.dashboard.tools.users')}
           />
         </div>
 
@@ -460,7 +462,7 @@ const StudentDashboard = () => {
               className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-6 rounded-3xl hover:from-indigo-700 hover:to-purple-700 transition-all font-bold text-center shadow-lg shadow-indigo-200 flex items-center justify-center gap-3 group"
             >
               <BookOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              Browse Courses
+              {t('common.browse_courses')}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
@@ -468,7 +470,7 @@ const StudentDashboard = () => {
               className="flex-1 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-8 py-6 rounded-3xl border-2 border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all font-bold text-center shadow-sm flex items-center justify-center gap-3 group"
             >
               <PlayCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-              My Courses
+              {t('common.my_courses')}
             </Link>
           </div>
 
@@ -477,10 +479,10 @@ const StudentDashboard = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-500" />
-                My Badges
+                {t('student.dashboard.my_badges')}
               </h3>
               <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
-                {user?.badges?.length || 0} Earned
+                {user?.badges?.length || 0} {t('student.dashboard.earned')}
               </span>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -502,7 +504,7 @@ const StudentDashboard = () => {
                 <div className="flex-1 flex items-center justify-center py-4">
                   <p className="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
                     <Star className="w-4 h-4" />
-                    Complete lessons to earn badges!
+                    {t('student.dashboard.complete_lessons_badge')}
                   </p>
                 </div>
               )}
@@ -514,15 +516,15 @@ const StudentDashboard = () => {
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">My Courses</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Continue your learning journey</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('common.my_courses')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('student.dashboard.continue_journey')}</p>
             </div>
             {enrollments.length > 0 && (
               <Link
                 to="/student/courses"
                 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1"
               >
-                View all
+                {t('common.view_all')}
                 <ChevronRight className="w-4 h-4" />
               </Link>
             )}
@@ -533,12 +535,12 @@ const StudentDashboard = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full mb-6">
                 <BookOpen className="w-10 h-10 text-slate-400 dark:text-slate-500" />
               </div>
-              <p className="text-slate-500 dark:text-slate-400 mb-6 text-lg font-semibold">You haven't enrolled in any courses yet</p>
+              <p className="text-slate-500 dark:text-slate-400 mb-6 text-lg font-semibold">{t('student.dashboard.no_courses')}</p>
               <Link
                 to="/courses"
                 className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-bold shadow-lg shadow-indigo-200 dark:shadow-none"
               >
-                Browse Courses
+                {t('common.browse_courses')}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -572,6 +574,7 @@ const StatCard = ({ title, value, icon, bgColor, borderColor, trend }) => (
 );
 
 const EnrollmentCard = ({ enrollment }) => {
+  const { t } = useTranslation();
   const course = enrollment.course;
   const progress = enrollment.progressPercentage || 0;
   const isCompleted = enrollment.completionStatus === 'COMPLETED';
@@ -603,18 +606,18 @@ const EnrollmentCard = ({ enrollment }) => {
 
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <span className={`px-3 py-1 rounded-full text-xs font-bold border ${isCompleted
-              ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
-              : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+            : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
             }`}>
             {isCompleted ? (
               <span className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
-                Completed
+                {t('course.status.completed')}
               </span>
             ) : (
               <span className="flex items-center gap-1">
                 <PlayCircle className="w-3 h-3" />
-                In Progress
+                {t('course.status.in_progress')}
               </span>
             )}
           </span>
@@ -630,14 +633,14 @@ const EnrollmentCard = ({ enrollment }) => {
         {/* Progress Bar */}
         <div className="mb-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Progress</span>
+            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{t('student.course_card.progress')}</span>
             <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">{progress}%</span>
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${isCompleted
-                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-600'
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                : 'bg-gradient-to-r from-indigo-500 to-purple-600'
                 }`}
               style={{ width: `${progress}%` }}
             ></div>
@@ -648,18 +651,18 @@ const EnrollmentCard = ({ enrollment }) => {
       {/* Action Buttons */}
       <div className="flex sm:flex-col gap-3 w-full sm:w-auto">
         <button className={`flex-1 sm:flex-none px-6 py-3 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 whitespace-nowrap ${isCompleted
-            ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-            : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none'
+          ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+          : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none'
           }`}>
           {isCompleted ? (
             <>
               <CheckCircle className="w-4 h-4" />
-              Review
+              {t('common.review')}
             </>
           ) : (
             <>
               <PlayCircle className="w-4 h-4" />
-              Continue
+              {t('common.continue')}
             </>
           )}
         </button>
@@ -671,7 +674,7 @@ const EnrollmentCard = ({ enrollment }) => {
             className="flex-1 sm:flex-none bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-xl hover:from-yellow-500 hover:to-orange-600 transition-all font-bold text-center whitespace-nowrap shadow-lg shadow-yellow-200 dark:shadow-none flex items-center justify-center gap-2"
           >
             <Award className="w-4 h-4" />
-            Certificate
+            {t('common.certificate')}
           </Link>
         )}
       </div>

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import enrollmentService from '../../services/enrollmentService';
 
 const MyCourses = () => {
+  const { t } = useTranslation();
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL'); // ALL | IN_PROGRESS | COMPLETED
@@ -70,10 +72,10 @@ const MyCourses = () => {
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
-            My Courses
+            {t('student.my_courses.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium">
-            Manage and continue your enrolled courses
+            {t('student.my_courses.subtitle')}
           </p>
         </header>
 
@@ -82,7 +84,7 @@ const MyCourses = () => {
           <div className="flex flex-wrap gap-4">
             <input
               type="text"
-              placeholder="Search courses..."
+              placeholder={t('student.my_courses.search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 min-w-[200px] px-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
@@ -93,9 +95,9 @@ const MyCourses = () => {
               onChange={(e) => setFilter(e.target.value)}
               className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white"
             >
-              <option value="ALL">All Courses</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
+              <option value="ALL">{t('student.my_courses.filter_all')}</option>
+              <option value="IN_PROGRESS">{t('student.my_courses.filter_in_progress')}</option>
+              <option value="COMPLETED">{t('student.my_courses.filter_completed')}</option>
             </select>
           </div>
         </div>
@@ -120,31 +122,35 @@ const MyCourses = () => {
 
 // ----------------------------------------------------------------
 
-const EmptyState = ({ hasEnrollments }) => (
-  <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-12 text-center">
-    {hasEnrollments ? (
-      <p className="text-slate-500 dark:text-slate-400 text-lg font-medium">
-        No courses match your filters
-      </p>
-    ) : (
-      <>
-        <p className="text-slate-500 dark:text-slate-400 text-lg mb-4 font-medium">
-          You haven't enrolled in any courses yet
+const EmptyState = ({ hasEnrollments }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-12 text-center">
+      {hasEnrollments ? (
+        <p className="text-slate-500 dark:text-slate-400 text-lg font-medium">
+          {t('student.my_courses.no_match')}
         </p>
-        <Link
-          to="/courses"
-          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold"
-        >
-          Browse available courses →
-        </Link>
-      </>
-    )}
-  </div>
-);
+      ) : (
+        <>
+          <p className="text-slate-500 dark:text-slate-400 text-lg mb-4 font-medium">
+            {t('student.dashboard.no_courses')}
+          </p>
+          <Link
+            to="/courses"
+            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold"
+          >
+            {t('student.my_courses.browse_available')}
+          </Link>
+        </>
+      )}
+    </div>
+  );
+};
 
 // ----------------------------------------------------------------
 
 const EnrollmentCard = ({ enrollment }) => {
+  const { t } = useTranslation();
   const course = enrollment.course;
   if (!course) return null;
 
@@ -162,11 +168,11 @@ const EnrollmentCard = ({ enrollment }) => {
           />
           <span
             className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${completed
-                ? 'bg-emerald-500 text-white'
-                : 'bg-amber-500 text-white'
+              ? 'bg-emerald-500 text-white'
+              : 'bg-amber-500 text-white'
               }`}
           >
-            {completed ? 'Completed' : 'In Progress'}
+            {completed ? t('course.status.completed') : t('course.status.in_progress')}
           </span>
         </div>
       </Link>
@@ -185,7 +191,7 @@ const EnrollmentCard = ({ enrollment }) => {
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">
-            <span className="uppercase tracking-wider">Progress</span>
+            <span className="uppercase tracking-wider">{t('student.course_card.progress')}</span>
             <span>{progress}%</span>
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 shadow-inner">
@@ -199,7 +205,7 @@ const EnrollmentCard = ({ enrollment }) => {
 
         {enrollment.lastAccessed && (
           <p className="text-xs text-slate-400 dark:text-slate-500 mb-6 font-medium italic">
-            Last accessed:{' '}
+            {t('student.course_card.last_accessed')}:{' '}
             {new Date(enrollment.lastAccessed).toLocaleDateString()}
           </p>
         )}
@@ -208,7 +214,7 @@ const EnrollmentCard = ({ enrollment }) => {
           to={`/student/courses/${course.id}/learn`}
           className="block w-full bg-indigo-600 dark:bg-indigo-500 text-white text-center py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all font-bold shadow-lg shadow-indigo-100 dark:shadow-none hover:shadow-indigo-200"
         >
-          {completed ? 'Review Course' : 'Continue Learning'}
+          {completed ? t('student.my_courses.review_course') : t('student.my_courses.continue_learning')}
         </Link>
       </div>
     </div>

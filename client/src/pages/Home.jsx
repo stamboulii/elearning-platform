@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import courseService from '../services/courseService';
 import categoryService from '../services/categoryService';
@@ -34,6 +35,7 @@ const StepCard = ({ number, title, description, icon }) => (
 );
 
 const Home = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [featuredCourses, setFeaturedCourses] = useState([]);
@@ -81,14 +83,14 @@ const Home = () => {
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold text-sm mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <Sparkles className="w-4 h-4" />
-                <span>Modern E-Learning Platform</span>
+                <span>{t('home.hero.badge')}</span>
               </div>
               <h1 className="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-8 leading-[1.1] tracking-tight animate-in fade-in slide-in-from-bottom-6 duration-700">
-                Master New Skills <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Without Limits.</span>
+                {t('home.hero.title_main')} <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{t('home.hero.title_accent')}</span>
               </h1>
               <p className="text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                Join a community of 10,000+ students. Learn from industry experts and advance your career with our professional-grade curriculum.
+                {t('home.hero.subtitle')}
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start animate-in fade-in slide-in-from-bottom-10 duration-1000">
@@ -98,7 +100,7 @@ const Home = () => {
                       to="/register"
                       className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                     >
-                      Start Learning Now
+                      {t('home.hero.get_started')}
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                     <Link

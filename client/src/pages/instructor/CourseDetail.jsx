@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import courseService from '../../services/courseService';
+import enrollmentService from '../../services/enrollmentService';
+import toast from '../../utils/toast';
 import {
   BookOpen,
   Users,
@@ -381,17 +383,110 @@ const CurriculumTab = ({ sections }) => {
   );
 };
 
-const StudentsTab = ({ totalStudents }) => (
-  <div className="text-center py-12">
-    <Users className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Student Management</h3>
-    <p className="text-slate-600 dark:text-slate-400 mb-1">Total Enrolled: <span className="font-bold">{totalStudents}</span></p>
-    <p className="text-sm text-slate-500 dark:text-slate-500 mb-6">View detailed student analytics and engagement metrics</p>
-    <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors">
-      View Student List
-    </button>
-  </div>
-);
+const StudentsTab = ({ courseId, totalStudents }) => {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        const data = await enrollmentService.getCourseStudents(courseId);
+        setStudents(data || []);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+        toast.error('Failed to load student list');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [courseId]);
+
+  if (loading) {
+    return (
+      <div className="py-12 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+        <p className="mt-4 text-slate-500">Loading student list...</p>
+      </div>
+    );
+  }
+
+  if (students.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Users className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Students Enrolled</h3>
+        <p className="text-slate-600 dark:text-slate-400">When students enroll in your course, they will appear here.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Enrolled Students</h3>
+        <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-full">
+          {students.length} Total
+        </span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left border-b border-slate-100 dark:border-slate-800">
+              <th className="pb-3 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Student</th>
+              <th className="pb-3 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Progress</th>
+              <th className="pb-3 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Enrollment Date</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+            {students.map((enrollment) => (
+              <tr key={enrollment.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                <td className="py-4">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={enrollment.user?.profilePicture || 'https://via.placeholder.com/32'}
+                      className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700"
+                      alt="Avatar"
+                    />
+                    <div>
+                      <div className="text-sm font-bold text-slate-900 dark:text-white">
+                        {enrollment.user?.firstName} {enrollment.user?.lastName}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {enrollment.user?.email}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">
+                      {enrollment.progressPercentage}%
+                    </div>
+                    <div className="w-24 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-indigo-600 rounded-full"
+                        style={{ width: `${enrollment.progressPercentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-4 text-right">
+                  <div className="text-sm text-slate-600 dark:text-slate-400">
+                    {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
 const ReviewsTab = ({ reviews }) => {
   const avg = reviews?.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;

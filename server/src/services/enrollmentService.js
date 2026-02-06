@@ -533,6 +533,48 @@ class EnrollmentService {
       recentEnrollments
     };
   }
+
+  // Get all enrollments for a course (Instructor/Admin only) - NEW
+  async getCourseEnrollments(courseId, userId) {
+    // Verify course exists
+    const course = await prisma.course.findUnique({
+      where: { id: courseId }
+    });
+
+    if (!course) {
+      throw new Error('Course not found');
+    }
+
+    // Verify instructor owns the course OR user is admin
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true }
+    });
+
+    if (course.instructorId !== userId && currentUser.role !== 'ADMIN') {
+      throw new Error('Not authorized to view enrollments for this course');
+    }
+
+    // Get all enrollments with student details
+    const enrollments = await prisma.enrollment.findMany({
+      where: { courseId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            profilePicture: true
+          }
+        },
+        transaction: true
+      },
+      orderBy: { enrolledAt: 'desc' }
+    });
+
+    return enrollments;
+  }
 }
 
 export default new EnrollmentService();

@@ -34,7 +34,8 @@ import {
   getMyEnrollments,
   getEnrollmentDetails,
   checkEnrollment,
-  getCourseEnrollmentStats
+  getCourseEnrollmentStats,
+  getCourseEnrollments
 } from '../controllers/enrollmentController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
@@ -176,5 +177,29 @@ router.get('/:id', getEnrollmentDetails);
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.get('/course/:courseId/stats', authorize('INSTRUCTOR', 'ADMIN'), getCourseEnrollmentStats);
+
+/**
+ * @swagger
+ * /enrollments/course/{courseId}/students:
+ *   get:
+ *     summary: Get all students enrolled in a course (Instructor only)
+ *     tags: [Enrollments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Students list retrieved successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.get('/course/:courseId/students', authorize('INSTRUCTOR', 'ADMIN'), getCourseEnrollments);
 
 export default router;

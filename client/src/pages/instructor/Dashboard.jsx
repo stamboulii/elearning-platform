@@ -323,6 +323,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import courseService from '../../services/courseService';
 import analyticsService from '../../services/analyticsService';
 import {
@@ -364,6 +365,7 @@ import {
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 
 const InstructorDashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -432,7 +434,7 @@ const InstructorDashboard = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
-          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Loading dashboard...</p>
+          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -465,13 +467,13 @@ const InstructorDashboard = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h1 className="text-3xl font-extrabold tracking-tight">
-                      Welcome back, {user?.firstName}!
+                      {t('instructor.dashboard.welcome', { name: user?.firstName })}
                     </h1>
                     <Sparkles className="w-6 h-6 text-yellow-300" />
                   </div>
                   <p className="text-indigo-100 font-semibold flex items-center gap-2">
                     <Zap className="w-4 h-4" />
-                    Instructor Dashboard - Manage your courses and students
+                    {t('instructor.dashboard.overview')}
                   </p>
                 </div>
               </div>
@@ -480,7 +482,7 @@ const InstructorDashboard = () => {
               <div className="bg-white/10 backdrop-blur-md rounded-2xl px-6 py-4 border border-white/20">
                 <div className="text-center">
                   <div className="text-3xl font-black text-white mb-1">{stats.totalStudents}</div>
-                  <div className="text-xs font-bold text-indigo-100 uppercase tracking-wider">Total Students</div>
+                  <div className="text-xs font-bold text-indigo-100 uppercase tracking-wider">{t('instructor.dashboard.stats.total_students')}</div>
                 </div>
               </div>
             </div>
@@ -490,36 +492,36 @@ const InstructorDashboard = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
-            title="Total Courses"
+            title={t('instructor.dashboard.stats.total_courses')}
             value={stats.totalCourses}
             icon={<BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
             bgColor="bg-blue-50 dark:bg-blue-900/30"
             borderColor="border-blue-100 dark:border-blue-800"
-            trend="All courses"
+            trend={t('common.view_all')}
           />
           <StatCard
-            title="Published"
+            title={t('instructor.dashboard.stats.published')}
             value={stats.publishedCourses}
             icon={<CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
             bgColor="bg-emerald-50 dark:bg-emerald-900/30"
             borderColor="border-emerald-100 dark:border-emerald-800"
-            trend="Live courses"
+            trend={t('course.status.published')}
           />
           <StatCard
-            title="Drafts"
+            title={t('instructor.dashboard.stats.drafts')}
             value={stats.draftCourses}
             icon={<FileText className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
             bgColor="bg-amber-50 dark:bg-amber-900/30"
             borderColor="border-amber-100 dark:border-amber-800"
-            trend="In progress"
+            trend={t('course.status.draft')}
           />
           <StatCard
-            title="Total Students"
+            title={t('instructor.dashboard.stats.total_students')}
             value={stats.totalStudents}
             icon={<Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
             bgColor="bg-purple-50 dark:bg-purple-900/30"
             borderColor="border-purple-100 dark:border-purple-800"
-            trend="Enrolled"
+            trend={t('student.dashboard.earned')}
           />
         </div>
 
@@ -527,35 +529,35 @@ const InstructorDashboard = () => {
         {revenueAnalytics && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <RevenueCard
-              title="Total Revenue"
+              title={t('instructor.dashboard.analytics.total_revenue')}
               value={formatCurrency(revenueAnalytics.totalRevenue)}
               icon={<DollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
               bgColor="bg-emerald-50 dark:bg-emerald-900/30"
-              trend={`${revenueAnalytics.paidEnrollments} paid`}
+              trend={`${revenueAnalytics.paidEnrollments} ${t('course.status.completed')}`}
               trendUp={true}
             />
             <RevenueCard
-              title="Pending Revenue"
+              title={t('instructor.dashboard.analytics.pending_revenue')}
               value={formatCurrency(revenueAnalytics.pendingRevenue)}
               icon={<Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
               bgColor="bg-amber-50 dark:bg-amber-900/30"
-              trend={`${revenueAnalytics.pendingEnrollments} pending`}
+              trend={`${revenueAnalytics.pendingEnrollments} ${t('course.status.draft')}`}
               trendUp={false}
             />
             <RevenueCard
-              title="Paid Enrollments"
+              title={t('instructor.dashboard.analytics.paid_enrollments')}
               value={revenueAnalytics.paidEnrollments}
               icon={<CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
               bgColor="bg-blue-50 dark:bg-blue-900/30"
-              trend="Completed"
+              trend={t('course.status.completed')}
               trendUp={true}
             />
             <RevenueCard
-              title="Total Enrollments"
+              title={t('instructor.dashboard.stats.total_students')}
               value={revenueAnalytics.totalEnrollments}
               icon={<Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
               bgColor="bg-purple-50 dark:bg-purple-900/30"
-              trend="All time"
+              trend={t('admin.dashboard.period.last_year')}
               trendUp={true}
             />
           </div>
@@ -568,8 +570,8 @@ const InstructorDashboard = () => {
             <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Monthly Revenue</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Last 6 months</p>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('instructor.dashboard.analytics.monthly_revenue')}</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('admin.dashboard.period.last_90_days')}</p>
                 </div>
                 <TrendingUp className="w-6 h-6 text-emerald-600" />
               </div>
@@ -613,8 +615,8 @@ const InstructorDashboard = () => {
             <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Top Courses by Revenue</h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Best performers</p>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('instructor.dashboard.analytics.top_courses')}</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('admin.dashboard.tools.courses')}</p>
                 </div>
                 <BarChart3 className="w-6 h-6 text-indigo-600" />
               </div>
@@ -655,8 +657,8 @@ const InstructorDashboard = () => {
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 mb-10">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Enrollment Statistics</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Paid vs Pending by course</p>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('instructor.dashboard.analytics.enrollment_stats')}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('admin.dashboard.tools.users')}</p>
               </div>
               <Users className="w-6 h-6 text-purple-600" />
             </div>
@@ -733,7 +735,7 @@ const InstructorDashboard = () => {
             className="flex-1 sm:flex-none bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all font-bold shadow-lg shadow-indigo-200 flex items-center justify-center gap-3 group"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-            Create New Course
+            {t('instructor.dashboard.create_course')}
             <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" />
           </Link>
           <Link
@@ -741,7 +743,7 @@ const InstructorDashboard = () => {
             className="flex-1 sm:flex-none bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-8 py-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all font-bold shadow-sm flex items-center justify-center gap-3 group"
           >
             <Eye className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            View All Courses
+            {t('instructor.dashboard.view_all_courses')}
           </Link>
         </div>
 
@@ -749,15 +751,15 @@ const InstructorDashboard = () => {
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Recent Courses</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage and edit your course content</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('instructor.dashboard.recent_courses')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('instructor.dashboard.manage_edit')}</p>
             </div>
             {courses.length > 5 && (
               <Link
                 to="/instructor/courses"
                 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1"
               >
-                View all
+                {t('common.view_all')}
                 <ChevronRight className="w-4 h-4" />
               </Link>
             )}
@@ -768,14 +770,14 @@ const InstructorDashboard = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full mb-6">
                 <BookOpen className="w-10 h-10 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No courses yet</h3>
-              <p className="text-slate-500 dark:text-slate-400 mb-6">Start creating your first course to share your knowledge</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('instructor.dashboard.no_courses')}</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">{t('instructor.dashboard.start_creating')}</p>
               <Link
                 to="/instructor/courses/create"
                 className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-bold shadow-lg shadow-indigo-200 dark:shadow-none"
               >
                 <Plus className="w-5 h-5" />
-                Create Your First Course
+                {t('instructor.dashboard.create_course')}
               </Link>
             </div>
           ) : (
@@ -828,6 +830,7 @@ const RevenueCard = ({ title, value, icon, bgColor, trend, trendUp }) => (
 );
 
 const CourseRow = ({ course }) => {
+  const { t } = useTranslation();
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -869,12 +872,12 @@ const CourseRow = ({ course }) => {
             {course.status === 'PUBLISHED' ? (
               <>
                 <CheckCircle className="w-3 h-3" />
-                Published
+                {t('course.status.published')}
               </>
             ) : (
               <>
                 <FileText className="w-3 h-3" />
-                Draft
+                {t('course.status.draft')}
               </>
             )}
           </span>
@@ -882,13 +885,13 @@ const CourseRow = ({ course }) => {
           {/* Students Count */}
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
             <Users className="w-3 h-3" />
-            {course._count.enrollments} students
+            {course._count.enrollments} {t('course.info.students')}
           </span>
 
           {/* Sections Count */}
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
             <Layers className="w-3 h-3" />
-            {course._count.sections} sections
+            {course._count.sections} {t('course.info.sections')}
           </span>
         </div>
       </div>
@@ -897,7 +900,7 @@ const CourseRow = ({ course }) => {
       <div className="flex sm:flex-col items-center sm:items-end gap-4 w-full sm:w-auto">
         <div className="text-left sm:text-right flex-1 sm:flex-none">
           <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{formatPrice(course.price)}</p>
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Price</p>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.price')}</p>
         </div>
 
         <div className="flex items-center gap-2">

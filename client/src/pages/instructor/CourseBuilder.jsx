@@ -846,6 +846,7 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import toast from '../../utils/toast';
 import courseService from '../../services/courseService';
 import sectionService from '../../services/sectionService';
@@ -931,6 +932,7 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText 
 };
 
 const CourseBuilder = () => {
+  const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
@@ -956,7 +958,7 @@ const CourseBuilder = () => {
       setSections(sectionsData);
     } catch (error) {
       console.error('Error fetching course data:', error);
-      toast.error('Failed to load course data');
+      toast.error(t('instructor.dashboard.errors.failed_load') || 'Failed to load course data');
     } finally {
       setLoading(false);
     }
@@ -974,23 +976,23 @@ const CourseBuilder = () => {
 
   const handlePublishCourse = async () => {
     if (sections.length === 0) {
-      toast.error('Please add at least one section before publishing');
+      toast.error(t('instructor.course_builder.no_sections_title'));
       return;
     }
 
     const hasLessons = sections.some(s => s.lessons && s.lessons.length > 0);
     if (!hasLessons) {
-      toast.error('Please add at least one lesson before publishing');
+      toast.error(t('instructor.course_builder.no_lessons_toast') || 'Please add at least one lesson before publishing');
       return;
     }
 
     try {
       await courseService.updateCourse(courseId, { status: 'PUBLISHED' });
-      toast.success('Course published successfully! 🎉');
+      toast.success(t('instructor.course_builder.publish_success'));
       navigate('/instructor/courses');
     } catch (error) {
       console.error('Error publishing course:', error);
-      toast.error('Failed to publish course');
+      toast.error(t('instructor.course_builder.publish_failed'));
     }
   };
 
@@ -999,7 +1001,7 @@ const CourseBuilder = () => {
       <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
-          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Loading course builder...</p>
+          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">{t('instructor.course_builder.loading_builder')}</p>
         </div>
       </div>
     );
@@ -1016,7 +1018,7 @@ const CourseBuilder = () => {
             </div>
             <div>
               <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{course?.title}</h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Build your course curriculum</p>
+              <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">{t('instructor.course_builder.subtitle')}</p>
             </div>
           </div>
           <div className="flex gap-3 w-full sm:w-auto">
@@ -1025,14 +1027,14 @@ const CourseBuilder = () => {
               className="flex-1 sm:flex-none bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-3 rounded-2xl hover:from-emerald-700 hover:to-emerald-800 transition-all font-bold shadow-lg shadow-emerald-200 dark:shadow-emerald-900/20 flex items-center justify-center gap-2"
             >
               <Sparkles className="w-5 h-5" />
-              Publish Course
+              {t('instructor.course_builder.publish')}
             </button>
             <button
               onClick={() => navigate('/instructor/courses')}
               className="px-6 py-3 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-2xl border-2 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-bold flex items-center gap-2"
             >
               <Save className="w-5 h-5" />
-              Save & Exit
+              {t('instructor.course_builder.save_exit')}
             </button>
           </div>
         </div>
@@ -1059,7 +1061,7 @@ const CourseBuilder = () => {
                 </span>
                 <span className="inline-flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-indigo-100 dark:border-indigo-800">
                   <BookOpen className="w-4 h-4" />
-                  {sections.length} Sections
+                  {sections.length} {t('course.info.sections')}
                 </span>
               </div>
             </div>
@@ -1072,7 +1074,7 @@ const CourseBuilder = () => {
           className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20 mb-10 flex items-center justify-center gap-3 group"
         >
           <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-          Add New Section
+          {t('instructor.course_builder.add_new_section')}
         </button>
 
         {/* Sections List */}
@@ -1082,8 +1084,8 @@ const CourseBuilder = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full mb-6">
                 <BookOpen className="w-10 h-10 text-slate-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No sections yet</h3>
-              <p className="text-slate-500 dark:text-slate-400 mb-6">Add your first section to start building your course!</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('instructor.course_builder.no_sections_title')}</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">{t('instructor.course_builder.no_sections_desc')}</p>
             </div>
           ) : (
             sections.map((section, index) => (
@@ -1175,11 +1177,11 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
             </button>
             <div className="flex-1">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Section {index + 1}: {section.title}
+                {t('student.course_player.section')} {index + 1}: {section.title}
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
-                {section.lessons?.length || 0} lessons
+                {t('instructor.course_builder.section_count', { count: section.lessons?.length || 0 })}
               </p>
             </div>
           </div>
@@ -1189,7 +1191,7 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
               className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm shadow-indigo-200 dark:shadow-indigo-900/20 flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Add Lesson
+              {t('instructor.course_builder.lesson_title')}
             </button>
             <button
               onClick={() => setShowDeleteConfirm(true)}
@@ -1207,8 +1209,8 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
             {!section.lessons || section.lessons.length === 0 ? (
               <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
                 <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-500 dark:text-slate-400 font-medium">No lessons yet</p>
-                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Click "Add Lesson" to get started</p>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">{t('student.student_dashboard.no_lessons') || 'No lessons yet'}</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('instructor.course_builder.click_add_lesson') || 'Click "Add Lesson" to get started'}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -1232,10 +1234,10 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDeleteSection}
-        title="Delete Section"
-        message="Are you sure you want to delete this section? This will also delete all lessons within it. This action cannot be undone."
-        confirmText="Delete Section"
-        cancelText="Cancel"
+        title={t('instructor.course_builder.delete_section_title')}
+        message={t('instructor.course_builder.delete_section_confirm')}
+        confirmText={t('instructor.my_courses.card.delete')}
+        cancelText={t('instructor.course_builder.cancel')}
         type="danger"
       />
     </>
@@ -1319,19 +1321,19 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
               {lesson.contentUrl && (
                 <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600">
                   <CheckCircle className="w-3 h-3" />
-                  Video uploaded
+                  {t('instructor.course_builder.video_uploaded') || 'Video uploaded'}
                 </span>
               )}
               {lesson.isPreview && (
                 <span className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg text-xs font-bold border border-amber-100 dark:border-amber-800">
                   <Eye className="w-3 h-3" />
-                  Preview
+                  {t('student.course_player.preview_lesson')}
                 </span>
               )}
               {lesson.isFree && (
                 <span className="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-lg text-xs font-bold border border-emerald-100 dark:border-emerald-800">
                   <Gift className="w-3 h-3" />
-                  Free
+                  {t('student.course_player.free_lesson')}
                 </span>
               )}
             </div>
@@ -1350,7 +1352,7 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
               />
               <span className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all text-sm font-bold shadow-sm shadow-emerald-200 dark:shadow-emerald-900/20">
                 <Upload className="w-4 h-4" />
-                {uploading ? `${uploadProgress}%` : 'Upload Video'}
+                {uploading ? `${uploadProgress}%` : t('instructor.course_builder.upload_video')}
               </span>
             </label>
           )}
@@ -1377,10 +1379,10 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={onDelete}
-        title="Delete Lesson"
-        message="Are you sure you want to delete this lesson? This action cannot be undone."
-        confirmText="Delete Lesson"
-        cancelText="Cancel"
+        title={t('instructor.course_builder.delete_lesson_title')}
+        message={t('instructor.course_builder.delete_lesson_confirm')}
+        confirmText={t('instructor.my_courses.card.delete')}
+        cancelText={t('instructor.course_builder.cancel')}
         type="danger"
       />
     </>
@@ -1419,7 +1421,7 @@ const UploadThumbnail = ({ courseId, onUpload }) => {
       />
       <span className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl hover:bg-indigo-700 transition-all text-sm font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20">
         <Upload className="w-4 h-4" />
-        {uploading ? 'Uploading...' : 'Upload Thumbnail'}
+        {uploading ? t('common.loading') : t('instructor.course_builder.upload_thumbnail')}
       </span>
     </label>
   );
@@ -1463,7 +1465,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
             <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl">
               <BookOpen className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Add New Section</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('instructor.course_builder.add_new_module')}</h2>
           </div>
           <button
             onClick={onClose}
@@ -1504,7 +1506,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-all font-bold disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20"
             >
-              {loading ? '...' : 'Create Module'}
+              {loading ? '...' : t('instructor.course_builder.create_module')}
             </button>
             <button
               type="button"
@@ -1598,8 +1600,8 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
               <Plus className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Add Lesson</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Section: {section.title}</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('instructor.course_builder.create_lesson')}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('student.course_player.section')}: {section.title}</p>
             </div>
           </div>
           <button
@@ -1613,7 +1615,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
         <div>
           <div className="mb-4">
             <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">
-              Lesson Title <span className="text-rose-500">*</span>
+              {t('instructor.course_builder.lesson_title')} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -1625,7 +1627,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">Content Type</label>
+            <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('instructor.course_builder.content_type')}</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {['VIDEO', 'TEXT', 'QUIZ', 'DOCUMENT'].map((type) => (
                 <button
@@ -1641,7 +1643,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                     {getContentTypeIcon(type)}
                   </div>
                   <span className={`text-xs font-bold ${formData.contentType === type ? 'text-indigo-900 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400'}`}>
-                    {type}
+                    {t(`instructor.course_builder.types.${type.toLowerCase()}`)}
                   </span>
                 </button>
               ))}
@@ -1652,7 +1654,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
             <div className="mb-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-2xl border border-blue-100 dark:border-blue-900/30">
               <label className="block text-blue-900 dark:text-blue-400 font-bold mb-3 flex items-center gap-2">
                 <Video className="w-5 h-5" />
-                Upload Video
+                {t('instructor.course_builder.upload_video')}
               </label>
               <input
                 type="file"
@@ -1660,18 +1662,18 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 onChange={(e) => setVideoFile(e.target.files[0])}
                 className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
-              <p className="text-xs text-blue-600 dark:text-blue-500 mt-2">Max file size: 500MB</p>
+              <p className="text-xs text-blue-600 dark:text-blue-500 mt-2">{t('instructor.course_builder.max_video_size')}</p>
             </div>
           )}
 
           {formData.contentType === 'TEXT' && (
             <div className="mb-4">
-              <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">Content</label>
+              <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('instructor.course_builder.content') || 'Content'}</label>
               <textarea
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows="8"
-                placeholder="Write your lesson content here..."
+                placeholder={t('instructor.course_builder.text_placeholder')}
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none placeholder:text-slate-400"
               />
             </div>
@@ -1681,7 +1683,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
             <div className="mb-4 bg-amber-50 dark:bg-amber-900/10 p-6 rounded-2xl border border-amber-100 dark:border-amber-900/30">
               <label className="block text-amber-900 dark:text-amber-400 font-bold mb-3 flex items-center gap-2">
                 <File className="w-5 h-5" />
-                Upload Document
+                {t('instructor.course_builder.upload_doc')}
               </label>
               <input
                 type="file"
@@ -1689,7 +1691,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 onChange={(e) => setDocumentFile(e.target.files[0])}
                 className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-white"
               />
-              <p className="text-xs text-amber-600 dark:text-amber-500 mt-2">PDF, Word, or PowerPoint (Max 10MB)</p>
+              <p className="text-xs text-amber-600 dark:text-amber-500 mt-2">{t('instructor.course_builder.max_doc_size')}</p>
             </div>
           )}
 
@@ -1698,11 +1700,11 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
               <div className="flex items-center justify-between">
                 <h3 className="text-purple-900 dark:text-purple-400 font-black flex items-center gap-2 text-lg">
                   <BrainCircuit className="w-6 h-6" />
-                  Quiz Builder
+                  {t('instructor.course_builder.quiz_builder')}
                 </h3>
                 <div className="flex gap-4">
                   <div className="flex flex-col items-end">
-                    <label className="text-[10px] uppercase font-bold text-purple-600 dark:text-purple-500 mb-1">Passing Score (%)</label>
+                    <label className="text-[10px] uppercase font-bold text-purple-600 dark:text-purple-500 mb-1">{t('instructor.course_builder.passing_score')}</label>
                     <input
                       type="number"
                       className="w-20 text-center font-bold bg-white dark:bg-slate-800 border-2 border-purple-200 dark:border-purple-800 rounded-xl p-2 focus:ring-2 focus:ring-purple-500 outline-none dark:text-white"
@@ -1717,7 +1719,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 <div key={qIndex} className="bg-white p-5 rounded-2xl shadow-sm border border-purple-100 space-y-4 relative">
                   <div className="flex justify-between items-start">
                     <span className="bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-bold">
-                      Question #{qIndex + 1}
+                      {t('instructor.course_builder.question')} #{qIndex + 1}
                     </span>
                     {quizQuestions.length > 1 && (
                       <button
@@ -1732,7 +1734,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
 
                   <input
                     type="text"
-                    placeholder="Enter your question here..."
+                    placeholder={t('instructor.course_builder.question_placeholder')}
                     className="w-full border-b-2 border-purple-100 dark:border-purple-800 bg-transparent focus:border-purple-500 outline-none py-3 text-slate-800 dark:text-white font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     value={q.questionText}
                     onChange={(e) => {
@@ -1743,7 +1745,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                   />
 
                   <div className="space-y-2">
-                    <label className="text-xs uppercase font-bold text-slate-600">Options</label>
+                    <label className="text-xs uppercase font-bold text-slate-600">{t('instructor.course_builder.options')}</label>
                     {q.options.map((opt, oIndex) => (
                       <div key={oIndex} className="flex items-center gap-3">
                         <input
@@ -1793,7 +1795,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                       className="text-purple-600 text-sm font-bold mt-2 flex items-center gap-1 hover:text-purple-700 transition-colors"
                     >
                       <Plus className="w-4 h-4" />
-                      Add Option
+                      {t('instructor.course_builder.add_option')}
                     </button>
                   </div>
                 </div>
@@ -1805,7 +1807,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 className="w-full py-4 border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-2xl text-purple-600 dark:text-purple-400 font-bold hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center justify-center gap-2"
               >
                 <Plus className="w-5 h-5" />
-                Add Another Question
+                {t('instructor.course_builder.add_question')}
               </button>
             </div>
           )}
@@ -1813,7 +1815,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
           <div className="mb-4">
             <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2 flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Duration (minutes)
+              {t('instructor.course_builder.duration')}
             </label>
             <input
               type="number"
@@ -1828,7 +1830,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
           <div className="mb-6 border-t border-slate-200 dark:border-slate-800 pt-6">
             <h4 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Eye className="w-5 h-5" />
-              Lesson Access
+              {t('instructor.course_builder.access_control')}
             </h4>
 
             {isCourseFullyFree ? (
@@ -1836,10 +1838,9 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 <div className="flex items-start gap-3">
                   <Gift className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-emerald-900 dark:text-emerald-300">Free Course</p>
+                    <p className="font-bold text-emerald-900 dark:text-emerald-300">{t('student.course_player.free_lesson')}</p>
                     <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-1">
-                      All lessons in this course are automatically free for everyone.
-                      You can still use the "Preview" option to highlight key lessons.
+                      {t('instructor.course_builder.free_course_info')}
                     </p>
                   </div>
                 </div>
@@ -1849,8 +1850,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-800 dark:text-blue-300">
-                    This is a <strong>paid course (${course?.price})</strong>.
-                    You can mark individual lessons as free to give students a preview!
+                    {t('instructor.course_builder.paid_course_info', { price: course?.price })}
                   </p>
                 </div>
               </div>
@@ -1867,10 +1867,10 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                 <div className="flex-1">
                   <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
                     <Eye className="w-4 h-4" />
-                    Mark as Preview
+                    {t('instructor.course_builder.mark_preview')}
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                    Highlight this lesson in the course details page
+                    {t('instructor.course_builder.preview_desc')}
                   </p>
                 </div>
               </label>
@@ -1886,10 +1886,10 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                   <div className="flex-1">
                     <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
                       <Gift className="w-4 h-4" />
-                      Make Lesson Free
+                      {t('instructor.course_builder.mark_free')}
                     </div>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                      Students can access this lesson without purchasing the course
+                      {t('instructor.course_builder.free_desc')}
                     </p>
                   </div>
                 </label>
@@ -1907,12 +1907,12 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Creating...
+                  {t('instructor.course_builder.creating')}
                 </>
               ) : (
                 <>
                   <CheckCircle className="w-5 h-5" />
-                  Create Lesson
+                  {t('instructor.course_builder.create_lesson')}
                 </>
               )}
             </button>

@@ -30,6 +30,12 @@ const enrollmentService = {
   getCourseStats: async (courseId) => {
     const response = await api.get(`/enrollments/course/${courseId}/stats`);
     return response.data.data.stats;
+  },
+
+  // Get enrolled students for a course (Instructor only)
+  getCourseStudents: async (courseId) => {
+    const response = await api.get(`/enrollments/course/${courseId}/students`);
+    return response.data.data.enrollments;
   }
 };
 

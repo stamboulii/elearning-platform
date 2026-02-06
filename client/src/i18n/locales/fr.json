@@ -1,0 +1,299 @@
+{
+  "common": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Déconnexion",
+    "home": "Accueil",
+    "courses": "Cours",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "search": "Rechercher n'importe quoi...",
+    "search_button": "Rechercher",
+    "language": "Langue",
+    "view_all": "Voir tout",
+    "browse_courses": "Parcourir les cours",
+    "my_courses": "Mes cours",
+    "loading": "Chargement...",
+    "status": "Statut",
+    "price": "Prix",
+    "actions": "Actions",
+    "continue": "Continuer",
+    "review": "Réviser",
+    "certificate": "Certificat"
+  },
+  "home": {
+    "hero": {
+      "badge": "Plus de 10 000+ étudiants ont déjà rejoint !",
+      "title_main": "Maîtrisez n'importe quelle compétence",
+      "title_accent": "Sans Limites.",
+      "subtitle": "Rejoignez des milliers d'apprenants et maîtrisez de nouvelles compétences grâce à nos cours animés par des experts. Des certificats professionnels, des projets interactifs et une communauté d'experts vous attendent.",
+      "get_started": "Commencer maintenant",
+      "watch_demo": "Voir la démo"
+    }
+  },
+  "student": {
+    "dashboard": {
+      "welcome": "Bon retour, {{name}} !",
+      "level_scholar": "Érudit de niveau {{level}}",
+      "xp_progress": "Progression XP",
+      "xp_until_level": "{{xp}} XP jusqu'au niveau {{level}}",
+      "stats": {
+        "total_courses": "Total des cours",
+        "in_progress": "En cours",
+        "completed": "Terminés",
+        "avg_progress": "Progression moyenne"
+      },
+      "my_badges": "Mes badges",
+      "earned": "Gagnés",
+      "complete_lessons_badge": "Terminez des leçons pour gagner des badges !",
+      "no_courses": "Vous ne vous êtes pas encore inscrit à des cours",
+      "continue_journey": "Continuez votre parcours d'apprentissage"
+    },
+    "my_courses": {
+      "title": "Mes cours",
+      "subtitle": "Gérez et continuez vos cours inscrits",
+      "search_placeholder": "Rechercher des cours...",
+      "filter_all": "Tous les cours",
+      "filter_in_progress": "En cours",
+      "filter_completed": "Terminés",
+      "no_match": "Aucun cours ne correspond à vos filtres",
+      "review_course": "Réviser le cours",
+      "continue_learning": "Continuer l'apprentissage",
+      "browse_available": "Parcourir les cours disponibles →"
+    },
+    "course_player": {
+      "back_to_course": "Retour au cours",
+      "preview_mode": "Mode aperçu - Uniquement les leçons gratuites accessibles",
+      "enroll_now": "S'inscrire maintenant",
+      "course_content": "Contenu du cours",
+      "section": "Section",
+      "mark_complete": "Marquer comme terminé",
+      "xp_earned": "+50 XP gagnés !",
+      "lesson_completed": "Leçon terminée avec succès",
+      "track_prompt": "Vous devez vous inscrire au cours pour suivre votre progression",
+      "failed_mark": "Échec du marquage de la leçon comme terminée",
+      "course_not_found": "Cours non trouvé",
+      "back_to_courses": "Retour aux cours",
+      "locked_title": "Cette leçon est verrouillée",
+      "locked_desc": "Inscrivez-vous au cours pour accéder à ce contenu",
+      "view_enroll": "Voir le cours et s'inscrire",
+      "quiz_placeholder": "Le contenu du quiz sera affiché ici",
+      "enjoy_prompt": "Vous aimez cette leçon ? Inscrivez-vous au cours pour suivre votre progression et accéder à toutes les leçons !",
+      "select_lesson": "Sélectionnez une leçon pour commencer",
+      "preview_lesson": "Leçon d'aperçu",
+      "free_lesson": "Leçon gratuite"
+    },
+    "course_card": {
+      "progress": "Progression",
+      "last_accessed": "Dernière connexion"
+    }
+  },
+  "instructor": {
+    "dashboard": {
+      "welcome": "Bon retour, {{name}} !",
+      "overview": "Tableau de bord de l'instructeur - Gérez vos cours et vos étudiants",
+      "stats": {
+        "total_courses": "Total des cours",
+        "published": "Publiés",
+        "drafts": "Brouillons",
+        "total_students": "Total des étudiants"
+      },
+      "analytics": {
+        "revenue": "Analyse des revenus",
+        "total_revenue": "Revenu total",
+        "pending_revenue": "Revenu en attente",
+        "paid_enrollments": "Inscriptions payées",
+        "monthly_revenue": "Revenu mensuel",
+        "top_courses": "Meilleurs cours par revenu",
+        "enrollment_stats": "Statistiques d'inscription"
+      },
+      "recent_courses": "Cours récents",
+      "manage_edit": "Gérez et modifiez le contenu de vos cours",
+      "create_course": "Créer un nouveau cours",
+      "view_all_courses": "Voir tous les cours",
+      "no_courses": "Aucun cours pour le moment",
+      "start_creating": "Commencez à créer votre premier cours pour partager vos connaissances"
+    },
+    "my_courses": {
+      "title": "Mes cours",
+      "subtitle": "Gérez et suivez vos cours",
+      "create_new": "Créer un nouveau cours",
+      "loading": "Chargement des cours...",
+      "filters": {
+        "search": "Rechercher des cours...",
+        "status": "Tous les statuts",
+        "sort_newest": "Le plus récent",
+        "sort_oldest": "Le plus ancien",
+        "sort_title": "Titre (A-Z)",
+        "sort_students": "Plus d'étudiants"
+      },
+      "active_filters": "Filtres actifs",
+      "clear_all": "Tout effacer",
+      "empty": {
+        "no_found": "Aucun cours trouvé",
+        "no_yet": "Pas encore de cours",
+        "try_adjusting": "Essayez d'ajuster vos filtres ou votre requête de recherche",
+        "start_creating": "Créez votre premier cours pour commencer",
+        "create_first": "Créez votre premier cours",
+        "clear_filters": "Effacer les filtres"
+      },
+      "card": {
+        "manage_content": "Gérer le contenu",
+        "view_analytics": "Voir les analyses",
+        "view_details": "Voir les détails",
+        "edit_content": "Modifier le contenu",
+        "edit_info": "Modifier les infos",
+        "delete": "Supprimer",
+        "delete_confirm": "Êtes-vous sûr de vouloir supprimer \"{{title}}\" ? Cette action est irréversible.",
+        "delete_success": "Cours supprimé avec succès",
+        "delete_failed": "Échec de la suppression du cours",
+        "completed": "Terminés :",
+        "in_progress": "En cours :",
+        "avg_progress": "Progression moyenne :",
+        "level": "Niveau"
+      }
+    },
+    "course_builder": {
+      "subtitle": "Créez votre programme de cours",
+      "publish": "Publier le cours",
+      "save_exit": "Enregistrer et quitter",
+      "add_section": "Ajouter une section",
+      "no_sections_title": "Pas encore de sections",
+      "no_sections_desc": "Ajoutez votre première section pour commencer à construire votre cours !",
+      "no_lessons_toast": "Veuillez ajouter au moins une leçon avant de publier",
+      "click_add_lesson": "Cliquez sur \"Ajouter une leçon\" pour commencer",
+      "video_success": "Vidéo téléchargée avec succès !",
+      "video_failed": "Échec du téléchargement de la vidéo",
+      "video_uploaded": "Vidéo téléchargée",
+      "upload_thumbnail": "Télécharger la vignette",
+      "add_lesson_to": "Ajouter une leçon à : {{sectionTitle}}",
+      "lesson_title": "Titre de la leçon",
+      "content_type": "Type de contenu",
+      "types": {
+        "video": "Vidéo",
+        "text": "Texte",
+        "quiz": "Quiz",
+        "document": "Document"
+      },
+      "upload_video": "Télécharger une vidéo",
+      "max_video_size": "Taille max : 500Mo",
+      "text_placeholder": "Écrivez le contenu de votre leçon ici...",
+      "upload_doc": "Télécharger un document",
+      "max_doc_size": "PDF, Word ou PowerPoint (Max 10Mo)",
+      "quiz_builder": "Constructeur de Quiz",
+      "passing_score": "Score de réussite (%)",
+      "question": "Question",
+      "remove": "Supprimer",
+      "question_placeholder": "Entrez votre question ici...",
+      "options": "Options",
+      "add_option": "Ajouter une option",
+      "add_question": "Ajouter une autre question",
+      "duration": "Durée (minutes)",
+      "access_control": "Accès à la leçon",
+      "free_course_info": "Toutes les leçons de ce cours sont automatiquement gratuites pour tout le monde. Vous pouvez toujours utiliser l'option \"Aperçu\" pour mettre en avant les leçons clés.",
+      "paid_course_info": "C'est un cours payant (${{price}}). Vous pouvez marquer des leçons individuelles comme gratuites pour donner un aperçu aux étudiants !",
+      "mark_preview": "Marquer comme Aperçu",
+      "preview_desc": "Mettre en avant cette leçon sur la page de détails du cours",
+      "mark_free": "Marquer comme Gratuit",
+      "free_desc": "Permettre à tout le monde d'accéder à cette leçon sans s'inscrire (utile pour le Marketing)",
+      "creating": "Création...",
+      "create_lesson": "Créer la leçon",
+      "cancel": "Annuler",
+      "delete_section_title": "Supprimer la section",
+      "delete_section_confirm": "Êtes-vous sûr de vouloir supprimer cette section ? Cela supprimera également toutes les leçons qu'elle contient. Cette action est irréversible.",
+      "delete_lesson_title": "Supprimer la leçon",
+      "delete_lesson_confirm": "Êtes-vous sûr de vouloir supprimer cette leçon ? Cette action est irréversible.",
+      "publish_success": "Cours publié avec succès ! 🎉",
+      "publish_failed": "Échec de la publication du cours",
+      "section_count": "{{count}} leçons",
+      "add_new_section": "Ajouter une nouvelle section",
+      "manage_content": "Gérer le contenu",
+      "view_analytics": "Voir les analyses",
+      "create_module": "Créer le module",
+      "add_new_module": "Ajouter un nouveau module",
+      "loading_builder": "Chargement de l'éditeur de cours...",
+      "thumbnail_success": "Vignette téléchargée avec succès ! 🖼️"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "overview": "Aperçu de la plateforme",
+      "management": "Tableau de bord de gestion et analyses en temps réel.",
+      "period": {
+        "last_7_days": "7 derniers jours",
+        "last_30_days": "30 derniers jours",
+        "last_90_days": "90 derniers jours",
+        "last_year": "L'année dernière"
+      },
+      "stats": {
+        "total_revenue": "Revenu total",
+        "total_students": "Total des étudiants",
+        "total_enrollments": "Total des inscriptions",
+        "total_courses": "Total des cours"
+      },
+      "attention": {
+        "title": "Attention requise",
+        "pending_courses": "Approbations de cours en attente",
+        "pending_reviews": "Nouveaux avis à vérifier",
+        "unapproved_info": "Les éléments non approuvés ne sont pas visibles pour les étudiants."
+      },
+      "management_system": "Gestion du système",
+      "explore_tools": "Explorer les outils",
+      "tools": {
+        "users": "Utilisateurs",
+        "courses": "Cours",
+        "categories": "Catégories",
+        "payments": "Paiements",
+        "coupons": "Coupons",
+        "settings": "Paramètres"
+      }
+    }
+  },
+  "course": {
+    "status": {
+      "published": "Publié",
+      "draft": "Brouillon",
+      "in_progress": "En cours",
+      "completed": "Terminé"
+    },
+    "info": {
+      "students": "étudiants",
+      "sections": "sections"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous pour continuer votre parcours d'apprentissage",
+      "email_label": "Adresse e-mail",
+      "password_label": "Mot de passe",
+      "remember_me": "Se souvenir de moi",
+      "forgot_password": "Mot de passe oublié ?",
+      "submit": "Se connecter maintenant",
+      "new_user": "Nouveau sur notre plateforme ?",
+      "create_account": "Créer un compte"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Rejoignez notre plateforme d'apprentissage dès aujourd'hui",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "join_as": "Je veux rejoindre en tant que",
+      "student": "🎓 Étudiant",
+      "instructor": "👨‍🏫 Instructeur",
+      "password_min": "Minimum 6 caractères",
+      "confirm_password": "Confirmer le mot de passe",
+      "submit": "Créer un compte maintenant",
+      "already_have_account": "Vous avez déjà un compte ?",
+      "sign_in_here": "Connectez-vous ici"
+    },
+    "errors": {
+      "passwords_mismatch": "Les mots de passe ne correspondent pas",
+      "password_too_short": "Le mot de passe doit comporter au moins 6 caractères",
+      "login_failed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
+      "initializing": "Initialisation...",
+      "processing": "Traitement..."
+    }
+  }
+}

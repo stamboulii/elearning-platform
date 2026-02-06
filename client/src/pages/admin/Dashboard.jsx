@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Users,
   BookOpen,
@@ -35,6 +36,7 @@ import {
 import adminService from '../../services/adminService';
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('30d');
@@ -73,7 +75,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
-          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Loading analytics...</p>
+          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -85,8 +87,8 @@ const AdminDashboard = () => {
         {/* Header Section */}
         <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Platform Overview</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">Management dashboard and real-time analytics.</p>
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t('admin.dashboard.overview')}</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">{t('admin.dashboard.management')}</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -97,10 +99,10 @@ const AdminDashboard = () => {
                 onChange={(e) => setPeriod(e.target.value)}
                 className="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
               >
-                <option value="7d">Last 7 days</option>
-                <option value="30d">Last 30 days</option>
-                <option value="90d">Last 90 days</option>
-                <option value="1y">Last year</option>
+                <option value="7d">{t('admin.dashboard.period.last_7_days')}</option>
+                <option value="30d">{t('admin.dashboard.period.last_30_days')}</option>
+                <option value="90d">{t('admin.dashboard.period.last_90_days')}</option>
+                <option value="1y">{t('admin.dashboard.period.last_year')}</option>
               </select>
             </div>
             <button
@@ -116,7 +118,7 @@ const AdminDashboard = () => {
         {/* Highlight Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
-            title="Total Revenue"
+            title={t('admin.dashboard.stats.total_revenue')}
             value={`$${stats.totalRevenue.toLocaleString()}`}
             trend={`+$${stats.newRevenue.toLocaleString()}`}
             icon={<DollarSign className="w-6 h-6 text-emerald-600" />}
@@ -125,7 +127,7 @@ const AdminDashboard = () => {
             link="/admin/transactions"
           />
           <StatCard
-            title="Total Students"
+            title={t('admin.dashboard.stats.total_students')}
             value={stats.totalUsers.toLocaleString()}
             trend={`+${stats.newUsers} new`}
             icon={<Users className="w-6 h-6 text-blue-600" />}
@@ -134,7 +136,7 @@ const AdminDashboard = () => {
             link="/admin/users"
           />
           <StatCard
-            title="Total Enrollments"
+            title={t('admin.dashboard.stats.total_enrollments')}
             value={stats.totalEnrollments.toLocaleString()}
             trend={`+${stats.newEnrollments} new`}
             icon={<GraduationCap className="w-6 h-6 text-indigo-600" />}
@@ -143,7 +145,7 @@ const AdminDashboard = () => {
             link="/admin/enrollments"
           />
           <StatCard
-            title="Total Courses"
+            title={t('admin.dashboard.stats.total_courses')}
             value={stats.totalCourses.toLocaleString()}
             trend="Active platform"
             icon={<BookOpen className="w-6 h-6 text-purple-600" />}
@@ -211,11 +213,11 @@ const AdminDashboard = () => {
             <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 flex-1">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                Attention Required
+                {t('admin.dashboard.attention.title')}
               </h3>
               <div className="space-y-4">
                 <ActionCard
-                  title="Pending Course Approvals"
+                  title={t('admin.dashboard.attention.pending_courses')}
                   count={stats.pendingCourses}
                   icon={<BookOpen className="w-5 h-5" />}
                   color="text-amber-600"
@@ -223,7 +225,7 @@ const AdminDashboard = () => {
                   link="/admin/courses?status=draft"
                 />
                 <ActionCard
-                  title="New Reviews to Verify"
+                  title={t('admin.dashboard.attention.pending_reviews')}
                   count={stats.pendingReviews}
                   icon={<Star className="w-5 h-5" />}
                   color="text-blue-600"
@@ -231,7 +233,7 @@ const AdminDashboard = () => {
                   link="/admin/reviews?status=pending"
                 />
                 <div className="pt-4 border-t border-slate-50 dark:border-slate-800">
-                  <p className="text-xs text-slate-400 dark:text-slate-500 italic">Unapproved items are not visible to students.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 italic">{t('admin.dashboard.attention.unapproved_info')}</p>
                 </div>
               </div>
             </div>
@@ -247,17 +249,17 @@ const AdminDashboard = () => {
         {/* Navigation & Management Grid */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">System Management</h3>
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded-full">Explore tools</span>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t('admin.dashboard.management_system')}</h3>
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded-full">{t('admin.dashboard.explore_tools')}</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-            <NavTool icon={<Users />} label="Users" link="/admin/users" color="text-blue-600 dark:text-blue-400" bg="bg-blue-50 dark:bg-blue-900/30" />
-            <NavTool icon={<BookOpen />} label="Courses" link="/admin/courses" color="text-purple-600 dark:text-purple-400" bg="bg-purple-50 dark:bg-purple-900/30" />
-            <NavTool icon={<Layers />} label="Categories" link="/admin/categories" color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-50 dark:bg-indigo-900/30" />
-            <NavTool icon={<DollarSign />} label="Payments" link="/admin/transactions" color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-50 dark:bg-emerald-900/30" />
-            <NavTool icon={<Tag />} label="Coupons" link="/admin/coupons" color="text-rose-600 dark:text-rose-400" bg="bg-rose-50 dark:bg-rose-900/30" />
-            <NavTool icon={<Settings />} label="Settings" link="/settings" color="text-slate-600 dark:text-slate-400" bg="bg-slate-50 dark:bg-slate-800" />
+            <NavTool icon={<Users />} label={t('admin.dashboard.tools.users')} link="/admin/users" color="text-blue-600 dark:text-blue-400" bg="bg-blue-50 dark:bg-blue-900/30" />
+            <NavTool icon={<BookOpen />} label={t('admin.dashboard.tools.courses')} link="/admin/courses" color="text-purple-600 dark:text-purple-400" bg="bg-purple-50 dark:bg-purple-900/30" />
+            <NavTool icon={<Layers />} label={t('admin.dashboard.tools.categories')} link="/admin/categories" color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-50 dark:bg-indigo-900/30" />
+            <NavTool icon={<DollarSign />} label={t('admin.dashboard.tools.payments')} link="/admin/transactions" color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-50 dark:bg-emerald-900/30" />
+            <NavTool icon={<Tag />} label={t('admin.dashboard.tools.coupons')} link="/admin/coupons" color="text-rose-600 dark:text-rose-400" bg="bg-rose-50 dark:bg-rose-900/30" />
+            <NavTool icon={<Settings />} label={t('admin.dashboard.tools.settings')} link="/settings" color="text-slate-600 dark:text-slate-400" bg="bg-slate-50 dark:bg-slate-800" />
           </div>
         </div>
       </div>

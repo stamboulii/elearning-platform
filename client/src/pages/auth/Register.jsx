@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 // import { useAuth } from '../../context/AuthContext';
 import { useAuth } from '../../hooks/useAuth';
 const Register = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -31,12 +33,12 @@ const Register = () => {
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.errors.passwords_mismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('auth.errors.password_too_short'));
       return;
     }
 
@@ -73,10 +75,10 @@ const Register = () => {
         <div className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl dark:shadow-none border border-slate-100 dark:border-slate-800 p-10 transition-all duration-300 hover:shadow-indigo-200/20 dark:hover:border-slate-700">
           <div className="text-center mb-8">
             <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-              Create Account
+              {t('auth.register.title')}
             </h2>
             <p className="mt-2 text-slate-500 dark:text-slate-400 font-medium">
-              Join our e-learning platform today
+              {t('auth.register.subtitle')}
             </p>
           </div>
 
@@ -92,7 +94,7 @@ const Register = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  First Name
+                  {t('auth.register.first_name')}
                 </label>
                 <input
                   id="firstName"
@@ -107,7 +109,7 @@ const Register = () => {
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Last Name
+                  {t('auth.register.last_name')}
                 </label>
                 <input
                   id="lastName"
@@ -140,7 +142,7 @@ const Register = () => {
 
             <div>
               <label htmlFor="role" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                I want to join as
+                {t('auth.register.join_as')}
               </label>
               <select
                 id="role"
@@ -149,14 +151,14 @@ const Register = () => {
                 onChange={handleChange}
                 className="block w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white transition-all shadow-inner appearance-none cursor-pointer"
               >
-                <option value="STUDENT">🎓 Student</option>
-                <option value="INSTRUCTOR">👨‍🏫 Instructor</option>
+                <option value="STUDENT">{t('auth.register.student')}</option>
+                <option value="INSTRUCTOR">{t('auth.register.instructor')}</option>
               </select>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Password
+                {t('auth.login.password_label')}
               </label>
               <input
                 id="password"
@@ -168,12 +170,12 @@ const Register = () => {
                 className="block w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white placeholder-slate-400 transition-all shadow-inner"
                 placeholder="••••••••"
               />
-              <p className="mt-2 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest px-1">Minimum 6 characters</p>
+              <p className="mt-2 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest px-1">{t('auth.register.password_min')}</p>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Confirm Password
+                {t('auth.register.confirm_password')}
               </label>
               <input
                 id="confirmPassword"
@@ -198,19 +200,19 @@ const Register = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Processing...
+                  {t('auth.errors.processing')}
                 </span>
               ) : (
-                'Create Account Now'
+                t('auth.register.submit')
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm font-bold text-slate-600 dark:text-slate-400">
-              Already have an account?{' '}
+              {t('auth.register.already_have_account')}{' '}
               <Link to="/login" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition">
-                Sign in here
+                {t('auth.register.sign_in_here')}
               </Link>
             </p>
           </div>

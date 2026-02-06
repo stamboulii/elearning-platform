@@ -294,10 +294,12 @@ import sectionService from '../../services/sectionService';
 import progressService from '../../services/progressService';
 import enrollmentService from '../../services/enrollmentService';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import toast from 'react-hot-toast';
 
 const CoursePlayer = () => {
+  const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
@@ -377,7 +379,7 @@ const CoursePlayer = () => {
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
-      alert('Failed to load course');
+      alert(t('common.error_occurred'));
     } finally {
       setLoading(false);
     }
@@ -424,8 +426,8 @@ const CoursePlayer = () => {
     if (locked) {
       // Show modal with enrollment prompt
       const confirmEnroll = window.confirm(
-        `This lesson is locked. You need to enroll in the course to access it.\n\n` +
-        `Would you like to view the course details and enroll?`
+        `${t('student.course_player.locked_desc')}\n\n` +
+        t('student.course_player.enjoy_prompt')
       );
 
       if (confirmEnroll) {
@@ -467,7 +469,7 @@ const CoursePlayer = () => {
 
   const handleCompleteLesson = async () => {
     if (!currentLesson || !enrollment) {
-      alert('You need to enroll in the course to track progress');
+      alert(t('student.course_player.track_prompt'));
       return;
     }
 
@@ -495,8 +497,8 @@ const CoursePlayer = () => {
         <div className="flex items-center gap-3">
           <span className="text-2xl">✨</span>
           <div>
-            <p className="font-bold">+50 XP Earned!</p>
-            <p className="text-xs text-gray-500">Lesson completed successfully</p>
+            <p className="font-bold">{t('student.course_player.xp_earned')}</p>
+            <p className="text-xs text-gray-500">{t('student.course_player.lesson_completed')}</p>
           </div>
         </div>
       ), { duration: 4000 });
@@ -506,7 +508,7 @@ const CoursePlayer = () => {
 
     } catch (error) {
       console.error('Error completing lesson:', error);
-      alert('Failed to mark lesson as complete');
+      alert(t('student.course_player.failed_mark'));
     }
   };
 
@@ -522,9 +524,9 @@ const CoursePlayer = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="text-center">
-          <p className="text-slate-600 dark:text-slate-400 mb-4">Course not found</p>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">{t('student.course_player.course_not_found')}</p>
           <Link to="/courses" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-            Back to Courses
+            {t('student.course_player.back_to_courses')}
           </Link>
         </div>
       </div>
@@ -543,7 +545,7 @@ const CoursePlayer = () => {
           <div className="flex justify-between items-center flex-wrap gap-4">
             <div className="flex-1 min-w-0">
               <Link to={`/courses/${courseId}`} className="text-indigo-600 dark:text-indigo-400 hover:underline inline-block mb-1">
-                ← Back to Course
+                ← {t('student.course_player.back_to_course')}
               </Link>
               <h1 className="text-xl font-bold truncate text-slate-900 dark:text-white">{course.title}</h1>
 
@@ -551,9 +553,9 @@ const CoursePlayer = () => {
               {!enrollment && !isCourseOwner && !isCourseFullyFree && (
                 <div className="mt-2 inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-400 px-3 py-1 rounded-lg text-sm">
                   <span>👁</span>
-                  <span>Preview mode - Only free lessons accessible</span>
+                  <span>{t('student.course_player.preview_mode')}</span>
                   <Link to={`/courses/${courseId}`} className="underline font-medium">
-                    Enroll now
+                    {t('student.course_player.enroll_now')}
                   </Link>
                 </div>
               )}
@@ -562,7 +564,7 @@ const CoursePlayer = () => {
             {enrollment && (
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-slate-500 dark:text-slate-400">Progress: {overallProgress}%</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">{t('student.course_card.progress')}: {overallProgress}%</div>
                   <div className="w-48 bg-slate-200 dark:bg-slate-800 rounded-full h-2">
                     <div
                       className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full transition-all"
@@ -576,7 +578,7 @@ const CoursePlayer = () => {
                     to={`/student/certificates/${enrollment.certificate.id}`}
                     className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition font-bold text-sm shadow-lg shadow-emerald-100 dark:shadow-none flex items-center gap-2"
                   >
-                    📜 Certificate
+                    📜 {t('common.certificate')}
                   </Link>
                 )}
               </div>
@@ -588,12 +590,12 @@ const CoursePlayer = () => {
       <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* SIDEBAR */}
         <div className="lg:col-span-1 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-          <h2 className="font-bold mb-4 sticky top-0 bg-white dark:bg-slate-900 py-2 border-b dark:border-slate-800 text-slate-800 dark:text-white z-10">Course Content</h2>
+          <h2 className="font-bold mb-4 sticky top-0 bg-white dark:bg-slate-900 py-2 border-b dark:border-slate-800 text-slate-800 dark:text-white z-10">{t('student.course_player.course_content')}</h2>
 
           {sections.map((section, sectionIndex) => (
             <div key={section.id} className="mb-4">
               <h3 className="text-sm font-semibold mb-2 text-slate-500 dark:text-slate-400 px-2">
-                Section {sectionIndex + 1}: {section.title}
+                {t('student.course_player.section')} {sectionIndex + 1}: {section.title}
               </h3>
 
               <div className="space-y-1">
@@ -630,12 +632,12 @@ const CoursePlayer = () => {
                       <div className="flex items-center gap-2 mt-1 ml-6">
                         {lesson.isPreview && (
                           <span className="text-[10px] uppercase tracking-wider bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">
-                            👁 Preview
+                            👁 {t('common.preview')}
                           </span>
                         )}
                         {lesson.isFree && !lesson.isPreview && (
                           <span className="text-[10px] uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
-                            🎁 Free
+                            🎁 {t('instructor.dashboard.analytics.paid_enrollments')}
                           </span>
                         )}
                         {lesson.duration && (
@@ -662,12 +664,12 @@ const CoursePlayer = () => {
                   <div className="flex items-center gap-2 mt-2">
                     {currentLesson.isPreview && (
                       <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 dark:border-indigo-800">
-                        👁 Preview Lesson
+                        👁 {t('student.course_player.preview_lesson')}
                       </span>
                     )}
                     {currentLesson.isFree && !currentLesson.isPreview && (
                       <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 dark:border-emerald-800">
-                        🎁 Free Lesson
+                        🎁 {t('student.course_player.free_lesson')}
                       </span>
                     )}
                   </div>
@@ -677,13 +679,13 @@ const CoursePlayer = () => {
               {isLessonLocked(currentLesson) ? (
                 <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
                   <div className="mb-4 text-6xl">🔒</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">This lesson is locked</h3>
-                  <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">Enroll in the course to access this content</p>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('student.course_player.locked_title')}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">{t('student.course_player.locked_desc')}</p>
                   <Link
                     to={`/courses/${courseId}`}
                     className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
                   >
-                    View Course & Enroll
+                    {t('student.course_player.view_enroll')}
                   </Link>
                 </div>
               ) : (
@@ -715,7 +717,7 @@ const CoursePlayer = () => {
 
                   {currentLesson.contentType === 'QUIZ' && (
                     <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
-                      <p className="text-amber-800 dark:text-amber-400 font-medium">Quiz content will be displayed here</p>
+                      <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
                     </div>
                   )}
 
@@ -731,20 +733,20 @@ const CoursePlayer = () => {
                       ) : (
                         <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
                           <span className="font-bold">✓</span>
-                          <span className="font-black text-sm uppercase tracking-wider">Completed</span>
+                          <span className="font-black text-sm uppercase tracking-wider">{t('course.status.completed')}</span>
                         </div>
                       )}
                     </>
                   ) : (
                     <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
                       <p className="text-indigo-800 dark:text-indigo-400 font-medium">
-                        💡 <strong>Enjoying this lesson?</strong> Enroll in the course to track your progress and access all lessons!
+                        💡 <strong>{t('student.course_player.enjoy_prompt')}</strong>
                       </p>
                       <Link
                         to={`/courses/${courseId}`}
                         className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
                       >
-                        Enroll Now
+                        {t('student.course_player.enroll_now')}
                       </Link>
                     </div>
                   )}
@@ -753,7 +755,7 @@ const CoursePlayer = () => {
             </>
           ) : (
             <div className="text-center py-16">
-              <p className="text-slate-500 dark:text-slate-400 font-medium italic">Select a lesson to begin</p>
+              <p className="text-slate-500 dark:text-slate-400 font-medium italic">{t('student.course_player.select_lesson')}</p>
             </div>
           )}
         </div>

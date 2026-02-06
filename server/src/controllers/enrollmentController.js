@@ -133,3 +133,30 @@ export const getCourseEnrollmentStats = async (req, res) => {
     });
   }
 };
+
+// @desc    Get enrolled students for a course (Instructor only)
+// @route   GET /api/enrollments/course/:courseId/students
+// @access  Private (Instructor/Admin)
+export const getCourseEnrollments = async (req, res) => {
+  try {
+    const enrollments = await enrollmentService.getCourseEnrollments(
+      req.params.courseId,
+      req.user.id
+    );
+
+    res.json({
+      success: true,
+      count: enrollments.length,
+      data: { enrollments }
+    });
+  } catch (error) {
+    console.error('Get course enrollments error:', error);
+    const statusCode = error.message === 'Course not found' ? 404
+      : error.message.includes('Not authorized') ? 403
+      : 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

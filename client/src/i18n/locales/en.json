@@ -1,0 +1,299 @@
+{
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "home": "Home",
+    "courses": "Courses",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "search": "Search for anything...",
+    "search_button": "Search",
+    "language": "Language",
+    "view_all": "View All",
+    "browse_courses": "Browse Courses",
+    "my_courses": "My Courses",
+    "loading": "Loading...",
+    "status": "Status",
+    "price": "Price",
+    "actions": "Actions",
+    "continue": "Continue",
+    "review": "Review",
+    "certificate": "Certificate"
+  },
+  "home": {
+    "hero": {
+      "badge": "Over 10,000+ Students Already Joined!",
+      "title_main": "Master New Skills",
+      "title_accent": "Without Limits.",
+      "subtitle": "Join a community of 10,000+ students. Learn from industry experts and advance your career with our professional-grade curriculum.",
+      "get_started": "Start Learning Now",
+      "watch_demo": "Watch Demo"
+    }
+  },
+  "student": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}!",
+      "level_scholar": "Level {{level}} Scholar",
+      "xp_progress": "XP Progress",
+      "xp_until_level": "{{xp}} XP until level {{level}}",
+      "stats": {
+        "total_courses": "Total Courses",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "avg_progress": "Avg Progress"
+      },
+      "my_badges": "My Badges",
+      "earned": "Earned",
+      "complete_lessons_badge": "Complete lessons to earn badges!",
+      "no_courses": "You haven't enrolled in any courses yet",
+      "continue_journey": "Continue your learning journey"
+    },
+    "my_courses": {
+      "title": "My Courses",
+      "subtitle": "Manage and continue your enrolled courses",
+      "search_placeholder": "Search courses...",
+      "filter_all": "All Courses",
+      "filter_in_progress": "In Progress",
+      "filter_completed": "Completed",
+      "no_match": "No courses match your filters",
+      "review_course": "Review Course",
+      "continue_learning": "Continue Learning",
+      "browse_available": "Browse available courses →"
+    },
+    "course_player": {
+      "back_to_course": "Back to Course",
+      "preview_mode": "Preview mode - Only free lessons accessible",
+      "enroll_now": "Enroll now",
+      "course_content": "Course Content",
+      "section": "Section",
+      "mark_complete": "Mark as Complete",
+      "xp_earned": "+50 XP Earned!",
+      "lesson_completed": "Lesson completed successfully",
+      "track_prompt": "You need to enroll in the course to track progress",
+      "failed_mark": "Failed to mark lesson as complete",
+      "course_not_found": "Course not found",
+      "back_to_courses": "Back to Courses",
+      "locked_title": "This lesson is locked",
+      "locked_desc": "Enroll in the course to access this content",
+      "view_enroll": "View Course & Enroll",
+      "quiz_placeholder": "Quiz content will be displayed here",
+      "enjoy_prompt": "Enjoying this lesson? Enroll in the course to track your progress and access all lessons!",
+      "select_lesson": "Select a lesson to begin",
+      "preview_lesson": "Preview Lesson",
+      "free_lesson": "Free Lesson"
+    },
+    "course_card": {
+      "progress": "Progress",
+      "last_accessed": "Last accessed"
+    }
+  },
+  "instructor": {
+    "dashboard": {
+      "welcome": "Welcome back, {{name}}!",
+      "overview": "Instructor Dashboard - Manage your courses and students",
+      "stats": {
+        "total_courses": "Total Courses",
+        "published": "Published",
+        "drafts": "Drafts",
+        "total_students": "Total Students"
+      },
+      "analytics": {
+        "revenue": "Revenue Analytics",
+        "total_revenue": "Total Revenue",
+        "pending_revenue": "Pending Revenue",
+        "paid_enrollments": "Paid Enrollments",
+        "monthly_revenue": "Monthly Revenue",
+        "top_courses": "Top Courses by Revenue",
+        "enrollment_stats": "Enrollment Statistics"
+      },
+      "recent_courses": "Recent Courses",
+      "manage_edit": "Manage and edit your course content",
+      "create_course": "Create New Course",
+      "view_all_courses": "View All Courses",
+      "no_courses": "No courses yet",
+      "start_creating": "Start creating your first course to share your knowledge"
+    },
+    "my_courses": {
+      "title": "My Courses",
+      "subtitle": "Manage and track your courses",
+      "create_new": "Create New Course",
+      "loading": "Loading courses...",
+      "filters": {
+        "search": "Search courses...",
+        "status": "All Status",
+        "sort_newest": "Newest First",
+        "sort_oldest": "Oldest First",
+        "sort_title": "Title (A-Z)",
+        "sort_students": "Most Students"
+      },
+      "active_filters": "Active Filters",
+      "clear_all": "Clear all",
+      "empty": {
+        "no_found": "No courses found",
+        "no_yet": "No courses yet",
+        "try_adjusting": "Try adjusting your filters or search query",
+        "start_creating": "Create your first course to get started",
+        "create_first": "Create Your First Course",
+        "clear_filters": "Clear Filters"
+      },
+      "card": {
+        "manage_content": "Manage Content",
+        "view_analytics": "View Analytics",
+        "view_details": "View Details",
+        "edit_content": "Edit Content",
+        "edit_info": "Edit Info",
+        "delete": "Delete",
+        "delete_confirm": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
+        "delete_success": "Course deleted successfully",
+        "delete_failed": "Failed to delete course",
+        "completed": "Completed:",
+        "in_progress": "In Progress:",
+        "avg_progress": "Avg Progress:",
+        "level": "Level"
+      }
+    },
+    "course_builder": {
+      "subtitle": "Build your course curriculum",
+      "publish": "Publish Course",
+      "save_exit": "Save & Exit",
+      "add_section": "Add Section",
+      "no_sections_title": "No sections yet",
+      "no_sections_desc": "Add your first section to start building your course!",
+      "no_lessons_toast": "Please add at least one lesson before publishing",
+      "click_add_lesson": "Click \"Add Lesson\" to get started",
+      "video_success": "Video uploaded successfully!",
+      "video_failed": "Failed to upload video",
+      "video_uploaded": "Video uploaded",
+      "upload_thumbnail": "Upload Thumbnail",
+      "add_lesson_to": "Add Lesson to: {{sectionTitle}}",
+      "lesson_title": "Lesson Title",
+      "content_type": "Content Type",
+      "types": {
+        "video": "Video",
+        "text": "Text",
+        "quiz": "Quiz",
+        "document": "Document"
+      },
+      "upload_video": "Upload Video",
+      "max_video_size": "Max file size: 500MB",
+      "text_placeholder": "Write your lesson content here...",
+      "upload_doc": "Upload Document",
+      "max_doc_size": "PDF, Word, or PowerPoint (Max 10MB)",
+      "quiz_builder": "Quiz Builder",
+      "passing_score": "Passing Score (%)",
+      "question": "Question",
+      "remove": "Remove",
+      "question_placeholder": "Enter your question here...",
+      "options": "Options",
+      "add_option": "Add Option",
+      "add_question": "Add Another Question",
+      "duration": "Duration (minutes)",
+      "access_control": "Lesson Access",
+      "free_course_info": "All lessons in this course are automatically free for everyone. You can still use the \"Preview\" option to highlight key lessons.",
+      "paid_course_info": "This is a paid course (${{price}}). You can mark individual lessons as free to give students a preview!",
+      "mark_preview": "Mark as Preview",
+      "preview_desc": "Highlight this lesson in the course details page",
+      "mark_free": "Mark as Free",
+      "free_desc": "Allow everyone to access this lesson without enrolling (useful for Marketing)",
+      "creating": "Creating...",
+      "create_lesson": "Create Lesson",
+      "cancel": "Cancel",
+      "delete_section_title": "Delete Section",
+      "delete_section_confirm": "Are you sure you want to delete this section? This will also delete all lessons within it. This action cannot be undone.",
+      "delete_lesson_title": "Delete Lesson",
+      "delete_lesson_confirm": "Are you sure you want to delete this lesson? This action cannot be undone.",
+      "publish_success": "Course published successfully! 🎉",
+      "publish_failed": "Failed to publish course",
+      "section_count": "{{count}} lessons",
+      "add_new_section": "Add New Section",
+      "manage_content": "Manage Content",
+      "view_analytics": "View Analytics",
+      "create_module": "Create Module",
+      "add_new_module": "Add New Module",
+      "loading_builder": "Loading course builder...",
+      "thumbnail_success": "Thumbnail uploaded successfully! 🖼️"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "overview": "Platform Overview",
+      "management": "Management dashboard and real-time analytics.",
+      "period": {
+        "last_7_days": "Last 7 days",
+        "last_30_days": "Last 30 days",
+        "last_90_days": "Last 90 days",
+        "last_year": "Last year"
+      },
+      "stats": {
+        "total_revenue": "Total Revenue",
+        "total_students": "Total Students",
+        "total_enrollments": "Total Enrollments",
+        "total_courses": "Total Courses"
+      },
+      "attention": {
+        "title": "Attention Required",
+        "pending_courses": "Pending Course Approvals",
+        "pending_reviews": "New Reviews to Verify",
+        "unapproved_info": "Unapproved items are not visible to students."
+      },
+      "management_system": "System Management",
+      "explore_tools": "Explore tools",
+      "tools": {
+        "users": "Users",
+        "courses": "Courses",
+        "categories": "Categories",
+        "payments": "Payments",
+        "coupons": "Coupons",
+        "settings": "Settings"
+      }
+    }
+  },
+  "course": {
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "in_progress": "In Progress",
+      "completed": "Completed"
+    },
+    "info": {
+      "students": "students",
+      "sections": "sections"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue your learning journey",
+      "email_label": "Email Address",
+      "password_label": "Password",
+      "remember_me": "Remember me",
+      "forgot_password": "Forgot password?",
+      "submit": "Sign In Now",
+      "new_user": "New to our platform?",
+      "create_account": "Create Account"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join our e-learning platform today",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "join_as": "I want to join as",
+      "student": "🎓 Student",
+      "instructor": "👨‍🏫 Instructor",
+      "password_min": "Minimum 6 characters",
+      "confirm_password": "Confirm Password",
+      "submit": "Create Account Now",
+      "already_have_account": "Already have an account?",
+      "sign_in_here": "Sign in here"
+    },
+    "errors": {
+      "passwords_mismatch": "Passwords do not match",
+      "password_too_short": "Password must be at least 6 characters long",
+      "login_failed": "Login failed. Please check your credentials.",
+      "initializing": "Initializing...",
+      "processing": "Processing..."
+    }
+  }
+}

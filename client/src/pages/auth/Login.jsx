@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 // import { useAuth } from '../../context/AuthContext';
 import { useAuth } from '../../hooks/useAuth';
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, user, loading } = useAuth();
 
@@ -57,7 +59,7 @@ const Login = () => {
     // ❗ NO NAVIGATION HERE
     // Navigation happens ONLY via useEffect after user state updates
     if (!result.success) {
-      setError(result.message || 'Login failed. Please check your credentials.');
+      setError(result.message || t('auth.errors.login_failed'));
     }
   };
 
@@ -72,10 +74,10 @@ const Login = () => {
               </svg>
             </div>
             <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-              Welcome Back
+              {t('auth.login.title')}
             </h2>
             <p className="mt-2 text-slate-500 dark:text-slate-400 font-medium">
-              Sign in to continue your learning journey
+              {t('auth.login.subtitle')}
             </p>
           </div>
 
@@ -90,7 +92,7 @@ const Login = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Email Address
+                {t('auth.login.email_label')}
               </label>
               <input
                 id="email"
@@ -106,7 +108,7 @@ const Login = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Password
+                {t('auth.login.password_label')}
               </label>
               <input
                 id="password"
@@ -129,13 +131,13 @@ const Login = () => {
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 rounded dark:bg-slate-800"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm font-bold text-slate-600 dark:text-slate-400">
-                  Remember me
+                  {t('auth.login.remember_me')}
                 </label>
               </div>
 
               <div className="text-sm">
                 <a href="#" className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition">
-                  Forgot password?
+                  {t('auth.login.forgot_password')}
                 </a>
               </div>
             </div>
@@ -151,10 +153,10 @@ const Login = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Initializing...
+                  {t('auth.errors.initializing')}
                 </span>
               ) : (
-                'Sign In Now'
+                t('auth.login.submit')
               )}
             </button>
           </form>
@@ -165,7 +167,7 @@ const Login = () => {
                 <div className="w-full border-t border-slate-100 dark:border-slate-800"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-bold">New to our platform?</span>
+                <span className="px-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 font-bold">{t('auth.login.new_user')}</span>
               </div>
             </div>
 
@@ -174,7 +176,7 @@ const Login = () => {
                 to="/register"
                 className="inline-flex items-center px-8 py-3 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-black rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all active:scale-95"
               >
-                Create Account
+                {t('auth.login.create_account')}
               </Link>
             </div>
           </div>
