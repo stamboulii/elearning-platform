@@ -43,11 +43,32 @@ app.use(helmet());
 // app.use('/api', limiter);
 
 // CORS
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
-}));
+// app.use(cors({
+//   origin: process.env.CLIENT_URL || 'http://localhost:5173',
+//   credentials: true
+// }));
+const allowedOrigins = [
+  'https://first-formation.fr',
+  'https://www.first-formation.fr',
+  'http://localhost:5173', // Keep for local development
+  process.env.CLIENT_URL
+].filter(Boolean);
 
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
