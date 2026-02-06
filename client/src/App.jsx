@@ -1,58 +1,3 @@
-// import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-// import { AuthProvider } from './context/AuthContext';
-// import ProtectedRoute from './components/ProtectedRoute';
-// import Login from './pages/auth/Login';
-// import Register from './pages/auth/Register';
-// import Dashboard from './pages/Dashboard';
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <AuthProvider>
-//         <Routes>
-//           {/* Public Routes */}
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/register" element={<Register />} />
-
-//           {/* Protected Routes */}
-//           <Route
-//             path="/dashboard"
-//             element={
-//               <ProtectedRoute>
-//                 <Dashboard />
-//               </ProtectedRoute>
-//             }
-//           />
-
-//           {/* Redirect root to dashboard */}
-//           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-//           {/* 404 */}
-//           <Route
-//             path="*"
-//             element={
-//               <div className="min-h-screen flex items-center justify-center bg-gray-50">
-//                 <div className="text-center">
-//                   <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
-//                   <p className="text-xl text-gray-600 mb-8">Page not found</p>
-//                   <a
-//                     href="/dashboard"
-//                     className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-//                   >
-//                     Go to Dashboard
-//                   </a>
-//                 </div>
-//               </div>
-//             }
-//           />
-//         </Routes>
-//       </AuthProvider>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/layout/Header';
@@ -254,7 +199,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
 
             {/* Common Protected Routes */}
             <Route
