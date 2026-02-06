@@ -47,28 +47,35 @@ app.use(helmet());
 //   origin: process.env.CLIENT_URL || 'http://localhost:5173',
 //   credentials: true
 // }));
+// CORS Configuration
 const allowedOrigins = [
   'https://first-formation.fr',
   'https://www.first-formation.fr',
-  'http://localhost:5173', // Keep for local development
-  process.env.CLIENT_URL
-].filter(Boolean);
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
+    // Allow requests with no origin (mobile apps, Postman, curl)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // Cache preflight requests for 10 minutes
 }));
+
+// Ensure OPTIONS requests are handled
+app.options('*', cors());
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -22,7 +22,7 @@ const options = {
         description: 'Development server'
       },
       {
-        url: 'https://api.elearning.com/api',
+        url: 'https://api.first-formation.fr/api',
         description: 'Production server'
       }
     ],
