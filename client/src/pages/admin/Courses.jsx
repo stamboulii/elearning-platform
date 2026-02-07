@@ -128,22 +128,22 @@ const AdminCourses = () => {
           <StatCard
             title={t('admin.courses.stats.total_courses')}
             value={courses.length}
-            icon={<BookOpen className="w-6 h-6 text-indigo-600" />}
-            bgColor="bg-indigo-50"
+            icon={<BookOpen className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />}
+            bgColor="bg-indigo-50 dark:bg-indigo-900/30"
             borderColor="border-indigo-100 dark:border-indigo-900/30"
           />
           <StatCard
             title={t('admin.courses.stats.published')}
             value={courses.filter(c => c.status === 'PUBLISHED').length}
-            icon={<CheckCircle className="w-6 h-6 text-emerald-600" />}
-            bgColor="bg-emerald-50"
+            icon={<CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
+            bgColor="bg-emerald-50 dark:bg-emerald-900/30"
             borderColor="border-emerald-100 dark:border-emerald-900/30"
           />
           <StatCard
             title={t('admin.courses.stats.draft')}
             value={courses.filter(c => c.status === 'DRAFT').length}
-            icon={<FileText className="w-6 h-6 text-amber-600" />}
-            bgColor="bg-amber-50"
+            icon={<FileText className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
+            bgColor="bg-amber-50 dark:bg-amber-900/30"
             borderColor="border-amber-100 dark:border-amber-900/30"
           />
           <StatCard
@@ -352,15 +352,15 @@ const AdminCourses = () => {
 
 // Stat Card Component
 const StatCard = ({ title, value, icon, bgColor, borderColor }) => (
-  <div className={`bg-white rounded-3xl p-6 border ${borderColor} shadow-sm hover:shadow-md transition-all group`}>
+  <div className={`bg-white dark:bg-slate-800 rounded-3xl p-6 border ${borderColor} shadow-sm hover:shadow-md transition-all group`}>
     <div className="flex items-center justify-between mb-6">
       <div className={`${bgColor} p-3 rounded-2xl group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <TrendingUp className="w-5 h-5 text-slate-300 group-hover:text-slate-600 transition-colors" />
+      <TrendingUp className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors" />
     </div>
-    <h3 className="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">{title}</h3>
-    <p className="text-3xl font-black text-slate-900">{value}</p>
+    <h3 className="text-slate-500 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">{title}</h3>
+    <p className="text-3xl font-black text-slate-900 dark:text-white">{value}</p>
   </div>
 );
 
@@ -372,22 +372,22 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
     switch (status) {
       case 'PUBLISHED':
         return {
-          color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          color: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
           icon: <CheckCircle className="w-3 h-3" />
         };
       case 'DRAFT':
         return {
-          color: 'bg-amber-50 text-amber-700 border-amber-200',
+          color: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
           icon: <FileText className="w-3 h-3" />
         };
       case 'ARCHIVED':
         return {
-          color: 'bg-slate-50 text-slate-700 border-slate-200',
+          color: 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
           icon: <Archive className="w-3 h-3" />
         };
       default:
         return {
-          color: 'bg-slate-50 text-slate-700 border-slate-200',
+          color: 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
           icon: <AlertCircle className="w-3 h-3" />
         };
     }
@@ -396,7 +396,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
   const statusConfig = getStatusConfig(course.status);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-lg hover:border-indigo-100 transition-all group">
+    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:border-indigo-100 dark:hover:border-indigo-800 transition-all group">
       <div className="flex flex-col md:flex-row">
         {/* Thumbnail */}
         <div className="md:w-80 h-56 md:h-auto relative flex-shrink-0">
@@ -415,10 +415,10 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
         {/* Content */}
         <div className="flex-1 p-6 md:p-8">
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               {course.title}
             </h3>
-            <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed mb-4">
+            <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed mb-4">
               {course.shortDescription}
             </p>
 
@@ -427,31 +427,31 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
               <img
                 src={course.instructor?.profilePicture || 'https://via.placeholder.com/32'}
                 alt={course.instructor?.firstName}
-                className="w-10 h-10 rounded-full object-cover border-2 border-slate-200"
+                className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
               />
               <div>
-                <p className="text-sm font-bold text-slate-900">
+                <p className="text-sm font-bold text-slate-900 dark:text-white">
                   {course.instructor?.firstName} {course.instructor?.lastName}
                 </p>
-                <p className="text-xs text-slate-500">{t('admin.courses.card.instructor')}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{t('admin.courses.card.instructor')}</p>
               </div>
             </div>
 
             {/* Stats */}
             <div className="flex items-center gap-6 mb-4 flex-wrap">
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600">
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-400">
                 <Users className="w-4 h-4" />
                 {course._count?.enrollments || 0}
               </span>
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600">
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 dark:text-amber-500">
                 <Star className="w-4 h-4 fill-current" />
                 {course.averageRating?.toFixed(1) || '0.0'} ({course._count?.reviews || 0})
               </span>
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600">
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-400">
                 <Layers className="w-4 h-4" />
                 {course._count?.sections || 0} {t('admin.courses.card.sections')}
               </span>
-              <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600">
+              <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
                 <DollarSign className="w-4 h-4" />
                 {course.price}
               </span>
@@ -459,17 +459,17 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
 
             {/* Category & Level */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold border border-blue-100">
+              <span className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-lg text-xs font-bold border border-blue-100 dark:border-blue-800">
                 {course.category?.name || t('common.none')}
               </span>
-              <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold border border-purple-100">
+              <span className="bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-lg text-xs font-bold border border-purple-100 dark:border-purple-800">
                 {course.level}
               </span>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-100">
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
             <button
               onClick={onViewDetails}
               className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm flex items-center gap-2"
