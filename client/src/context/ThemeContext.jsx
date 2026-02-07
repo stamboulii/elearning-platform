@@ -7,6 +7,11 @@ export const ThemeProvider = ({ children }) => {
         return localStorage.getItem('theme') || 'system';
     });
 
+    // Save theme to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
     useEffect(() => {
         const root = window.document.documentElement;
 
@@ -39,8 +44,6 @@ export const ThemeProvider = ({ children }) => {
         } else {
             applyTheme(theme);
         }
-
-        localStorage.setItem('theme', theme);
     }, [theme]);
 
     // Provide a function to toggle strictly between light and dark for simple toggles

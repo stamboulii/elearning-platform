@@ -73,7 +73,7 @@ const CourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -94,27 +94,27 @@ const CourseDetail = () => {
   ) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-12">
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-slate-900 dark:to-slate-800 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Content */}
             <div className="lg:col-span-2">
               <div className="mb-4">
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                <span className="bg-blue-600 dark:bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
                   {course.category?.name}
                 </span>
               </div>
-              <h1 className="text-4xl font-bold mb-4">{course.title}</h1>
-              <p className="text-xl text-gray-300 mb-6">{course.shortDescription}</p>
+              <h1 className="text-4xl font-bold mb-4 text-white">{course.title}</h1>
+              <p className="text-xl text-gray-300 dark:text-slate-300 mb-6">{course.shortDescription}</p>
 
               {/* Stats */}
               <div className="flex items-center gap-6 mb-6 flex-wrap">
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-400">⭐</span>
                   <span className="font-semibold">{course.averageRating?.toFixed(1) || '0.0'}</span>
-                  <span className="text-gray-300">({course.totalReviews || 0} reviews)</span>
+                  <span className="text-gray-300 dark:text-slate-400">({course.totalReviews || 0} reviews)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span>👥</span>
@@ -138,8 +138,8 @@ const CourseDetail = () => {
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p className="text-sm text-gray-400">Created by</p>
-                  <p className="font-semibold">
+                  <p className="text-sm text-gray-400 dark:text-slate-400">Created by</p>
+                  <p className="font-semibold text-white">
                     {course.instructor?.firstName} {course.instructor?.lastName}
                   </p>
                 </div>
@@ -167,8 +167,8 @@ const CourseDetail = () => {
           {/* Left Content */}
           <div className="lg:col-span-2">
             {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-md mb-6">
-              <div className="border-b">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md mb-6 transition-colors">
+              <div className="border-b dark:border-slate-700">
                 <div className="flex">
                   <TabButton
                     active={activeTab === 'overview'}
@@ -223,7 +223,7 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
   const isInstructor = user?.id === course.instructor?.id;
 
   return (
-    <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl overflow-hidden transition-colors">
       {course.previewVideo ? (
         <video
           controls
@@ -247,16 +247,16 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
               <span className="text-4xl font-bold text-blue-600">
                 ${course.discountPrice}
               </span>
-              <span className="text-xl text-gray-500 line-through ml-3">
+              <span className="text-xl text-gray-500 dark:text-slate-400 line-through ml-3">
                 ${course.price}
               </span>
-              <div className="mt-1 text-sm text-green-600 font-medium">
+              <div className="mt-1 text-sm text-green-600 dark:text-green-400 font-medium">
                 Save ${(course.price - course.discountPrice).toFixed(2)}
               </div>
             </div>
           ) : (
             <span className="text-4xl font-bold text-blue-600">
-              {course.price === 0 ? 'Free' : `$${course.price}`}
+              {course.price === 0 ? 'Free' : `${course.price}`}
             </span>
           )}
         </div>
@@ -264,14 +264,14 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
         {isInstructor ? (
           <button
             onClick={() => window.location.href = `/instructor/courses/${course.id}/builder`}
-            className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
+            className="w-full bg-gray-600 dark:bg-slate-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 dark:hover:bg-slate-700 transition"
           >
             Manage Course
           </button>
         ) : isEnrolled ? (
           <button
             onClick={onGoToCourse}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+            className="w-full bg-green-600 dark:bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 dark:hover:bg-green-700 transition"
           >
             Go to Course
           </button>
@@ -279,18 +279,18 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
           <button
             onClick={onEnroll}
             disabled={enrolling}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+            className="w-full bg-blue-600 dark:bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-indigo-700 transition disabled:opacity-50"
           >
             {enrolling ? 'Enrolling...' : course.price === 0 ? 'Enroll for Free' : 'Buy Now'}
           </button>
         )}
 
-        <p className="text-center text-sm text-gray-500 mt-3">
+        <p className="text-center text-sm text-gray-500 dark:text-slate-400 mt-3">
           30-Day Money-Back Guarantee
         </p>
 
         {/* Quick Info */}
-        <div className="mt-6 pt-6 border-t space-y-3">
+        <div className="mt-6 pt-6 border-t dark:border-slate-700 space-y-3">
           <InfoItem icon="⏱" label="Duration" value={`${course.estimatedDuration || 0} hours`} />
           <InfoItem icon="📊" label="Level" value={course.level} />
           <InfoItem icon="🌍" label="Language" value={course.language === 'en' ? 'English' : course.language} />
@@ -307,8 +307,8 @@ const TabButton = ({ active, onClick, label }) => (
   <button
     onClick={onClick}
     className={`px-6 py-3 font-medium transition ${active
-        ? 'text-blue-600 border-b-2 border-blue-600'
-        : 'text-gray-600 hover:text-gray-800'
+      ? 'text-blue-600 dark:text-indigo-400 border-b-2 border-blue-600 dark:border-indigo-400'
+      : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white'
       }`}
   >
     {label}
@@ -320,8 +320,8 @@ const OverviewTab = ({ course }) => (
   <div className="space-y-6">
     {/* Description */}
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">About this course</h2>
-      <div className="text-gray-700 whitespace-pre-line leading-relaxed">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">About this course</h2>
+      <div className="text-gray-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
         {course.fullDescription || course.shortDescription}
       </div>
     </div>
@@ -329,12 +329,12 @@ const OverviewTab = ({ course }) => (
     {/* What you'll learn */}
     {course.outcomes && course.outcomes.length > 0 && (
       <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">What you'll learn</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">What you'll learn</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {course.outcomes.map((outcome, index) => (
             <div key={index} className="flex items-start gap-3">
-              <span className="text-green-600 mt-1">✓</span>
-              <span className="text-gray-700">{outcome.outcome}</span>
+              <span className="text-green-600 dark:text-green-400 mt-1">✓</span>
+              <span className="text-gray-700 dark:text-slate-300">{outcome.outcome}</span>
             </div>
           ))}
         </div>
@@ -344,11 +344,11 @@ const OverviewTab = ({ course }) => (
     {/* Requirements */}
     {course.requirements && course.requirements.length > 0 && (
       <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Requirements</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Requirements</h2>
         <ul className="space-y-2">
           {course.requirements.map((req, index) => (
-            <li key={index} className="flex items-start gap-3 text-gray-700">
-              <span className="text-gray-400">•</span>
+            <li key={index} className="flex items-start gap-3 text-gray-700 dark:text-slate-300">
+              <span className="text-gray-400 dark:text-slate-500">•</span>
               <span>{req.requirement}</span>
             </li>
           ))}
@@ -371,24 +371,24 @@ const CurriculumTab = ({ sections }) => {
   };
 
   if (!sections || sections.length === 0) {
-    return <p className="text-gray-500">No curriculum available yet.</p>;
+    return <p className="text-gray-500 dark:text-slate-400">No curriculum available yet.</p>;
   }
 
   return (
     <div className="space-y-3">
       {sections.map((section, index) => (
-        <div key={section.id} className="border border-gray-200 rounded-lg overflow-hidden">
+        <div key={section.id} className="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
           <button
             onClick={() => toggleSection(section.id)}
-            className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition"
+            className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-slate-800 transition text-left"
           >
             <div className="flex items-center gap-4 flex-1">
-              <span className="text-gray-600">{expandedSections.includes(section.id) ? '▼' : '▶'}</span>
+              <span className="text-gray-600 dark:text-slate-400">{expandedSections.includes(section.id) ? '▼' : '▶'}</span>
               <div className="text-left">
-                <h3 className="font-semibold text-gray-800">
+                <h3 className="font-semibold text-gray-800 dark:text-white">
                   Section {index + 1}: {section.title}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-slate-400">
                   {section.lessons?.length || 0} lessons
                 </p>
               </div>
@@ -396,29 +396,29 @@ const CurriculumTab = ({ sections }) => {
           </button>
 
           {expandedSections.includes(section.id) && section.lessons && (
-            <div className="border-t bg-gray-50">
+            <div className="border-t bg-gray-50 dark:bg-slate-800/50">
               {section.lessons.map((lesson, lessonIndex) => (
                 <div
                   key={lesson.id}
-                  className="flex items-center justify-between px-4 py-3 border-b last:border-b-0 hover:bg-gray-100"
+                  className="flex items-center justify-between px-4 py-3 border-b dark:border-slate-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-slate-700/50 transition"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-400 text-sm">{lessonIndex + 1}</span>
+                    <span className="text-gray-400 dark:text-slate-500 text-sm">{lessonIndex + 1}</span>
                     <div className="flex items-center gap-2">
                       {lesson.contentType === 'VIDEO' && <span>▶️</span>}
                       {lesson.contentType === 'TEXT' && <span>📄</span>}
                       {lesson.contentType === 'QUIZ' && <span>❓</span>}
-                      <span className="text-gray-700">{lesson.title}</span>
+                      <span className="text-gray-700 dark:text-slate-300">{lesson.title}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {lesson.isPreview && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                      <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
                         Preview
                       </span>
                     )}
                     {lesson.duration && (
-                      <span className="text-sm text-gray-600">{lesson.duration} min</span>
+                      <span className="text-sm text-gray-600 dark:text-slate-400">{lesson.duration} min</span>
                     )}
                   </div>
                 </div>
@@ -436,8 +436,8 @@ const ReviewsTab = ({ reviews, courseId }) => {
   if (!reviews || reviews.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">No reviews yet</p>
-        <p className="text-sm text-gray-400">Be the first to review this course!</p>
+        <p className="text-gray-500 dark:text-slate-400 mb-4">No reviews yet</p>
+        <p className="text-sm text-gray-400 dark:text-slate-500">Be the first to review this course!</p>
       </div>
     );
   }
@@ -453,7 +453,7 @@ const ReviewsTab = ({ reviews, courseId }) => {
 
 // Review Card Component
 const ReviewCard = ({ review }) => (
-  <div className="border-b pb-6 last:border-b-0">
+  <div className="border-b dark:border-slate-700 pb-6 last:border-b-0">
     <div className="flex items-start gap-4">
       <img
         src={review.user?.profilePicture || 'https://via.placeholder.com/50'}
@@ -463,7 +463,7 @@ const ReviewCard = ({ review }) => (
       <div className="flex-1">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h4 className="font-semibold text-gray-800">
+            <h4 className="font-semibold text-gray-800 dark:text-white">
               {review.user?.firstName} {review.user?.lastName}
             </h4>
             <div className="flex items-center gap-2 mt-1">
@@ -472,14 +472,14 @@ const ReviewCard = ({ review }) => (
                   <span key={i}>{i < review.rating ? '★' : '☆'}</span>
                 ))}
               </div>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-slate-400">
                 {new Date(review.createdAt).toLocaleDateString()}
               </span>
             </div>
           </div>
         </div>
         {review.reviewText && (
-          <p className="text-gray-700 mt-2">{review.reviewText}</p>
+          <p className="text-gray-700 dark:text-slate-300 mt-2">{review.reviewText}</p>
         )}
       </div>
     </div>
@@ -488,8 +488,8 @@ const ReviewCard = ({ review }) => (
 
 // Instructor Info Component
 const InstructorInfo = ({ instructor }) => (
-  <div className="bg-white rounded-lg shadow-md p-6">
-    <h2 className="text-2xl font-bold text-gray-800 mb-4">About the Instructor</h2>
+  <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mt-6 transition-colors">
+    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">About the Instructor</h2>
     <div className="flex items-start gap-4">
       <img
         src={instructor?.profilePicture || 'https://via.placeholder.com/80'}
@@ -497,11 +497,11 @@ const InstructorInfo = ({ instructor }) => (
         className="w-20 h-20 rounded-full object-cover"
       />
       <div>
-        <h3 className="text-xl font-semibold text-gray-800">
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
           {instructor?.firstName} {instructor?.lastName}
         </h3>
         {instructor?.bio && (
-          <p className="text-gray-600 mt-2">{instructor.bio}</p>
+          <p className="text-gray-600 dark:text-slate-400 mt-2">{instructor.bio}</p>
         )}
       </div>
     </div>
@@ -510,8 +510,8 @@ const InstructorInfo = ({ instructor }) => (
 
 // Course Features Component
 const CourseFeatures = ({ course, totalLessons, totalDuration }) => (
-  <div className="bg-white rounded-lg shadow-md p-6">
-    <h3 className="font-semibold text-gray-800 mb-4">This course includes:</h3>
+  <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 transition-colors">
+    <h3 className="font-semibold text-gray-800 dark:text-white mb-4">This course includes:</h3>
     <div className="space-y-3">
       <FeatureItem icon="⏱" text={`${Math.floor(totalDuration / 60)}h ${totalDuration % 60}m on-demand video`} />
       <FeatureItem icon="📚" text={`${totalLessons} lessons`} />
@@ -526,16 +526,16 @@ const CourseFeatures = ({ course, totalLessons, totalDuration }) => (
 // Helper Components
 const InfoItem = ({ icon, label, value }) => (
   <div className="flex items-center justify-between text-sm">
-    <span className="text-gray-600 flex items-center gap-2">
+    <span className="text-gray-600 dark:text-slate-400 flex items-center gap-2">
       <span>{icon}</span>
       {label}
     </span>
-    <span className="font-medium text-gray-800">{value}</span>
+    <span className="font-medium text-gray-800 dark:text-white">{value}</span>
   </div>
 );
 
 const FeatureItem = ({ icon, text }) => (
-  <div className="flex items-center gap-3 text-gray-700">
+  <div className="flex items-center gap-3 text-gray-700 dark:text-slate-300">
     <span className="text-xl">{icon}</span>
     <span>{text}</span>
   </div>

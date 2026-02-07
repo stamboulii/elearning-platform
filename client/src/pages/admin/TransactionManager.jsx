@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  DollarSign, Search, Filter, Download, Eye, RefreshCw, 
-  Calendar, CreditCard, CheckCircle, XCircle, Clock, 
+import { useTranslation } from 'react-i18next';
+import {
+  DollarSign, Search, Filter, Download, Eye, RefreshCw,
+  Calendar, CreditCard, CheckCircle, XCircle, Clock,
   AlertCircle, TrendingUp, Users, ShoppingBag, FileText,
   ChevronDown, ChevronUp, X, Check, Copy
 } from 'lucide-react';
@@ -9,6 +10,7 @@ import api from '../../services/api';
 import toast from '../../utils/toast';
 
 const TransactionManager = () => {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -63,7 +65,7 @@ const TransactionManager = () => {
       setTotalPages(response.data.data.pagination.totalPages);
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      toast.error('Failed to load transactions');
+      toast.error(t('admin.transactions.error.load_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -93,43 +95,43 @@ const TransactionManager = () => {
       setShowDetailsModal(true);
     } catch (error) {
       console.error('Error fetching transaction details:', error);
-      toast.error('Failed to load transaction details');
+      toast.error(t('admin.transactions.error.details_failed'));
     }
   };
 
   const handleRefund = async (transactionId) => {
-    if (!window.confirm('Are you sure you want to refund this transaction?')) {
+    if (!window.confirm(t('admin.transactions.confirm.refund'))) {
       return;
     }
 
     try {
       const response = await api.post(`/transactions/${transactionId}/refund`);
       if (response.data.success) {
-        toast.success('Transaction refunded successfully');
+        toast.success(t('admin.transactions.success.refunded'));
         fetchTransactions();
         fetchStats();
       }
     } catch (error) {
       console.error('Error refunding transaction:', error);
-      toast.error(error.response?.data?.message || 'Failed to refund transaction');
+      toast.error(error.response?.data?.message || t('admin.transactions.error.refund_failed'));
     }
   };
 
   const handleApproveOfflinePayment = async (transactionId) => {
-    if (!window.confirm('Are you sure you want to approve this offline payment?')) {
+    if (!window.confirm(t('admin.transactions.confirm.approve'))) {
       return;
     }
 
     try {
       const response = await api.post(`/transactions/${transactionId}/approve`);
       if (response.data.success) {
-        toast.success('Payment approved successfully');
+        toast.success(t('admin.transactions.success.approved'));
         fetchTransactions();
         fetchStats();
       }
     } catch (error) {
       console.error('Error approving payment:', error);
-      toast.error(error.response?.data?.message || 'Failed to approve payment');
+      toast.error(error.response?.data?.message || t('admin.transactions.error.approve_failed'));
     }
   };
 
@@ -142,9 +144,9 @@ const TransactionManager = () => {
         endDate: dateRange.endDate || undefined,
       };
 
-      const response = await api.get('/transactions/export', { 
+      const response = await api.get('/transactions/export', {
         params,
-        responseType: 'blob' 
+        responseType: 'blob'
       });
 
       // Create download link
@@ -156,16 +158,16 @@ const TransactionManager = () => {
       link.click();
       link.remove();
 
-      toast.success('Transactions exported successfully');
+      toast.success(t('admin.transactions.success.exported'));
     } catch (error) {
       console.error('Error exporting transactions:', error);
-      toast.error('Failed to export transactions');
+      toast.error(t('admin.transactions.error.export_failed'));
     }
   };
 
   const handleCopyReference = (reference) => {
     navigator.clipboard.writeText(reference);
-    toast.success('Transaction reference copied!');
+    toast.success(t('admin.transactions.success.copied'));
   };
 
   const formatDate = (dateString) => {
@@ -191,25 +193,25 @@ const TransactionManager = () => {
         bg: 'bg-emerald-100',
         text: 'text-emerald-800',
         icon: CheckCircle,
-        label: 'Completed',
+        label: t('admin.transactions.status.completed'),
       },
       PENDING: {
         bg: 'bg-amber-100',
         text: 'text-amber-800',
         icon: Clock,
-        label: 'Pending',
+        label: t('admin.transactions.status.pending'),
       },
       FAILED: {
         bg: 'bg-rose-100',
         text: 'text-rose-800',
         icon: XCircle,
-        label: 'Failed',
+        label: t('admin.transactions.status.failed'),
       },
       REFUNDED: {
         bg: 'bg-purple-100',
         text: 'text-purple-800',
         icon: RefreshCw,
-        label: 'Refunded',
+        label: t('admin.transactions.status.refunded'),
       },
     };
 
@@ -239,8 +241,8 @@ const TransactionManager = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Transaction Management</h1>
-              <p className="text-slate-600 mt-1">Monitor and manage all payment transactions</p>
+              <h1 className="text-3xl font-bold text-slate-900">{t('admin.transactions.title')}</h1>
+              <p className="text-slate-600 mt-1">{t('admin.transactions.subtitle')}</p>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -248,14 +250,14 @@ const TransactionManager = () => {
                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                Refresh
+                {t('admin.transactions.refresh')}
               </button>
               <button
                 onClick={handleExport}
                 className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
               >
                 <Download className="w-4 h-4" />
-                Export CSV
+                {t('admin.transactions.export_csv')}
               </button>
             </div>
           </div>
@@ -264,7 +266,7 @@ const TransactionManager = () => {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Total Revenue</span>
+                <span className="text-sm font-medium text-slate-600">{t('admin.transactions.stats.total_revenue')}</span>
                 <div className="p-2 bg-emerald-100 rounded-lg">
                   <DollarSign className="w-4 h-4 text-emerald-600" />
                 </div>
@@ -276,7 +278,7 @@ const TransactionManager = () => {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Total Transactions</span>
+                <span className="text-sm font-medium text-slate-600">{t('admin.transactions.stats.total_transactions')}</span>
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <ShoppingBag className="w-4 h-4 text-blue-600" />
                 </div>
@@ -288,7 +290,7 @@ const TransactionManager = () => {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Completed</span>
+                <span className="text-sm font-medium text-slate-600">{t('admin.transactions.stats.completed')}</span>
                 <div className="p-2 bg-emerald-100 rounded-lg">
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
                 </div>
@@ -300,7 +302,7 @@ const TransactionManager = () => {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Pending</span>
+                <span className="text-sm font-medium text-slate-600">{t('admin.transactions.stats.pending')}</span>
                 <div className="p-2 bg-amber-100 rounded-lg">
                   <Clock className="w-4 h-4 text-amber-600" />
                 </div>
@@ -312,7 +314,7 @@ const TransactionManager = () => {
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Failed</span>
+                <span className="text-sm font-medium text-slate-600">{t('admin.transactions.stats.failed')}</span>
                 <div className="p-2 bg-rose-100 rounded-lg">
                   <XCircle className="w-4 h-4 text-rose-600" />
                 </div>
@@ -329,7 +331,7 @@ const TransactionManager = () => {
               {/* Search */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Search
+                  {t('common.search')}
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -337,7 +339,7 @@ const TransactionManager = () => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by reference, user, course..."
+                    placeholder={t('admin.transactions.search_placeholder')}
                     className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                   />
                 </div>
@@ -346,41 +348,41 @@ const TransactionManager = () => {
               {/* Status Filter */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Status
+                  {t('admin.transactions.filters.status')}
                 </label>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                 >
-                  <option value="all">All Status</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="FAILED">Failed</option>
-                  <option value="REFUNDED">Refunded</option>
+                  <option value="all">{t('admin.transactions.filters.all_status')}</option>
+                  <option value="COMPLETED">{t('admin.transactions.status.completed')}</option>
+                  <option value="PENDING">{t('admin.transactions.status.pending')}</option>
+                  <option value="FAILED">{t('admin.transactions.status.failed')}</option>
+                  <option value="REFUNDED">{t('admin.transactions.status.refunded')}</option>
                 </select>
               </div>
 
               {/* Payment Method Filter */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Payment Method
+                  {t('admin.transactions.filters.payment_method')}
                 </label>
                 <select
                   value={filterPaymentMethod}
                   onChange={(e) => setFilterPaymentMethod(e.target.value)}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                 >
-                  <option value="all">All Methods</option>
-                  <option value="card">Card</option>
-                  <option value="offline">Offline</option>
+                  <option value="all">{t('admin.transactions.filters.all_methods')}</option>
+                  <option value="card">{t('admin.transactions.payment_method.card')}</option>
+                  <option value="offline">{t('admin.transactions.payment_method.offline')}</option>
                 </select>
               </div>
 
               {/* Date Range */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Date Range
+                  {t('admin.transactions.filters.date_range')}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -407,7 +409,7 @@ const TransactionManager = () => {
                   className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                 >
                   <X className="w-4 h-4" />
-                  Clear all filters
+                  {t('admin.transactions.filters.clear_all')}
                 </button>
               </div>
             )}
@@ -419,13 +421,13 @@ const TransactionManager = () => {
           {isLoading ? (
             <div className="p-12 text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-slate-500">Loading transactions...</p>
+              <p className="mt-4 text-slate-500">{t('admin.transactions.loading')}</p>
             </div>
           ) : transactions.length === 0 ? (
             <div className="p-12 text-center">
               <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">No transactions found</h3>
-              <p className="text-slate-500">Try adjusting your filters</p>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">{t('admin.transactions.empty.title')}</h3>
+              <p className="text-slate-500">{t('admin.transactions.empty.subtitle')}</p>
             </div>
           ) : (
             <>
@@ -433,21 +435,21 @@ const TransactionManager = () => {
                 <table className="w-full">
                   <thead className="bg-slate-50 border-b border-slate-100">
                     <tr>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Reference</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">User</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Course</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Amount</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Payment Method</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Status</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Date</th>
-                      <th className="text-left p-4 text-sm font-semibold text-slate-700">Actions</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.reference')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.user')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.course')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.amount')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.payment_method')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.status')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.date')}</th>
+                      <th className="text-left p-4 text-sm font-semibold text-slate-700">{t('admin.transactions.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {transactions.map((transaction) => (
                       <>
-                        <tr 
-                          key={transaction.id} 
+                        <tr
+                          key={transaction.id}
                           className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
                         >
                           <td className="p-4">
@@ -458,7 +460,7 @@ const TransactionManager = () => {
                               <button
                                 onClick={() => handleCopyReference(transaction.transactionReference)}
                                 className="p-1 hover:bg-slate-200 rounded transition-colors"
-                                title="Copy reference"
+                                title={t('admin.transactions.actions.copy_reference')}
                               >
                                 <Copy className="w-3 h-3 text-slate-400" />
                               </button>
@@ -495,40 +497,34 @@ const TransactionManager = () => {
                                 {transaction.course?.title}
                               </div>
                               <div className="text-xs text-slate-500">
-                                by {transaction.course?.instructor?.firstName} {transaction.course?.instructor?.lastName}
+                                {t('admin.courses.card.by')} {transaction.course?.instructor?.firstName} {transaction.course?.instructor?.lastName}
                               </div>
                             </div>
                           </td>
                           <td className="p-4">
-                            <div className="font-bold text-slate-900">
-                              {formatCurrency(transaction.amount, transaction.currency)}
-                            </div>
+                            <span className="font-semibold text-slate-900">
+                              {formatCurrency(transaction.amount)}
+                            </span>
                           </td>
                           <td className="p-4">
-                            <div className="flex items-center gap-2">
-                              <CreditCard className="w-4 h-4 text-slate-400" />
-                              <span className="text-sm capitalize">
-                                {transaction.paymentMethod}
-                              </span>
-                            </div>
-                            <div className="text-xs text-slate-500 capitalize">
-                              via {transaction.paymentGateway}
-                            </div>
+                            <span className="text-sm text-slate-600">
+                              {transaction.paymentMethod === 'card' ? t('admin.transactions.payment_method.card') : t('admin.transactions.payment_method.offline')}
+                            </span>
                           </td>
                           <td className="p-4">
                             {getStatusBadge(transaction.status)}
                           </td>
                           <td className="p-4">
-                            <div className="text-sm text-slate-900">
+                            <span className="text-sm text-slate-600">
                               {formatDate(transaction.createdAt)}
-                            </div>
+                            </span>
                           </td>
                           <td className="p-4">
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleViewDetails(transaction)}
                                 className="p-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                title="View Details"
+                                title={t('admin.transactions.actions.view_details')}
                               >
                                 <Eye className="w-4 h-4" />
                               </button>
@@ -536,7 +532,7 @@ const TransactionManager = () => {
                                 <button
                                   onClick={() => handleApproveOfflinePayment(transaction.id)}
                                   className="p-2 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                                  title="Approve Payment"
+                                  title={t('admin.transactions.actions.approve_payment')}
                                 >
                                   <Check className="w-4 h-4" />
                                 </button>
@@ -545,7 +541,7 @@ const TransactionManager = () => {
                                 <button
                                   onClick={() => handleRefund(transaction.id)}
                                   className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                                  title="Refund"
+                                  title={t('admin.transactions.actions.refund')}
                                 >
                                   <RefreshCw className="w-4 h-4" />
                                 </button>
@@ -553,45 +549,25 @@ const TransactionManager = () => {
                             </div>
                           </td>
                         </tr>
-
-                        {/* Expanded Row Details */}
                         {expandedRow === transaction.id && (
-                          <tr className="bg-slate-50">
-                            <td colSpan="8" className="p-6">
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                          <tr key={`${transaction.id}-details`}>
+                            <td colSpan="8" className="p-4 bg-slate-50">
+                              <div className="grid grid-cols-4 gap-4 text-sm">
                                 <div>
-                                  <div className="text-xs font-medium text-slate-500 mb-1">
-                                    Full Reference
-                                  </div>
-                                  <div className="text-sm font-mono text-slate-900">
-                                    {transaction.transactionReference}
-                                  </div>
+                                  <span className="text-slate-500">Transaction ID:</span>
+                                  <span className="ml-2 font-mono text-slate-900">{transaction.id}</span>
                                 </div>
                                 <div>
-                                  <div className="text-xs font-medium text-slate-500 mb-1">
-                                    Created At
-                                  </div>
-                                  <div className="text-sm text-slate-900">
-                                    {formatDate(transaction.createdAt)}
-                                  </div>
+                                  <span className="text-slate-500">Coupon Used:</span>
+                                  <span className="ml-2 text-slate-900">{transaction.couponCode || '-'}</span>
                                 </div>
-                                {transaction.completedAt && (
-                                  <div>
-                                    <div className="text-xs font-medium text-slate-500 mb-1">
-                                      Completed At
-                                    </div>
-                                    <div className="text-sm text-slate-900">
-                                      {formatDate(transaction.completedAt)}
-                                    </div>
-                                  </div>
-                                )}
                                 <div>
-                                  <div className="text-xs font-medium text-slate-500 mb-1">
-                                    Transaction ID
-                                  </div>
-                                  <div className="text-sm font-mono text-slate-900">
-                                    {transaction.id.substring(0, 8)}...
-                                  </div>
+                                  <span className="text-slate-500">Original Amount:</span>
+                                  <span className="ml-2 text-slate-900">{formatCurrency(transaction.originalAmount || transaction.amount)}</span>
+                                </div>
+                                <div>
+                                  <span className="text-slate-500">Discount:</span>
+                                  <span className="ml-2 text-slate-900">{transaction.discountAmount ? formatCurrency(transaction.discountAmount) : '-'}</span>
                                 </div>
                               </div>
                             </td>
@@ -605,24 +581,24 @@ const TransactionManager = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between p-4 border-t border-slate-100">
-                  <div className="text-sm text-slate-600">
+                <div className="flex items-center justify-between p-6 bg-slate-50/50 border-t border-slate-100">
+                  <div className="text-sm font-medium text-slate-500">
                     Page {currentPage} of {totalPages}
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      Previous
+                      {t('common.previous')}
                     </button>
                     <button
                       onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      Next
+                      {t('common.next')}
                     </button>
                   </div>
                 </div>
@@ -634,191 +610,94 @@ const TransactionManager = () => {
 
       {/* Transaction Details Modal */}
       {showDetailsModal && selectedTransaction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl my-8">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-slate-900">Transaction Details</h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
-                >
-                  <X className="w-5 h-5 text-slate-500" />
-                </button>
-              </div>
+        <TransactionDetailsModal
+          transaction={selectedTransaction}
+          onClose={() => setShowDetailsModal(false)}
+          formatCurrency={formatCurrency}
+          getStatusBadge={getStatusBadge}
+        />
+      )}
+    </div>
+  );
+};
 
-              <div className="space-y-6">
-                {/* Status Header */}
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    {getStatusBadge(selectedTransaction.status)}
-                    <span className="text-2xl font-bold text-slate-900">
-                      {formatCurrency(selectedTransaction.amount, selectedTransaction.currency)}
-                    </span>
-                  </div>
-                </div>
+// Transaction Details Modal Component
+const TransactionDetailsModal = ({ transaction, onClose, formatCurrency, getStatusBadge }) => {
+  const { t } = useTranslation();
 
-                {/* Transaction Info */}
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-500 mb-1">
-                      Transaction Reference
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <div className="font-mono text-sm text-slate-900 bg-slate-50 px-3 py-2 rounded-lg flex-1">
-                        {selectedTransaction.transactionReference}
-                      </div>
-                      <button
-                        onClick={() => handleCopyReference(selectedTransaction.transactionReference)}
-                        className="p-2 hover:bg-slate-100 rounded-lg"
-                      >
-                        <Copy className="w-4 h-4 text-slate-400" />
-                      </button>
-                    </div>
-                  </div>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-slate-100">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-900">{t('admin.transactions.actions.view_details')}</h2>
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+              <X className="w-5 h-5 text-slate-500" />
+            </button>
+          </div>
+        </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-500 mb-1">
-                      Payment Method
-                    </label>
-                    <div className="text-sm text-slate-900 bg-slate-50 px-3 py-2 rounded-lg capitalize">
-                      {selectedTransaction.paymentMethod} via {selectedTransaction.paymentGateway}
-                    </div>
-                  </div>
+        <div className="p-6 space-y-6">
+          {/* Status and Amount */}
+          <div className="flex items-center justify-between">
+            <div>
+              {getStatusBadge(transaction.status)}
+            </div>
+            <div className="text-2xl font-bold text-slate-900">
+              {formatCurrency(transaction.amount)}
+            </div>
+          </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-500 mb-1">
-                      Created At
-                    </label>
-                    <div className="text-sm text-slate-900 bg-slate-50 px-3 py-2 rounded-lg">
-                      {formatDate(selectedTransaction.createdAt)}
-                    </div>
-                  </div>
+          {/* Details Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-50 rounded-xl p-4">
+              <span className="text-sm text-slate-500">{t('admin.transactions.table.reference')}</span>
+              <p className="font-mono text-slate-900 break-all">{transaction.transactionReference}</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <span className="text-sm text-slate-500">{t('admin.transactions.table.payment_method')}</span>
+              <p className="text-slate-900">{transaction.paymentMethod === 'card' ? t('admin.transactions.payment_method.card') : t('admin.transactions.payment_method.offline')}</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <span className="text-sm text-slate-500">{t('admin.transactions.table.date')}</span>
+              <p className="text-slate-900">{new Date(transaction.createdAt).toLocaleString()}</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <span className="text-sm text-slate-500">Coupon</span>
+              <p className="text-slate-900">{transaction.couponCode || '-'}</p>
+            </div>
+          </div>
 
-                  {selectedTransaction.completedAt && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-500 mb-1">
-                        Completed At
-                      </label>
-                      <div className="text-sm text-slate-900 bg-slate-50 px-3 py-2 rounded-lg">
-                        {formatDate(selectedTransaction.completedAt)}
-                      </div>
-                    </div>
-                  )}
-                </div>
+          {/* User Details */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">{t('admin.transactions.table.user')}</h3>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <p className="font-medium text-slate-900">{transaction.user?.firstName} {transaction.user?.lastName}</p>
+              <p className="text-sm text-slate-500">{transaction.user?.email}</p>
+            </div>
+          </div>
 
-                {/* User Info */}
-                <div className="border-t border-slate-200 pt-6">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Customer Information</h3>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-500 mb-1">
-                        Name
-                      </label>
-                      <div className="text-sm text-slate-900">
-                        {selectedTransaction.user?.firstName} {selectedTransaction.user?.lastName}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-500 mb-1">
-                        Email
-                      </label>
-                      <div className="text-sm text-slate-900">
-                        {selectedTransaction.user?.email}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Course Info */}
-                <div className="border-t border-slate-200 pt-6">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Course Information</h3>
-                  <div className="bg-slate-50 rounded-xl p-4">
-                    <div className="flex gap-4">
-                      {selectedTransaction.course?.thumbnailImage && (
-                        <img
-                          src={selectedTransaction.course.thumbnailImage}
-                          alt={selectedTransaction.course.title}
-                          className="w-24 h-16 object-cover rounded-lg"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900 mb-1">
-                          {selectedTransaction.course?.title}
-                        </h4>
-                        <p className="text-sm text-slate-600">
-                          by {selectedTransaction.course?.instructor?.firstName} {selectedTransaction.course?.instructor?.lastName}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Enrollment Info */}
-                {selectedTransaction.enrollment && (
-                  <div className="border-t border-slate-200 pt-6">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Enrollment Status</h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-500 mb-1">
-                          Payment Status
-                        </label>
-                        <div className="text-sm">
-                          {selectedTransaction.enrollment.isPaid ? (
-                            <span className="text-emerald-600 font-semibold">Paid</span>
-                          ) : (
-                            <span className="text-amber-600 font-semibold">Unpaid</span>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-500 mb-1">
-                          Progress
-                        </label>
-                        <div className="text-sm text-slate-900">
-                          {selectedTransaction.enrollment.progressPercentage}% Complete
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex gap-3 pt-6 border-t border-slate-200">
-                  {selectedTransaction.status === 'PENDING' && selectedTransaction.paymentMethod === 'offline' && (
-                    <button
-                      onClick={() => {
-                        handleApproveOfflinePayment(selectedTransaction.id);
-                        setShowDetailsModal(false);
-                      }}
-                      className="flex-1 px-4 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors"
-                    >
-                      Approve Payment
-                    </button>
-                  )}
-                  {selectedTransaction.status === 'COMPLETED' && (
-                    <button
-                      onClick={() => {
-                        handleRefund(selectedTransaction.id);
-                        setShowDetailsModal(false);
-                      }}
-                      className="flex-1 px-4 py-2.5 bg-rose-600 text-white font-semibold rounded-xl hover:bg-rose-700 transition-colors"
-                    >
-                      Process Refund
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShowDetailsModal(false)}
-                    className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+          {/* Course Details */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">{t('admin.transactions.table.course')}</h3>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <p className="font-medium text-slate-900">{transaction.course?.title}</p>
+              <p className="text-sm text-slate-500">
+                {t('admin.courses.card.by')} {transaction.course?.instructor?.firstName} {transaction.course?.instructor?.lastName}
+              </p>
             </div>
           </div>
         </div>
-      )}
+
+        <div className="p-6 border-t border-slate-100 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
+          >
+            {t('common.close')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -108,7 +108,7 @@ const AdminDashboard = () => {
             <button
               onClick={fetchDashboardData}
               className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-              title="Refresh Data"
+              title={t('admin.dashboard.refresh_tooltip')}
             >
               <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400" />
             </button>
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
           <StatCard
             title={t('admin.dashboard.stats.total_courses')}
             value={stats.totalCourses.toLocaleString()}
-            trend="Active platform"
+            trend={t('admin.dashboard.active_platform')}
             icon={<BookOpen className="w-6 h-6 text-purple-600" />}
             bgColor="bg-purple-50"
             borderColor="border-purple-100"
@@ -161,8 +161,8 @@ const AdminDashboard = () => {
           <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Revenue Performance</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Monthly revenue trends for the last 6 months</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t('admin.dashboard.revenue_chart.title')}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{t('admin.dashboard.revenue_chart.subtitle')}</p>
               </div>
               <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />

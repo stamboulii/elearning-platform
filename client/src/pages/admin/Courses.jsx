@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
 import categoryService from '../../services/categoryService';
 import {
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 
 const AdminCourses = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -73,15 +75,15 @@ const AdminCourses = () => {
   }, [fetchCourses]);
 
   const handleApproveCourse = async (courseId) => {
-    if (!confirm('Are you sure you want to approve this course?')) return;
+    if (!confirm(t('admin.courses.confirm.approve'))) return;
 
     try {
       await adminService.approveCourse(courseId);
-      alert('Course approved successfully');
+      alert(t('admin.courses.success.approved'));
       fetchCourses();
     } catch (error) {
       console.error('Error approving course:', error);
-      alert('Failed to approve course');
+      alert(t('admin.courses.error.approve_failed'));
     }
   };
 
@@ -91,32 +93,32 @@ const AdminCourses = () => {
   };
 
   const handleDeleteCourse = async (courseId) => {
-    if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
+    if (!confirm(t('admin.courses.confirm.delete'))) return;
 
     try {
       await adminService.deleteUser(courseId);
-      alert('Course deleted successfully');
+      alert(t('admin.courses.success.deleted'));
       fetchCourses();
     } catch (error) {
       console.error('Error deleting course:', error);
-      alert('Failed to delete course');
+      alert(t('admin.courses.error.delete_failed'));
     }
   };
 
   const hasActiveFilters = filters.search || filters.status || filters.category;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-8">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg shadow-indigo-200">
+            <div className="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Course Management</h1>
-              <p className="text-slate-500 mt-1 font-medium">Manage all platform courses and approvals</p>
+              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t('admin.courses.title')}</h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">{t('admin.courses.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -124,47 +126,47 @@ const AdminCourses = () => {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
-            title="Total Courses"
+            title={t('admin.courses.stats.total_courses')}
             value={courses.length}
             icon={<BookOpen className="w-6 h-6 text-indigo-600" />}
             bgColor="bg-indigo-50"
-            borderColor="border-indigo-100"
+            borderColor="border-indigo-100 dark:border-indigo-900/30"
           />
           <StatCard
-            title="Published"
+            title={t('admin.courses.stats.published')}
             value={courses.filter(c => c.status === 'PUBLISHED').length}
             icon={<CheckCircle className="w-6 h-6 text-emerald-600" />}
             bgColor="bg-emerald-50"
-            borderColor="border-emerald-100"
+            borderColor="border-emerald-100 dark:border-emerald-900/30"
           />
           <StatCard
-            title="Draft"
+            title={t('admin.courses.stats.draft')}
             value={courses.filter(c => c.status === 'DRAFT').length}
             icon={<FileText className="w-6 h-6 text-amber-600" />}
             bgColor="bg-amber-50"
-            borderColor="border-amber-100"
+            borderColor="border-amber-100 dark:border-amber-900/30"
           />
           <StatCard
-            title="Archived"
+            title={t('admin.courses.stats.archived')}
             value={courses.filter(c => c.status === 'ARCHIVED').length}
             icon={<Archive className="w-6 h-6 text-slate-600" />}
-            bgColor="bg-slate-50"
-            borderColor="border-slate-100"
+            bgColor="bg-slate-50 dark:bg-slate-800"
+            borderColor="border-slate-100 dark:border-slate-700"
           />
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-10">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-8 mb-10 transition-colors">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder={t('admin.courses.search_placeholder')}
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
               />
             </div>
 
@@ -174,12 +176,12 @@ const AdminCourses = () => {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
               >
-                <option value="">All Status</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="DRAFT">Draft</option>
-                <option value="ARCHIVED">Archived</option>
+                <option value="">{t('admin.courses.filters.all_status')}</option>
+                <option value="PUBLISHED">{t('course.status.published')}</option>
+                <option value="DRAFT">{t('course.status.draft')}</option>
+                <option value="ARCHIVED">{t('course.status.archived')}</option>
               </select>
             </div>
 
@@ -189,9 +191,9 @@ const AdminCourses = () => {
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({ ...filters, category: e.target.value, page: 1 })}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all appearance-none cursor-pointer"
               >
-                <option value="">All Categories</option>
+                <option value="">{t('admin.courses.filters.all_categories')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -203,35 +205,34 @@ const AdminCourses = () => {
             {/* Clear Filters */}
             <button
               onClick={() => setFilters({ search: '', status: '', category: '', instructor: '', page: 1, limit: 20 })}
-              className={`px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                hasActiveFilters
-                  ? 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100'
-                  : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
-              }`}
+              className={`px-4 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${hasActiveFilters
+                ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/50'
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-600 cursor-not-allowed'
+                }`}
               disabled={!hasActiveFilters}
             >
               <RotateCcw className="w-4 h-4" />
-              Clear Filters
+              {t('admin.courses.filters.clear_filters')}
             </button>
           </div>
 
           {/* Active Filters Display */}
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Filters:</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('admin.courses.filters.active_filters')}</span>
               {filters.search && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-100">
-                  Search: "{filters.search}"
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-bold border border-indigo-100 dark:border-indigo-800">
+                  {t('admin.courses.filters.search')}: "{filters.search}"
                 </span>
               )}
               {filters.status && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-bold border border-purple-100">
-                  Status: {filters.status}
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold border border-purple-100 dark:border-purple-800">
+                  {t('admin.courses.filters.status')}: {filters.status}
                 </span>
               )}
               {filters.category && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold border border-blue-100">
-                  Category: {categories.find(c => c.id === filters.category)?.name}
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-bold border border-blue-100 dark:border-blue-800">
+                  {t('admin.courses.filters.category')}: {categories.find(c => c.id === filters.category)?.name}
                 </span>
               )}
             </div>
@@ -243,23 +244,23 @@ const AdminCourses = () => {
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-              <p className="mt-4 text-slate-500 font-medium">Loading courses...</p>
+              <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">{t('admin.courses.loading')}</p>
             </div>
           </div>
         ) : courses.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-16 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 rounded-full mb-6">
-              <BookOpen className="w-10 h-10 text-slate-400" />
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-16 text-center transition-colors">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-full mb-6">
+              <BookOpen className="w-10 h-10 text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No courses found</h3>
-            <p className="text-slate-500 mb-6">Try adjusting your filters or search query</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('admin.courses.empty.title')}</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">{t('admin.courses.empty.subtitle')}</p>
             {hasActiveFilters && (
               <button
                 onClick={() => setFilters({ search: '', status: '', category: '', instructor: '', page: 1, limit: 20 })}
-                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-bold shadow-lg shadow-indigo-200"
+                className="inline-flex items-center gap-2 bg-indigo-600 dark:bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors font-bold shadow-lg shadow-indigo-200 dark:shadow-none"
               >
                 <RotateCcw className="w-4 h-4" />
-                Clear Filters
+                {t('admin.courses.filters.clear_filters')}
               </button>
             )}
           </div>
@@ -284,9 +285,9 @@ const AdminCourses = () => {
                 <button
                   onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
                   disabled={filters.page === 1}
-                  className="p-2.5 border border-slate-200 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                  className="p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5 text-slate-600" />
+                  <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
 
                 <div className="flex gap-2">
@@ -306,11 +307,10 @@ const AdminCourses = () => {
                       <button
                         key={pageNumber}
                         onClick={() => setFilters({ ...filters, page: pageNumber })}
-                        className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${
-                          filters.page === pageNumber
-                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200'
-                            : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-                        }`}
+                        className={`w-10 h-10 rounded-xl font-bold text-sm transition-all ${filters.page === pageNumber
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                          : 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          }`}
                       >
                         {pageNumber}
                       </button>
@@ -321,9 +321,9 @@ const AdminCourses = () => {
                 <button
                   onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
                   disabled={filters.page === totalPages}
-                  className="p-2.5 border border-slate-200 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                  className="p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
-                  <ChevronRight className="w-5 h-5 text-slate-600" />
+                  <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </div>
             )}
@@ -366,6 +366,8 @@ const StatCard = ({ title, value, icon, bgColor, borderColor }) => (
 
 // Course Card Component
 const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) => {
+  const { t } = useTranslation();
+
   const getStatusConfig = (status) => {
     switch (status) {
       case 'PUBLISHED':
@@ -431,7 +433,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
                 <p className="text-sm font-bold text-slate-900">
                   {course.instructor?.firstName} {course.instructor?.lastName}
                 </p>
-                <p className="text-xs text-slate-500">Instructor</p>
+                <p className="text-xs text-slate-500">{t('admin.courses.card.instructor')}</p>
               </div>
             </div>
 
@@ -447,7 +449,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
               </span>
               <span className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600">
                 <Layers className="w-4 h-4" />
-                {course._count?.sections || 0} sections
+                {course._count?.sections || 0} {t('admin.courses.card.sections')}
               </span>
               <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600">
                 <DollarSign className="w-4 h-4" />
@@ -458,7 +460,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
             {/* Category & Level */}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold border border-blue-100">
-                {course.category?.name || 'Uncategorized'}
+                {course.category?.name || t('common.none')}
               </span>
               <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold border border-purple-100">
                 {course.level}
@@ -473,7 +475,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
               className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm flex items-center gap-2"
             >
               <Eye className="w-4 h-4" />
-              View Details
+              {t('admin.courses.card.view_details')}
             </button>
 
             {course.status === 'DRAFT' && (
@@ -482,7 +484,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
                 className="px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-bold text-sm shadow-sm flex items-center gap-2"
               >
                 <CheckCircle className="w-4 h-4" />
-                Approve
+                {t('admin.courses.card.approve')}
               </button>
             )}
 
@@ -492,7 +494,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
                 className="px-4 py-2.5 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-all font-bold text-sm shadow-sm flex items-center gap-2"
               >
                 <Archive className="w-4 h-4" />
-                Archive
+                {t('admin.courses.card.archive')}
               </button>
             )}
 
@@ -501,7 +503,7 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
               className="px-4 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-all font-bold text-sm shadow-sm flex items-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
-              Delete
+              {t('admin.courses.card.delete')}
             </button>
           </div>
         </div>
@@ -512,103 +514,79 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
 
 // Reject Course Modal
 const RejectCourseModal = ({ course, onClose, onSuccess }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleReject = async () => {
     if (!reason.trim()) {
-      alert('Please provide a reason for rejection');
+      alert(t('admin.courses.error.reason_required'));
       return;
     }
 
     try {
       setLoading(true);
-      await adminService.rejectCourse(course.id, reason);
-      alert('Course rejected successfully');
+      await adminService.rejectCourse(course.id, { reason });
+      alert(t('admin.courses.success.rejected'));
       onSuccess();
     } catch (error) {
       console.error('Error rejecting course:', error);
-      alert('Failed to reject course');
+      alert(t('admin.courses.error.reject_failed'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in slide-in-from-bottom-4 duration-300">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-rose-50 rounded-2xl">
-              <XCircle className="w-6 h-6 text-rose-600" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900">Reject Course</h2>
-              <p className="text-sm text-slate-500 mt-1">This action will archive the course</p>
-            </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full">
+        <div className="p-6 border-b border-slate-100">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-900">{t('admin.courses.modal.reject_title')}</h2>
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
+              <X className="w-5 h-5 text-slate-500" />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
-          >
-            <X className="w-5 h-5 text-slate-400" />
-          </button>
+          <p className="text-sm text-slate-500 mt-1">{t('admin.courses.modal.reject_subtitle')}</p>
         </div>
 
-        {/* Course Info */}
-        <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
-          <p className="text-sm text-slate-600 mb-1">You are about to reject:</p>
-          <p className="font-bold text-slate-900">{course.title}</p>
-        </div>
+        <div className="p-6">
+          <div className="bg-slate-50 rounded-xl p-4 mb-4">
+            <p className="text-sm font-medium text-slate-700">{t('admin.courses.modal.reject_info')}</p>
+            <p className="text-lg font-bold text-slate-900 mt-1">{course.title}</p>
+          </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-slate-900 mb-2">
-              Reason for rejection <span className="text-rose-500">*</span>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              {t('admin.courses.modal.reason_label')} <span className="text-rose-500">{t('admin.courses.modal.reason_required')}</span>
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              rows="4"
-              placeholder="Please explain why this course is being rejected..."
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all resize-none placeholder:text-slate-400"
-              required
+              placeholder={t('admin.courses.modal.reason_placeholder')}
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all resize-none"
+              rows={4}
             />
-            <p className="text-xs text-slate-500 mt-2">The instructor will receive this feedback</p>
           </div>
 
-          {/* Actions */}
+          <p className="text-xs text-slate-500 mb-6">{t('admin.courses.modal.reason_note')}</p>
+
           <div className="flex gap-3">
             <button
-              type="submit"
+              onClick={handleReject}
               disabled={loading}
-              className="flex-1 bg-rose-600 text-white py-3 rounded-xl hover:bg-rose-700 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-rose-200 flex items-center justify-center gap-2"
+              className="flex-1 bg-rose-600 text-white py-2.5 rounded-xl hover:bg-rose-700 transition font-bold disabled:opacity-50"
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Rejecting...
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5" />
-                  Reject Course
-                </>
-              )}
+              {loading ? t('admin.courses.modal.rejecting') : t('admin.courses.modal.reject_button')}
             </button>
             <button
-              type="button"
               onClick={onClose}
-              className="px-6 py-3 border-2 border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-all font-bold"
+              className="px-6 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition font-bold"
             >
-              Cancel
+              {t('admin.courses.modal.cancel')}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

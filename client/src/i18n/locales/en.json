@@ -20,7 +20,45 @@
     "actions": "Actions",
     "continue": "Continue",
     "review": "Review",
-    "certificate": "Certificate"
+    "certificate": "Certificate",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save_changes": "Save Changes",
+    "clear_filters": "Clear Filters",
+    "refresh": "Refresh",
+    "previous": "Previous",
+    "next": "Next",
+    "search_placeholder": "Search...",
+    "no_results": "No results found",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "new": "New",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "back": "Back",
+    "close_all": "Close All",
+    "expand_all": "Expand All",
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
+    "all": "All",
+    "none": "None",
+    "optional": "Optional",
+    "required": "Required",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "join": "Join",
+    "leave": "Leave"
   },
   "home": {
     "hero": {
@@ -87,6 +125,43 @@
     "course_card": {
       "progress": "Progress",
       "last_accessed": "Last accessed"
+    },
+    "course_detail": {
+      "loading": "Loading course details...",
+      "go_to_course": "Go to Course",
+      "go_to_cart": "Go to Cart",
+      "enroll_now": "Enroll Now",
+      "buy_now": "Buy Now",
+      "enroll_free": "Enroll Free",
+      "try_preview": "Try Preview",
+      "courses": "Courses",
+      "reviews": "reviews",
+      "students": "students",
+      "updated": "Updated",
+      "created_by": "Created by",
+      "course_preview": "Course Preview",
+      "what_you_learn": "What you'll learn",
+      "course_content": "Course Content",
+      "sections": "sections",
+      "lessons": "lessons",
+      "overview": "Overview",
+      "description": "Description",
+      "curriculum_preparing": "Curriculum is being prepared...",
+      "preview": "Preview",
+      "free": "Free",
+      "min": "min",
+      "stars": "stars",
+      "instructor": "Instructor",
+      "rating": "Rating",
+      "instructor_bio": "Expert instructor with years of industry experience. Passionate about teaching and helping students achieve their career goals.",
+      "guarantee": "30-Day Guarantee",
+      "guarantee_text": "Not satisfied? Get a full refund within 30 days of purchase. No questions asked.",
+      "course_includes": "This course includes:",
+      "mobile_tv_access": "Access on Mobile & TV",
+      "lifetime_access": "Full Lifetime Access",
+      "certificate": "Professional Certificate",
+      "resources": "Downloadable Resources",
+      "course_rating": "Course Rating"
     }
   },
   "instructor": {
@@ -247,6 +322,433 @@
         "payments": "Payments",
         "coupons": "Coupons",
         "settings": "Settings"
+      },
+      "revenue_chart": {
+        "title": "Revenue Performance",
+        "subtitle": "Monthly revenue trends for the last 6 months"
+      },
+      "refresh_tooltip": "Refresh Data",
+      "active_platform": "Active platform",
+      "quick_stats": {
+        "conversion": "Conversion",
+        "avg_order": "Avg. Order"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Manage all platform users",
+      "search_placeholder": "Search users...",
+      "filters": {
+        "all_roles": "All Roles",
+        "student": "Student",
+        "instructor": "Instructor",
+        "admin": "Admin",
+        "all_status": "All Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "clear_filters": "Clear Filters"
+      },
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "toggle_status": "Toggle Status",
+        "activate": "Activate",
+        "deactivate": "Deactivate"
+      },
+      "confirm": {
+        "toggle_status": "Are you sure you want to toggle this user's status?",
+        "delete": "Are you sure you want to delete this user? This action cannot be undone."
+      },
+      "success": {
+        "status_updated": "User status updated successfully",
+        "deleted": "User deleted successfully",
+        "updated": "User updated successfully"
+      },
+      "error": {
+        "status_update_failed": "Failed to update user status",
+        "delete_failed": "Failed to delete user",
+        "update_failed": "Failed to update user"
+      },
+      "modal": {
+        "edit_user": "Edit User",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "role": "Role",
+        "active": "Active",
+        "saving": "Saving...",
+        "save_changes": "Save Changes"
+      }
+    },
+    "courses": {
+      "title": "Course Management",
+      "subtitle": "Manage all platform courses and approvals",
+      "search_placeholder": "Search courses...",
+      "stats": {
+        "total_courses": "Total Courses",
+        "published": "Published",
+        "draft": "Draft",
+        "archived": "Archived"
+      },
+      "filters": {
+        "all_status": "All Status",
+        "all_categories": "All Categories",
+        "clear_filters": "Clear Filters",
+        "active_filters": "Active Filters:",
+        "search": "Search",
+        "status": "Status",
+        "category": "Category"
+      },
+      "loading": "Loading courses...",
+      "empty": {
+        "title": "No courses found",
+        "subtitle": "Try adjusting your filters or search query",
+        "no_yet": "No courses yet",
+        "create_first": "Create your first course"
+      },
+      "card": {
+        "instructor": "Instructor",
+        "sections": "sections",
+        "view_details": "View Details",
+        "approve": "Approve",
+        "archive": "Archive",
+        "delete": "Delete",
+        "by": "by",
+        "students": "students",
+        "rating": "rating"
+      },
+      "modal": {
+        "reject_title": "Reject Course",
+        "reject_subtitle": "This action will archive the course",
+        "reject_info": "You are about to reject:",
+        "reason_label": "Reason for rejection",
+        "reason_required": "*",
+        "reason_placeholder": "Please explain why this course is being rejected...",
+        "reason_note": "The instructor will receive this feedback",
+        "rejecting": "Rejecting...",
+        "reject_button": "Reject Course",
+        "cancel": "Cancel"
+      },
+      "confirm": {
+        "approve": "Are you sure you want to approve this course?",
+        "archive": "Are you sure you want to archive this course?",
+        "delete": "Are you sure you want to delete this course? This action cannot be undone."
+      },
+      "success": {
+        "approved": "Course approved successfully",
+        "rejected": "Course rejected successfully",
+        "deleted": "Course deleted successfully",
+        "archived": "Course archived successfully"
+      },
+      "error": {
+        "approve_failed": "Failed to approve course",
+        "reject_failed": "Failed to reject course",
+        "delete_failed": "Failed to delete course",
+        "archive_failed": "Failed to archive course",
+        "reason_required": "Please provide a reason for rejection"
+      }
+    },
+    "categories": {
+      "title": "Category Management",
+      "subtitle": "Organize your course categories",
+      "add_category": "+ Add Category",
+      "stats": {
+        "total_categories": "Total Categories",
+        "parent_categories": "Parent Categories",
+        "subcategories": "Subcategories"
+      },
+      "table": {
+        "category": "Category",
+        "slug": "Slug",
+        "courses": "Courses",
+        "order": "Order",
+        "actions": "Actions"
+      },
+      "empty": {
+        "no_categories": "No categories yet",
+        "create_first": "Create your first category",
+        "create_category": "Create Category"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "modal": {
+        "create_category": "Create Category",
+        "edit_category": "Edit Category",
+        "name": "Name",
+        "slug": "Slug",
+        "description": "Description",
+        "icon": "Icon (emoji)",
+        "picture": "Picture",
+        "picture_upload": "Click to upload a picture",
+        "optional": "(optional)",
+        "parent": "Parent Category",
+        "no_parent": "No Parent",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "save": "Save"
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete this category?"
+      },
+      "success": {
+        "created": "Category created successfully",
+        "updated": "Category updated successfully",
+        "deleted": "Category deleted successfully"
+      },
+      "error": {
+        "create_failed": "Failed to create category",
+        "update_failed": "Failed to update category",
+        "delete_failed": "Failed to delete category",
+        "name_required": "Name is required",
+        "slug_required": "Slug is required"
+      }
+    },
+    "enrollments": {
+      "title": "Enrollment Management",
+      "subtitle": "Monitor student access and course progress across the platform",
+      "search_placeholder": "Search by student name, email, or course title...",
+      "filters": {
+        "all_status": "All Status",
+        "completion_status": "Completion Status",
+        "in_progress": "In Progress",
+        "completed": "Completed"
+      },
+      "table": {
+        "student": "Student",
+        "course": "Course",
+        "progress": "Progress",
+        "status": "Status",
+        "enrolled_date": "Enrolled Date",
+        "actions": "Actions",
+        "progress_label": "PROGRESS"
+      },
+      "actions": {
+        "revoke": "Revoke Enrollment"
+      },
+      "confirm": {
+        "revoke": "Are you sure you want to revoke this enrollment? This will remove the student's access to the course."
+      },
+      "success": {
+        "revoked": "Enrollment revoked successfully"
+      },
+      "error": {
+        "revoke_failed": "Failed to revoke enrollment",
+        "load_failed": "Failed to load enrollments"
+      },
+      "loading": "Loading enrollments...",
+      "empty": {
+        "title": "No enrollments found",
+        "subtitle": "Try adjusting your search or filters"
+      },
+      "pagination": {
+        "showing": "Showing Page {{current}} of {{total}}"
+      }
+    },
+    "coupons": {
+      "title": "Coupon Management",
+      "subtitle": "Create and manage discount coupons",
+      "create_coupon": "Create Coupon",
+      "search_placeholder": "Search coupons...",
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "loading": "Loading coupons...",
+      "empty": {
+        "title": "No coupons found",
+        "subtitle": "Create your first coupon to get started"
+      },
+      "table": {
+        "code": "Code",
+        "discount": "Discount",
+        "valid_period": "Valid Period",
+        "applicable_to": "Applicable To",
+        "usage": "Usage",
+        "status": "Status",
+        "actions": "Actions",
+        "times_used": "times used",
+        "all_courses": "All courses",
+        "courses": "course(s)"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "modal": {
+        "create_new": "Create New Coupon",
+        "edit": "Edit Coupon",
+        "coupon_code": "Coupon Code",
+        "discount_type": "Discount Type",
+        "percentage": "Percentage",
+        "fixed_amount": "Fixed Amount",
+        "discount_value": "Discount Value",
+        "valid_from": "Valid From",
+        "valid_until": "Valid Until",
+        "usage_limit": "Usage Limit",
+        "optional": "(optional)",
+        "active": "Active",
+        "applicable_courses": "Applicable Courses",
+        "selected_courses": "Selected Courses",
+        "clear_all": "Clear All",
+        "search_courses": "Search courses...",
+        "loading_courses": "Loading courses...",
+        "no_courses_found": "No courses found",
+        "cancel": "Cancel",
+        "create": "Create Coupon",
+        "update": "Update Coupon"
+      },
+      "actions": {
+        "copy_code": "Copy code",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete this coupon?"
+      },
+      "success": {
+        "created": "Coupon created successfully",
+        "updated": "Coupon updated successfully",
+        "deleted": "Coupon deleted successfully",
+        "copied": "Coupon code copied to clipboard!"
+      },
+      "error": {
+        "create_failed": "Failed to create coupon",
+        "update_failed": "Failed to update coupon",
+        "delete_failed": "Failed to delete coupon"
+      }
+    },
+    "transactions": {
+      "title": "Transaction Management",
+      "subtitle": "Monitor and manage all payment transactions",
+      "refresh": "Refresh",
+      "export_csv": "Export CSV",
+      "search_placeholder": "Search by reference, user, course...",
+      "filters": {
+        "all_status": "All Status",
+        "status": "Status",
+        "all_methods": "All Methods",
+        "payment_method": "Payment Method",
+        "date_range": "Date Range",
+        "clear_all": "Clear all filters"
+      },
+      "stats": {
+        "total_revenue": "Total Revenue",
+        "total_transactions": "Total Transactions",
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+      "status": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      },
+      "payment_method": {
+        "card": "Card",
+        "offline": "Offline"
+      },
+      "table": {
+        "reference": "Reference",
+        "user": "User",
+        "course": "Course",
+        "amount": "Amount",
+        "payment_method": "Payment Method",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view_details": "View Details",
+        "copy_reference": "Copy reference",
+        "refund": "Refund",
+        "approve_payment": "Approve Payment"
+      },
+      "confirm": {
+        "refund": "Are you sure you want to refund this transaction?",
+        "approve": "Are you sure you want to approve this offline payment?"
+      },
+      "success": {
+        "exported": "Transactions exported successfully",
+        "refunded": "Transaction refunded successfully",
+        "approved": "Payment approved successfully",
+        "copied": "Transaction reference copied!"
+      },
+      "error": {
+        "load_failed": "Failed to load transactions",
+        "export_failed": "Failed to export transactions",
+        "refund_failed": "Failed to refund transaction",
+        "approve_failed": "Failed to approve payment",
+        "details_failed": "Failed to load transaction details"
+      },
+      "loading": "Loading transactions...",
+      "empty": {
+        "title": "No transactions found",
+        "subtitle": "Try adjusting your filters"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your account preferences and security",
+      "security": {
+        "title": "Security",
+        "change_password": "Change Password",
+        "subtitle": "Update your password to keep your account secure",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm_password": "Confirm New Password",
+        "placeholder_current": "Enter current password",
+        "placeholder_new": "Enter new password",
+        "placeholder_confirm": "Confirm new password",
+        "requirements": {
+          "title": "Password must contain:",
+          "chars_8": "At least 8 characters",
+          "uppercase": "One uppercase letter",
+          "lowercase": "One lowercase letter",
+          "number": "One number"
+        },
+        "update_password": "Update Password"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "display_mode": "Display Mode",
+        "subtitle": "Choose how the interface looks",
+        "light_mode": {
+          "label": "Light Mode",
+          "description": "Clean and bright interface"
+        },
+        "dark_mode": {
+          "label": "Dark Mode",
+          "description": "Easy on the eyes at night"
+        },
+        "system_default": {
+          "label": "System Default",
+          "description": "Follows your device settings"
+        },
+        "preview": {
+          "title": "Preview",
+          "description": "This is how your interface will appear with the selected theme."
+        },
+        "apply_theme": "Apply Theme"
+      },
+      "success": {
+        "password_updated": "Password updated successfully!",
+        "theme_updated": "Theme updated to {{theme}} mode"
+      },
+      "error": {
+        "password_mismatch": "New password and confirmation do not match",
+        "current_wrong": "Current password is incorrect!",
+        "update_failed": "Something went wrong. Please try again."
       }
     }
   },
@@ -255,7 +757,9 @@
       "published": "Published",
       "draft": "Draft",
       "in_progress": "In Progress",
-      "completed": "Completed"
+      "completed": "Completed",
+      "archived": "Archived",
+      "pending": "Pending"
     },
     "info": {
       "students": "students",

@@ -20,7 +20,45 @@
     "actions": "Actions",
     "continue": "Continuer",
     "review": "Réviser",
-    "certificate": "Certificat"
+    "certificate": "Certificat",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "save_changes": "Enregistrer les modifications",
+    "clear_filters": "Effacer les filtres",
+    "refresh": "Actualiser",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "search_placeholder": "Rechercher...",
+    "no_results": "Aucun résultat trouvé",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "copy": "Copier",
+    "copied": "Copié!",
+    "new": "Nouveau",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "submit": "Soumettre",
+    "back": "Retour",
+    "close_all": "Tout fermer",
+    "expand_all": "Tout développer",
+    "select_all": "Tout sélectionner",
+    "deselect_all": "Tout désélectionner",
+    "all": "Tous",
+    "none": "Aucun",
+    "optional": "Facultatif",
+    "required": "Obligatoire",
+    "success": "Succès",
+    "error": "Erreur",
+    "warning": "Avertissement",
+    "info": "Information",
+    "join": "Rejoindre",
+    "leave": "Quitter"
   },
   "home": {
     "hero": {
@@ -87,6 +125,43 @@
     "course_card": {
       "progress": "Progression",
       "last_accessed": "Dernière connexion"
+    },
+    "course_detail": {
+      "loading": "Chargement des détails du cours...",
+      "go_to_course": "Accéder au cours",
+      "go_to_cart": "Aller au panier",
+      "enroll_now": "S'inscrire",
+      "buy_now": "Acheter",
+      "enroll_free": "Inscription gratuite",
+      "try_preview": "Essayer l'aperçu",
+      "courses": "Cours",
+      "reviews": "avis",
+      "students": "étudiants",
+      "updated": "Mis à jour",
+      "created_by": "Créé par",
+      "course_preview": "Aperçu du cours",
+      "what_you_learn": "Ce que vous apprendrez",
+      "course_content": "Contenu du cours",
+      "sections": "sections",
+      "lessons": "leçons",
+      "overview": "Aperçu",
+      "description": "Description",
+      "curriculum_preparing": "Le curriculum est en préparation...",
+      "preview": "Aperçu",
+      "free": "Gratuit",
+      "min": "min",
+      "stars": "étoiles",
+      "instructor": "Instructeur",
+      "rating": "Note",
+      "instructor_bio": "Instructeur expert avec des années d'expérience industrielle. Passionné par l'enseignement et l'aide aux étudiants pour atteindre leurs objectifs de carrière.",
+      "guarantee": "Garantie 30 jours",
+      "guarantee_text": "Non satisfait ? Obtenez un remboursement complet dans les 30 jours suivant l'achat. Sans questions.",
+      "course_includes": "Ce cours inclut :",
+      "mobile_tv_access": "Accès sur Mobile & TV",
+      "lifetime_access": "Accès à vie",
+      "certificate": "Certificat professionnel",
+      "resources": "Ressources téléchargeables",
+      "course_rating": "Note du cours"
     }
   },
   "instructor": {
@@ -247,6 +322,433 @@
         "payments": "Paiements",
         "coupons": "Coupons",
         "settings": "Paramètres"
+      },
+      "revenue_chart": {
+        "title": "Performance des revenus",
+        "subtitle": "Tendances des revenus mensuels au cours des 6 derniers mois"
+      },
+      "refresh_tooltip": "Actualiser les données",
+      "active_platform": "Plateforme active",
+      "quick_stats": {
+        "conversion": "Conversion",
+        "avg_order": "Commande moy."
+      }
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "subtitle": "Gérer tous les utilisateurs de la plateforme",
+      "search_placeholder": "Rechercher des utilisateurs...",
+      "filters": {
+        "all_roles": "Tous les rôles",
+        "student": "Étudiant",
+        "instructor": "Instructeur",
+        "admin": "Administrateur",
+        "all_status": "Tous les statuts",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "clear_filters": "Effacer les filtres"
+      },
+      "table": {
+        "name": "Nom",
+        "email": "E-mail",
+        "role": "Rôle",
+        "status": "Statut",
+        "joined": "Inscrit le",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "toggle_status": "Basculer le statut",
+        "activate": "Activer",
+        "deactivate": "Désactiver"
+      },
+      "confirm": {
+        "toggle_status": "Êtes-vous sûr de vouloir basculer le statut de cet utilisateur ?",
+        "delete": "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+      },
+      "success": {
+        "status_updated": "Statut de l'utilisateur mis à jour avec succès",
+        "deleted": "Utilisateur supprimé avec succès",
+        "updated": "Utilisateur mis à jour avec succès"
+      },
+      "error": {
+        "status_update_failed": "Échec de la mise à jour du statut de l'utilisateur",
+        "delete_failed": "Échec de la suppression de l'utilisateur",
+        "update_failed": "Échec de la mise à jour de l'utilisateur"
+      },
+      "modal": {
+        "edit_user": "Modifier l'utilisateur",
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "role": "Rôle",
+        "active": "Actif",
+        "saving": "Enregistrement...",
+        "save_changes": "Enregistrer les modifications"
+      }
+    },
+    "courses": {
+      "title": "Gestion des cours",
+      "subtitle": "Gérer tous les cours de la plateforme et les approbations",
+      "search_placeholder": "Rechercher des cours...",
+      "stats": {
+        "total_courses": "Total des cours",
+        "published": "Publiés",
+        "draft": "Brouillons",
+        "archived": "Archivés"
+      },
+      "filters": {
+        "all_status": "Tous les statuts",
+        "all_categories": "Toutes les catégories",
+        "clear_filters": "Effacer les filtres",
+        "active_filters": "Filtres actifs :",
+        "search": "Rechercher",
+        "status": "Statut",
+        "category": "Catégorie"
+      },
+      "loading": "Chargement des cours...",
+      "empty": {
+        "title": "Aucun cours trouvé",
+        "subtitle": "Essayez d'ajuster vos filtres ou votre recherche",
+        "no_yet": "Pas encore de cours",
+        "create_first": "Créez votre premier cours"
+      },
+      "card": {
+        "instructor": "Instructeur",
+        "sections": "sections",
+        "view_details": "Voir les détails",
+        "approve": "Approuver",
+        "archive": "Archiver",
+        "delete": "Supprimer",
+        "by": "par",
+        "students": "étudiants",
+        "rating": "note"
+      },
+      "modal": {
+        "reject_title": "Rejeter le cours",
+        "reject_subtitle": "Cette action archivera le cours",
+        "reject_info": "Vous êtes sur le point de rejeter :",
+        "reason_label": "Raison du rejet",
+        "reason_required": "*",
+        "reason_placeholder": "Veuillez expliquer pourquoi ce cours est rejeté...",
+        "reason_note": "L'instructeur recevra ce retour",
+        "rejecting": "Rejet en cours...",
+        "reject_button": "Rejeter le cours",
+        "cancel": "Annuler"
+      },
+      "confirm": {
+        "approve": "Êtes-vous sûr de vouloir approuver ce cours ?",
+        "archive": "Êtes-vous sûr de vouloir archiver ce cours ?",
+        "delete": "Êtes-vous sûr de vouloir supprimer ce cours ? Cette action est irréversible."
+      },
+      "success": {
+        "approved": "Cours approuvé avec succès",
+        "rejected": "Cours rejeté avec succès",
+        "deleted": "Cours supprimé avec succès",
+        "archived": "Cours archivé avec succès"
+      },
+      "error": {
+        "approve_failed": "Échec de l'approbation du cours",
+        "reject_failed": "Échec du rejet du cours",
+        "delete_failed": "Échec de la suppression du cours",
+        "archive_failed": "Échec de l'archivage du cours",
+        "reason_required": "Veuillez fournir une raison pour le rejet"
+      }
+    },
+    "categories": {
+      "title": "Gestion des catégories",
+      "subtitle": "Organisez vos catégories de cours",
+      "add_category": "+ Ajouter une catégorie",
+      "stats": {
+        "total_categories": "Total des catégories",
+        "parent_categories": "Catégories parentes",
+        "subcategories": "Sous-catégories"
+      },
+      "table": {
+        "category": "Catégorie",
+        "slug": "Slug",
+        "courses": "Cours",
+        "order": "Ordre",
+        "actions": "Actions"
+      },
+      "empty": {
+        "no_categories": "Pas encore de catégories",
+        "create_first": "Créez votre première catégorie",
+        "create_category": "Créer une catégorie"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "delete": "Supprimer"
+      },
+      "modal": {
+        "create_category": "Créer une catégorie",
+        "edit_category": "Modifier la catégorie",
+        "name": "Nom",
+        "slug": "Slug",
+        "description": "Description",
+        "icon": "Icône (emoji)",
+        "picture": "Image",
+        "picture_upload": "Cliquez pour télécharger une image",
+        "optional": "(optionnel)",
+        "parent": "Catégorie parente",
+        "no_parent": "Aucune parente",
+        "cancel": "Annuler",
+        "saving": "Enregistrement...",
+        "save": "Enregistrer"
+      },
+      "confirm": {
+        "delete": "Êtes-vous sûr de vouloir supprimer cette catégorie ?"
+      },
+      "success": {
+        "created": "Catégorie créée avec succès",
+        "updated": "Catégorie mise à jour avec succès",
+        "deleted": "Catégorie supprimée avec succès"
+      },
+      "error": {
+        "create_failed": "Échec de la création de la catégorie",
+        "update_failed": "Échec de la mise à jour de la catégorie",
+        "delete_failed": "Échec de la suppression de la catégorie",
+        "name_required": "Le nom est requis",
+        "slug_required": "Le slug est requis"
+      }
+    },
+    "enrollments": {
+      "title": "Gestion des inscriptions",
+      "subtitle": "Surveillez l'accès des étudiants et la progression des cours sur la plateforme",
+      "search_placeholder": "Rechercher par nom d'étudiant, e-mail ou titre de cours...",
+      "filters": {
+        "all_status": "Tous les statuts",
+        "completion_status": "Statut de completion",
+        "in_progress": "En cours",
+        "completed": "Terminé"
+      },
+      "table": {
+        "student": "Étudiant",
+        "course": "Cours",
+        "progress": "Progression",
+        "status": "Statut",
+        "enrolled_date": "Date d'inscription",
+        "actions": "Actions",
+        "progress_label": "PROGRESSION"
+      },
+      "actions": {
+        "revoke": "Révoquer l'inscription"
+      },
+      "confirm": {
+        "revoke": "Êtes-vous sûr de vouloir révoquer cette inscription ? Cela retirera l'accès de l'étudiant au cours."
+      },
+      "success": {
+        "revoked": "Inscription révoquée avec succès"
+      },
+      "error": {
+        "revoke_failed": "Échec de la révocation de l'inscription",
+        "load_failed": "Échec du chargement des inscriptions"
+      },
+      "loading": "Chargement des inscriptions...",
+      "empty": {
+        "title": "Aucune inscription trouvée",
+        "subtitle": "Essayez d'ajuster votre recherche ou vos filtres"
+      },
+      "pagination": {
+        "showing": "Affichage de la page {{current}} sur {{total}}"
+      }
+    },
+    "coupons": {
+      "title": "Gestion des coupons",
+      "subtitle": "Créer et gérer les coupons de réduction",
+      "create_coupon": "Créer un coupon",
+      "search_placeholder": "Rechercher des coupons...",
+      "filters": {
+        "all": "Tous",
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "loading": "Chargement des coupons...",
+      "empty": {
+        "title": "Aucun coupon trouvé",
+        "subtitle": "Créez votre premier coupon pour commencer"
+      },
+      "table": {
+        "code": "Code",
+        "discount": "Réduction",
+        "valid_period": "Période de validité",
+        "applicable_to": "Applicable à",
+        "usage": "Utilisation",
+        "status": "Statut",
+        "actions": "Actions",
+        "times_used": "utilisations",
+        "all_courses": "Tous les cours",
+        "courses": "cours"
+      },
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "modal": {
+        "create_new": "Créer un nouveau coupon",
+        "edit": "Modifier le coupon",
+        "coupon_code": "Code du coupon",
+        "discount_type": "Type de réduction",
+        "percentage": "Pourcentage",
+        "fixed_amount": "Montant fixe",
+        "discount_value": "Valeur de la réduction",
+        "valid_from": "Valide à partir du",
+        "valid_until": "Valide jusqu'au",
+        "usage_limit": "Limite d'utilisation",
+        "optional": "(facultatif)",
+        "active": "Actif",
+        "applicable_courses": "Cours applicables",
+        "selected_courses": "Cours sélectionnés",
+        "clear_all": "Tout effacer",
+        "search_courses": "Rechercher des cours...",
+        "loading_courses": "Chargement des cours...",
+        "no_courses_found": "Aucun cours trouvé",
+        "cancel": "Annuler",
+        "create": "Créer le coupon",
+        "update": "Mettre à jour le coupon"
+      },
+      "actions": {
+        "copy_code": "Copier le code",
+        "edit": "Modifier",
+        "delete": "Supprimer"
+      },
+      "confirm": {
+        "delete": "Êtes-vous sûr de vouloir supprimer ce coupon ?"
+      },
+      "success": {
+        "created": "Coupon créé avec succès",
+        "updated": "Coupon mis à jour avec succès",
+        "deleted": "Coupon supprimé avec succès",
+        "copied": "Code du coupon copié dans le presse-papiers !"
+      },
+      "error": {
+        "create_failed": "Échec de la création du coupon",
+        "update_failed": "Échec de la mise à jour du coupon",
+        "delete_failed": "Échec de la suppression du coupon"
+      }
+    },
+    "transactions": {
+      "title": "Gestion des transactions",
+      "subtitle": "Surveillez et gérez toutes les transactions de paiement",
+      "refresh": "Actualiser",
+      "export_csv": "Exporter CSV",
+      "search_placeholder": "Rechercher par référence, utilisateur, cours...",
+      "filters": {
+        "all_status": "Tous les statuts",
+        "status": "Statut",
+        "all_methods": "Toutes les méthodes",
+        "payment_method": "Méthode de paiement",
+        "date_range": "Plage de dates",
+        "clear_all": "Effacer tous les filtres"
+      },
+      "stats": {
+        "total_revenue": "Revenu total",
+        "total_transactions": "Total des transactions",
+        "completed": "Terminées",
+        "pending": "En attente",
+        "failed": "Échouées"
+      },
+      "status": {
+        "completed": "Terminée",
+        "pending": "En attente",
+        "failed": "Échouée",
+        "refunded": "Remboursée"
+      },
+      "payment_method": {
+        "card": "Carte",
+        "offline": "Hors ligne"
+      },
+      "table": {
+        "reference": "Référence",
+        "user": "Utilisateur",
+        "course": "Cours",
+        "amount": "Montant",
+        "payment_method": "Méthode de paiement",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view_details": "Voir les détails",
+        "copy_reference": "Copier la référence",
+        "refund": "Rembourser",
+        "approve_payment": "Approuver le paiement"
+      },
+      "confirm": {
+        "refund": "Êtes-vous sûr de vouloir rembourser cette transaction ?",
+        "approve": "Êtes-vous sûr d'approuver ce paiement hors ligne ?"
+      },
+      "success": {
+        "exported": "Transactions exportées avec succès",
+        "refunded": "Transaction remboursée avec succès",
+        "approved": "Paiement approuvé avec succès",
+        "copied": "Référence de transaction copiée !"
+      },
+      "error": {
+        "load_failed": "Échec du chargement des transactions",
+        "export_failed": "Échec de l'exportation des transactions",
+        "refund_failed": "Échec du remboursement de la transaction",
+        "approve_failed": "Échec de l'approbation du paiement",
+        "details_failed": "Échec du chargement des détails de la transaction"
+      },
+      "loading": "Chargement des transactions...",
+      "empty": {
+        "title": "Aucune transaction trouvée",
+        "subtitle": "Essayez d'ajuster vos filtres"
+      }
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Gérez les préférences de votre compte et la sécurité",
+      "security": {
+        "title": "Sécurité",
+        "change_password": "Changer le mot de passe",
+        "subtitle": "Mettez à jour votre mot de passe pour sécuriser votre compte",
+        "current_password": "Mot de passe actuel",
+        "new_password": "Nouveau mot de passe",
+        "confirm_password": "Confirmer le nouveau mot de passe",
+        "placeholder_current": "Entrez le mot de passe actuel",
+        "placeholder_new": "Entrez le nouveau mot de passe",
+        "placeholder_confirm": "Confirmez le nouveau mot de passe",
+        "requirements": {
+          "title": "Le mot de passe doit contenir :",
+          "chars_8": "Au moins 8 caractères",
+          "uppercase": "Une lettre majuscule",
+          "lowercase": "Une lettre minuscule",
+          "number": "Un chiffre"
+        },
+        "update_password": "Mettre à jour le mot de passe"
+      },
+      "appearance": {
+        "title": "Apparence",
+        "display_mode": "Mode d'affichage",
+        "subtitle": "Choisissez l'apparence de l'interface",
+        "light_mode": {
+          "label": "Mode clair",
+          "description": "Interface propre et lumineuse"
+        },
+        "dark_mode": {
+          "label": "Mode sombre",
+          "description": "Doux pour les yeux la nuit"
+        },
+        "system_default": {
+          "label": "Par défaut du système",
+          "description": "Suit les paramètres de votre appareil"
+        },
+        "preview": {
+          "title": "Aperçu",
+          "description": "Voici comment votre interface apparaîtra avec le thème sélectionné."
+        },
+        "apply_theme": "Appliquer le thème"
+      },
+      "success": {
+        "password_updated": "Mot de passe mis à jour avec succès !",
+        "theme_updated": "Thème mis à jour en mode {{theme}}"
+      },
+      "error": {
+        "password_mismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas",
+        "current_wrong": "Le mot de passe actuel est incorrect !",
+        "update_failed": "Une erreur s'est produite. Veuillez réessayer."
       }
     }
   },
@@ -255,7 +757,9 @@
       "published": "Publié",
       "draft": "Brouillon",
       "in_progress": "En cours",
-      "completed": "Terminé"
+      "completed": "Terminé",
+      "archived": "Archivé",
+      "pending": "En attente"
     },
     "info": {
       "students": "étudiants",

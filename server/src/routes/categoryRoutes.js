@@ -22,6 +22,7 @@
 // export default router;
 
 import express from 'express';
+import multer from 'multer';
 import {
   createCategory,
   getCategories,
@@ -32,6 +33,21 @@ import {
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Configure multer for memory storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 /**
  * @swagger
@@ -141,7 +157,7 @@ router.get('/:id', getCategory);
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
  */
-router.post('/', protect, authorize('ADMIN'), createCategory);
+router.post('/', protect, authorize('ADMIN'), upload.single('picture'), createCategory);
 
 /**
  * @swagger
@@ -187,7 +203,7 @@ router.post('/', protect, authorize('ADMIN'), createCategory);
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.put('/:id', protect, authorize('ADMIN'), updateCategory);
+router.put('/:id', protect, authorize('ADMIN'), upload.single('picture'), updateCategory);
 
 /**
  * @swagger

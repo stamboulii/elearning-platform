@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Settings,
   ShieldCheck,
@@ -17,11 +18,11 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-// import authService from '../../services/authService';
 import api from '../../services/api';
 import toast from '../../utils/toast';
 
 const UserSettings = () => {
+  const { t } = useTranslation();
   const { theme: currentTheme, setTheme: setGlobalTheme } = useTheme();
   const [activeSection, setActiveSection] = useState('security');
   const [selectedTheme, setSelectedTheme] = useState(currentTheme);
@@ -37,7 +38,7 @@ const UserSettings = () => {
   const sections = [
     {
       id: 'security',
-      label: 'Security',
+      label: t('admin.settings.security.title'),
       icon: <ShieldCheck className="w-5 h-5" />,
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
@@ -45,7 +46,7 @@ const UserSettings = () => {
     },
     {
       id: 'appearance',
-      label: 'Appearance',
+      label: t('admin.settings.appearance.title'),
       icon: <Moon className="w-5 h-5" />,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50',
@@ -56,35 +57,33 @@ const UserSettings = () => {
   const themeOptions = [
     {
       value: 'light',
-      label: 'Light Mode',
+      label: t('admin.settings.appearance.light_mode.label'),
       icon: <Sun className="w-5 h-5" />,
-      description: 'Clean and bright interface'
+      description: t('admin.settings.appearance.light_mode.description')
     },
     {
       value: 'dark',
-      label: 'Dark Mode',
+      label: t('admin.settings.appearance.dark_mode.label'),
       icon: <Moon className="w-5 h-5" />,
-      description: 'Easy on the eyes at night'
+      description: t('admin.settings.appearance.dark_mode.description')
     },
     {
       value: 'system',
-      label: 'System Default',
+      label: t('admin.settings.appearance.system_default.label'),
       icon: <Monitor className="w-5 h-5" />,
-      description: 'Follows your device settings'
+      description: t('admin.settings.appearance.system_default.description')
     }
   ];
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    console.log('Form submitted');
-
     const oldPassword = e.target.oldPassword.value;
     const newPassword = e.target.newPassword.value;
     const confirmPassword = e.target.confirmPassword.value;
 
     if (newPassword !== confirmPassword) {
-      toast.error('New password and confirmation do not match');
+      toast.error(t('admin.settings.error.password_mismatch'));
       return;
     }
 
@@ -95,30 +94,26 @@ const UserSettings = () => {
       });
 
       if (res.status === 200) {
-        toast.success('Password updated successfully!');
+        toast.success(t('admin.settings.success.password_updated'));
         e.target.reset();
       } else {
-        toast.error(res.data.message || 'Failed to update password');
+        toast.error(res.data.message || t('admin.settings.error.update_failed'));
       }
     } catch (error) {
       if (error.response?.status === 403) {
-        toast.error('Current password is incorrect!');
+        toast.error(t('admin.settings.error.current_wrong'));
       } else {
         console.error(error);
-        toast.error('Something went wrong. Please try again.');
+        toast.error(t('admin.settings.error.update_failed'));
       }
     }
   };
 
   const handleThemeSelection = (theme) => {
     setSelectedTheme(theme);
-    // Do not set global theme here, only update local state for preview
-  };
-
-  const saveThemeChanges = () => {
-    setGlobalTheme(selectedTheme);
-    toast.custom(`Theme updated to ${selectedTheme} mode`, 'success', {
-      duration: 3000,
+    setGlobalTheme(theme);
+    toast.custom(t('admin.settings.success.theme_updated', { theme: t(`admin.settings.appearance.${theme}_mode.label`) }), 'success', {
+      duration: 2000,
       icon: '🎨',
     });
   };
@@ -141,8 +136,8 @@ const UserSettings = () => {
               <Settings className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Settings</h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your account preferences and security</p>
+              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t('admin.settings.title')}</h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1">{t('admin.settings.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -157,8 +152,8 @@ const UserSettings = () => {
                     key={section.id}
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all group ${activeSection === section.id
-                        ? `${section.bg} ${section.border} border shadow-sm`
-                        : 'hover:bg-slate-50 dark:hover:bg-slate-700'
+                      ? `${section.bg} ${section.border} border shadow-sm`
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-700'
                       }`}
                   >
                     <div className={`${activeSection === section.id ? section.color : 'text-slate-400'} transition-colors`}>
@@ -189,8 +184,8 @@ const UserSettings = () => {
                       <Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">Change Password</h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Update your password to keep your account secure</p>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('admin.settings.security.change_password')}</h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{t('admin.settings.security.subtitle')}</p>
                     </div>
                   </div>
 
@@ -198,14 +193,14 @@ const UserSettings = () => {
                     {/* Current Password */}
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                        Current Password
+                        {t('admin.settings.security.current_password')}
                       </label>
                       <div className="relative">
                         <input
                           type={showCurrentPassword ? 'text' : 'password'}
                           name="oldPassword"
                           className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                          placeholder="Enter current password"
+                          placeholder={t('admin.settings.security.placeholder_current')}
                         />
                         <button
                           type="button"
@@ -220,14 +215,14 @@ const UserSettings = () => {
                     {/* New Password */}
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                        New Password
+                        {t('admin.settings.security.new_password')}
                       </label>
                       <div className="relative">
                         <input
                           type={showNewPassword ? 'text' : 'password'}
                           name="newPassword"
                           className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                          placeholder="Enter new password"
+                          placeholder={t('admin.settings.security.placeholder_new')}
                         />
                         <button
                           type="button"
@@ -242,14 +237,14 @@ const UserSettings = () => {
                     {/* Confirm Password */}
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                        Confirm New Password
+                        {t('admin.settings.security.confirm_password')}
                       </label>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           name="confirmPassword"
                           className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                          placeholder="Confirm new password"
+                          placeholder={t('admin.settings.security.placeholder_confirm')}
                         />
                         <button
                           type="button"
@@ -266,12 +261,12 @@ const UserSettings = () => {
                       <div className="flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                         <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                          <p className="font-bold">Password must contain:</p>
+                          <p className="font-bold">{t('admin.settings.security.requirements.title')}</p>
                           <ul className="space-y-0.5 ml-4 list-disc">
-                            <li>At least 8 characters</li>
-                            <li>One uppercase letter</li>
-                            <li>One lowercase letter</li>
-                            <li>One number</li>
+                            <li>{t('admin.settings.security.requirements.chars_8')}</li>
+                            <li>{t('admin.settings.security.requirements.uppercase')}</li>
+                            <li>{t('admin.settings.security.requirements.lowercase')}</li>
+                            <li>{t('admin.settings.security.requirements.number')}</li>
                           </ul>
                         </div>
                       </div>
@@ -281,7 +276,7 @@ const UserSettings = () => {
                       type="submit"
                       className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-sm"
                     >
-                      Update Password
+                      {t('admin.settings.security.update_password')}
                     </button>
                   </form>
                 </div>
@@ -298,8 +293,8 @@ const UserSettings = () => {
                       <Moon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">Display Mode</h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Choose how the interface looks</p>
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('admin.settings.appearance.display_mode')}</h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{t('admin.settings.appearance.subtitle')}</p>
                     </div>
                   </div>
 
@@ -309,8 +304,8 @@ const UserSettings = () => {
                         key={option.value}
                         onClick={() => handleThemeSelection(option.value)}
                         className={`relative p-6 rounded-2xl border-2 transition-all text-left ${selectedTheme === option.value
-                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
-                            : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
+                          ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-800'
                           }`}
                       >
                         {selectedTheme === option.value && (
@@ -331,26 +326,26 @@ const UserSettings = () => {
 
                   <div className="flex justify-end">
                     <button
-                      onClick={saveThemeChanges}
+                      onClick={() => handleThemeSelection(selectedTheme)}
                       disabled={selectedTheme === currentTheme}
                       className={`px-6 py-2 rounded-xl font-bold text-sm transition-all ${selectedTheme === currentTheme
-                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700 dark:text-slate-500'
-                          : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transform hover:-translate-y-0.5'
+                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-700 dark:text-slate-500'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transform hover:-translate-y-0.5'
                         }`}
                     >
-                      Save Changes
+                      {t('admin.settings.appearance.apply_theme')}
                     </button>
                   </div>
                 </div>
 
                 {/* Preview Card */}
                 <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-8">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Preview</h3>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('admin.settings.appearance.preview.title')}</h3>
 
                   {/* Preview Container - Changes based on selected Theme immediately */}
                   <div className={`rounded-2xl p-6 border transition-colors duration-300 ${isPreviewDark()
-                      ? 'bg-slate-900 border-slate-700'
-                      : 'bg-slate-50 border-slate-200'
+                    ? 'bg-slate-900 border-slate-700'
+                    : 'bg-slate-50 border-slate-200'
                     }`}>
                     <div className="flex items-center gap-4 mb-4">
                       <div className={`w-12 h-12 rounded-full ${isPreviewDark() ? 'bg-indigo-900' : 'bg-indigo-100'
@@ -372,7 +367,7 @@ const UserSettings = () => {
                     </div>
                   </div>
                   <p className="text-xs text-slate-400 mt-4 italic">
-                    This is how your interface will appear with the selected theme. Click "Save Changes" to apply.
+                    {t('admin.settings.appearance.preview.description')}
                   </p>
                 </div>
               </div>
@@ -383,4 +378,5 @@ const UserSettings = () => {
     </div>
   );
 };
+
 export default UserSettings;

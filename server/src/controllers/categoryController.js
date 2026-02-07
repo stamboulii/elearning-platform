@@ -5,7 +5,12 @@ import categoryService from '../services/categoryService.js';
 // @access  Private (Admin only)
 export const createCategory = async (req, res) => {
   try {
-    const category = await categoryService.createCategory(req.body);
+    // Combine body data with uploaded file
+    const categoryData = {
+      ...req.body,
+      ...(req.file && { picture: req.file })
+    };
+    const category = await categoryService.createCategory(categoryData);
 
     res.status(201).json({
       success: true,
@@ -67,7 +72,12 @@ export const getCategory = async (req, res) => {
 // @access  Private (Admin only)
 export const updateCategory = async (req, res) => {
   try {
-    const category = await categoryService.updateCategory(req.params.id, req.body);
+    // Combine body data with uploaded file
+    const categoryData = {
+      ...req.body,
+      ...(req.file && { picture: req.file })
+    };
+    const category = await categoryService.updateCategory(req.params.id, categoryData);
 
     res.json({
       success: true,

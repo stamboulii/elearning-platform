@@ -65,10 +65,10 @@ const InstructorCourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="mt-4 text-slate-500 font-medium">Loading course details...</p>
+          <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Loading course details...</p>
         </div>
       </div>
     );
@@ -187,17 +187,17 @@ const InstructorCourseDetail = () => {
 
               {/* Publishing Status */}
               {course.status === 'draft' && (
-                <div className="bg-amber-50 border border-amber-200 p-6 rounded-2xl">
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-6 rounded-2xl transition-colors">
                   <div className="flex items-start gap-3 mb-3">
-                    <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-bold text-amber-900 mb-1">Draft Course</h4>
-                      <p className="text-sm text-amber-700 leading-relaxed">
+                      <h4 className="font-bold text-amber-900 dark:text-amber-100 mb-1">Draft Course</h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-300 leading-relaxed">
                         This course is not yet published. Complete all sections and submit for review.
                       </p>
                     </div>
                   </div>
-                  <button className="w-full mt-3 bg-amber-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-amber-700 transition-colors">
+                  <button className="w-full mt-3 bg-amber-600 dark:bg-amber-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-amber-700 dark:hover:bg-amber-700 transition-colors">
                     Publish Course
                   </button>
                 </div>
@@ -262,12 +262,12 @@ const DetailRow = ({ icon, label, value }) => (
 const ActionButton = ({ icon, label, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 transition-colors text-left group"
+    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group"
   >
-    <div className="text-slate-600 group-hover:text-indigo-600 transition-colors">
+    <div className="text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
       {icon}
     </div>
-    <span className="text-sm font-semibold text-slate-700 group-hover:text-slate-900">
+    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
       {label}
     </span>
   </button>
@@ -408,7 +408,7 @@ const StudentsTab = ({ courseId, totalStudents }) => {
     return (
       <div className="py-12 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className="mt-4 text-slate-500">Loading student list...</p>
+        <p className="mt-4 text-slate-500 dark:text-slate-400">Loading student list...</p>
       </div>
     );
   }

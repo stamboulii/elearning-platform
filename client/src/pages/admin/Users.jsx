@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
 
 const AdminUsers = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -14,48 +16,48 @@ const AdminUsers = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-const fetchUsers = useCallback(async () => {
-  try {
-    setLoading(true);
-    const data = await adminService.getAllUsers(filters);
-    setUsers(data.data.users);
-    setTotalPages(data.totalPages);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  } finally {
-    setLoading(false);
-  }
-}, [filters]);
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await adminService.getAllUsers(filters);
+      setUsers(data.data.users);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
-useEffect(() => {
-  fetchUsers();
-}, [fetchUsers]);
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
 
 
   const handleToggleStatus = async (userId) => {
-    if (!confirm('Are you sure you want to toggle this user\'s status?')) return;
+    if (!confirm(t('admin.users.confirm.toggle_status'))) return;
 
     try {
       await adminService.toggleUserStatus(userId);
       fetchUsers();
-      alert('User status updated successfully');
+      alert(t('admin.users.success.status_updated'));
     } catch (error) {
       console.error('Error toggling user status:', error);
-      alert('Failed to update user status');
+      alert(t('admin.users.error.status_update_failed'));
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+    if (!confirm(t('admin.users.confirm.delete'))) return;
 
     try {
       await adminService.deleteUser(userId);
       fetchUsers();
-      alert('User deleted successfully');
+      alert(t('admin.users.success.deleted'));
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Failed to delete user');
+      alert(t('admin.users.error.delete_failed'));
     }
   };
 
@@ -69,8 +71,8 @@ useEffect(() => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">User Management</h1>
-          <p className="text-gray-600">Manage all platform users</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('admin.users.title')}</h1>
+          <p className="text-gray-600">{t('admin.users.subtitle')}</p>
         </div>
 
         {/* Filters */}
@@ -78,7 +80,7 @@ useEffect(() => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder={t('admin.users.search_placeholder')}
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -88,25 +90,25 @@ useEffect(() => {
               onChange={(e) => setFilters({ ...filters, role: e.target.value, page: 1 })}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">All Roles</option>
-              <option value="STUDENT">Student</option>
-              <option value="INSTRUCTOR">Instructor</option>
-              <option value="ADMIN">Admin</option>
+              <option value="">{t('admin.users.filters.all_roles')}</option>
+              <option value="STUDENT">{t('admin.users.filters.student')}</option>
+              <option value="INSTRUCTOR">{t('admin.users.filters.instructor')}</option>
+              <option value="ADMIN">{t('admin.users.filters.admin')}</option>
             </select>
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="">{t('admin.users.filters.all_status')}</option>
+              <option value="active">{t('admin.users.filters.active')}</option>
+              <option value="inactive">{t('admin.users.filters.inactive')}</option>
             </select>
             <button
               onClick={() => setFilters({ search: '', role: '', status: '', page: 1, limit: 20 })}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
-              Clear Filters
+              {t('admin.users.filters.clear_filters')}
             </button>
           </div>
         </div>
@@ -123,22 +125,22 @@ useEffect(() => {
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
+                      {t('admin.users.table.name')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
+                      {t('admin.users.table.email')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
+                      {t('admin.users.table.role')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      {t('admin.users.table.status')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Joined
+                      {t('admin.users.table.joined')}
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
+                      {t('admin.users.table.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -163,19 +165,17 @@ useEffect(() => {
                         <div className="text-sm text-gray-900">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' :
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' :
                           user.role === 'INSTRUCTOR' ? 'bg-blue-100 text-blue-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                            'bg-green-100 text-green-800'
+                          }`}>
                           {user.role}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                          {user.isActive ? t('common.active') : t('common.inactive')}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -186,19 +186,19 @@ useEffect(() => {
                           onClick={() => handleEditUser(user)}
                           className="text-blue-600 hover:text-blue-900 mr-3"
                         >
-                          Edit
+                          {t('admin.users.actions.edit')}
                         </button>
                         <button
                           onClick={() => handleToggleStatus(user.id)}
                           className="text-yellow-600 hover:text-yellow-900 mr-3"
                         >
-                          {user.isActive ? 'Deactivate' : 'Activate'}
+                          {user.isActive ? t('admin.users.actions.deactivate') : t('admin.users.actions.activate')}
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user.id)}
                           className="text-red-600 hover:text-red-900"
                         >
-                          Delete
+                          {t('admin.users.actions.delete')}
                         </button>
                       </td>
                     </tr>
@@ -215,18 +215,17 @@ useEffect(() => {
                   disabled={filters.page === 1}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Previous
+                  {t('common.previous')}
                 </button>
-                
+
                 {[...Array(totalPages)].map((_, index) => (
                   <button
                     key={index + 1}
                     onClick={() => setFilters({ ...filters, page: index + 1 })}
-                    className={`px-4 py-2 border rounded-lg ${
-                      filters.page === index + 1
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 hover:bg-gray-50'
-                    }`}
+                    className={`px-4 py-2 border rounded-lg ${filters.page === index + 1
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'border-gray-300 hover:bg-gray-50'
+                      }`}
                   >
                     {index + 1}
                   </button>
@@ -237,7 +236,7 @@ useEffect(() => {
                   disabled={filters.page === totalPages}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Next
+                  {t('common.next')}
                 </button>
               </div>
             )}
@@ -266,6 +265,7 @@ useEffect(() => {
 
 // Edit User Modal Component
 const EditUserModal = ({ user, onClose, onSuccess }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -276,15 +276,15 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       await adminService.updateUser(user.id, formData);
-      alert('User updated successfully');
+      alert(t('admin.users.success.updated'));
       onSuccess();
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('Failed to update user');
+      alert(t('admin.users.error.update_failed'));
     } finally {
       setLoading(false);
     }
@@ -293,11 +293,11 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Edit User</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('admin.users.modal.edit_user')}</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">First Name</label>
+            <label className="block text-gray-700 font-medium mb-2">{t('admin.users.modal.first_name')}</label>
             <input
               type="text"
               value={formData.firstName}
@@ -307,7 +307,7 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">Last Name</label>
+            <label className="block text-gray-700 font-medium mb-2">{t('admin.users.modal.last_name')}</label>
             <input
               type="text"
               value={formData.lastName}
@@ -317,15 +317,15 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2">Role</label>
+            <label className="block text-gray-700 font-medium mb-2">{t('admin.users.modal.role')}</label>
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="STUDENT">Student</option>
-              <option value="INSTRUCTOR">Instructor</option>
-              <option value="ADMIN">Admin</option>
+              <option value="STUDENT">{t('admin.users.filters.student')}</option>
+              <option value="INSTRUCTOR">{t('admin.users.filters.instructor')}</option>
+              <option value="ADMIN">{t('admin.users.filters.admin')}</option>
             </select>
           </div>
 
@@ -337,7 +337,7 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 className="w-4 h-4 text-blue-600"
               />
-              <span className="text-gray-700">Active</span>
+              <span className="text-gray-700">{t('admin.users.modal.active')}</span>
             </label>
           </div>
 
@@ -347,14 +347,14 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
               disabled={loading}
               className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50"
             >
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? t('admin.users.modal.saving') : t('admin.users.modal.save_changes')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>
