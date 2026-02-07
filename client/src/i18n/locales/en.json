@@ -67,7 +67,59 @@
       "title_accent": "Without Limits.",
       "subtitle": "Join a community of 10,000+ students. Learn from industry experts and advance your career with our professional-grade curriculum.",
       "get_started": "Start Learning Now",
-      "watch_demo": "Watch Demo"
+      "watch_demo": "Watch Demo",
+      "browse_catalog": "Browse Catalog",
+      "continue_journey": "Continue Journey",
+      "reviews": "from 2,000+ reviews"
+    },
+    "categories": {
+      "title": "Explore Top Categories",
+      "subtitle": "Find the right course for you from our wide range of categories",
+      "view_all": "View All Categories →",
+      "open_courses": "Open Courses"
+    },
+    "how_it_works": {
+      "title": "How It Works",
+      "subtitle": "Start your learning journey in three simple steps and unlock your potential.",
+      "step1_title": "Create Account",
+      "step1_desc": "Join for free as a student or instructor and set up your professional profile.",
+      "step2_title": "Select Your Course",
+      "step2_desc": "Browse 500+ courses across various domains verified by industry experts.",
+      "step3_title": "Start Learning",
+      "step3_desc": "Access interactive lessons, quizzes, and earn your certificate of completion."
+    },
+    "featured_courses": {
+      "title": "Top Rated Courses",
+      "subtitle": "Industry-leading curriculum designed to take your skills to the next level.",
+      "explore_library": "Explore Full Library",
+      "no_courses": "Class starts soon! No courses live yet.",
+      "see_all": "See All 500+ Courses"
+    },
+    "cta": {
+      "instructor_ready": "Ready to Create Your Next Course?",
+      "instructor_subtitle": "Join our top-tier instructors and scale your teaching career with our advanced course builder.",
+      "expert_ready": "Inspire Others & Share Your Expertise",
+      "expert_subtitle": "Start teaching today and join our community of 100+ expert instructors from around the world.",
+      "create_course": "Create New Course",
+      "start_teaching": "Start Teaching Today"
+    },
+    "floating_cards": {
+      "expert_verified": "Expert Verified",
+      "premium_content": "Premium Content",
+      "lessons": "500+ Lessons",
+      "interactive_video": "Interactive Video"
+    },
+    "stats": {
+      "students": "Students",
+      "courses": "Courses",
+      "instructors": "Instructors",
+      "categories": "Categories"
+    },
+    "earnings": {
+      "potential": "Potential Earnings",
+      "range": "2 000€ - 10 000€+",
+      "active_courses": "Active Courses",
+      "success_rate": "92% Success Rate"
     }
   },
   "student": {
@@ -267,7 +319,7 @@
       "duration": "Duration (minutes)",
       "access_control": "Lesson Access",
       "free_course_info": "All lessons in this course are automatically free for everyone. You can still use the \"Preview\" option to highlight key lessons.",
-      "paid_course_info": "This is a paid course (${{price}}). You can mark individual lessons as free to give students a preview!",
+      "paid_course_info": "This is a paid course ({{price}}€). You can mark individual lessons as free to give students a preview!",
       "mark_preview": "Mark as Preview",
       "preview_desc": "Highlight this lesson in the course details page",
       "mark_free": "Mark as Free",

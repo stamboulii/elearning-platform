@@ -107,7 +107,7 @@ const Home = () => {
                       to="/courses"
                       className="w-full sm:w-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-10 py-4 rounded-2xl font-bold text-lg border-2 border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
                     >
-                      Browse Catalog
+                      {t('home.hero.browse_catalog')}
                     </Link>
                   </>
                 ) : (
@@ -115,7 +115,7 @@ const Home = () => {
                     to="/courses"
                     className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:shadow-2xl transition-all"
                   >
-                    Continue Journey
+                    {t('home.hero.continue_journey')}
                   </Link>
                 )}
               </div>
@@ -127,7 +127,7 @@ const Home = () => {
                   ))}
                 </div>
                 <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  <span className="text-slate-900 dark:text-white">4.8/5</span> from 2,000+ reviews
+                  <span className="text-slate-900 dark:text-white">4.8/5</span> {t('home.hero.reviews')}
                 </div>
               </div>
             </div>
@@ -147,8 +147,8 @@ const Home = () => {
                       <CheckCircle className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-sm font-black text-slate-900 dark:text-white">Expert Verified</div>
-                      <div className="text-xs text-slate-500">Premium Content</div>
+                      <div className="text-sm font-black text-slate-900 dark:text-white">{t('home.floating_cards.expert_verified')}</div>
+                      <div className="text-xs text-slate-500">{t('home.floating_cards.premium_content')}</div>
                     </div>
                   </div>
                 </div>
@@ -159,8 +159,8 @@ const Home = () => {
                       <Play className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-sm font-black text-slate-900 dark:text-white">500+ Lessons</div>
-                      <div className="text-xs text-slate-500">Interactive Video</div>
+                      <div className="text-sm font-black text-slate-900 dark:text-white">{t('home.floating_cards.lessons')}</div>
+                      <div className="text-xs text-slate-500">{t('home.floating_cards.interactive_video')}</div>
                     </div>
                   </div>
                 </div>
@@ -177,10 +177,10 @@ const Home = () => {
       <section className="py-20 relative bg-white dark:bg-slate-950">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <StatCard icon={<Users className="w-6 h-6" />} number="10,000+" label="Students" color="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" />
-            <StatCard icon={<BookOpen className="w-6 h-6" />} number="500+" label="Courses" color="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400" />
-            <StatCard icon={<GraduationCap className="w-6 h-6" />} number="100+" label="Instructors" color="bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" />
-            <StatCard icon={<Award className="w-6 h-6" />} number="50+" label="Categories" color="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400" />
+            <StatCard icon={<Users className="w-6 h-6" />} number="10,000+" label={t('home.stats.students')} color="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" />
+            <StatCard icon={<BookOpen className="w-6 h-6" />} number="500+" label={t('home.stats.courses')} color="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400" />
+            <StatCard icon={<GraduationCap className="w-6 h-6" />} number="100+" label={t('home.stats.instructors')} color="bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400" />
+            <StatCard icon={<Award className="w-6 h-6" />} number="50+" label={t('home.stats.categories')} color="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400" />
           </div>
         </div>
       </section>
@@ -190,10 +190,10 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Explore Top Categories
+              {t('home.categories.title')}
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-lg">
-              Find the right course for you from our wide range of categories
+              {t('home.categories.subtitle')}
             </p>
           </div>
 
@@ -206,9 +206,9 @@ const Home = () => {
           <div className="text-center mt-8">
             <Link
               to="/courses"
-              className="text-blue-600 hover:text-blue-700 font-semibold"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold"
             >
-              View All Categories →
+              {t('home.categories.view_all')}
             </Link>
           </div>
         </div>
@@ -219,10 +219,10 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4">
-              How It Works
+              {t('home.how_it_works.title')}
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">
-              Start your learning journey in three simple steps and unlock your potential.
+              {t('home.how_it_works.subtitle')}
             </p>
           </div>
 
@@ -232,20 +232,20 @@ const Home = () => {
 
             <StepCard
               number="01"
-              title="Create Account"
-              description="Join for free as a student or instructor and set up your professional profile."
+              title={t('home.how_it_works.step1_title')}
+              description={t('home.how_it_works.step1_desc')}
               icon={<User className="w-8 h-8" />}
             />
             <StepCard
               number="02"
-              title="Select Your Course"
-              description="Browse 500+ courses across various domains verified by industry experts."
+              title={t('home.how_it_works.step2_title')}
+              description={t('home.how_it_works.step2_desc')}
               icon={<Search className="w-8 h-8" />}
             />
             <StepCard
               number="03"
-              title="Start Learning"
-              description="Access interactive lessons, quizzes, and earn your certificate of completion."
+              title={t('home.how_it_works.step3_title')}
+              description={t('home.how_it_works.step3_desc')}
               icon={<Zap className="w-8 h-8" />}
             />
           </div>
@@ -258,24 +258,24 @@ const Home = () => {
           <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
             <div className="max-w-xl text-center md:text-left">
               <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4">
-                Top Rated Courses
+                {t('home.featured_courses.title')}
               </h2>
               <p className="text-slate-600 dark:text-slate-400 text-lg">
-                Industry-leading curriculum designed to take your skills to the next level.
+                {t('home.featured_courses.subtitle')}
               </p>
             </div>
             <Link
               to="/courses"
               className="px-8 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm hidden md:block"
             >
-              Explore Full Library
+              {t('home.featured_courses.explore_library')}
             </Link>
           </div>
 
           {featuredCourses.length === 0 ? (
             <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-[32px] border-2 border-dashed border-slate-200 dark:border-slate-800">
               <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-xl font-bold text-slate-400">Class starts soon! No courses live yet.</p>
+              <p className="text-xl font-bold text-slate-400">{t('home.featured_courses.no_courses')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -290,7 +290,7 @@ const Home = () => {
               to="/courses"
               className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition inline-block w-full"
             >
-              See All 500+ Courses
+              {t('home.featured_courses.see_all')}
             </Link>
           </div>
         </div>
@@ -305,12 +305,12 @@ const Home = () => {
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
             <div className="max-w-2xl text-center lg:text-left">
               <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
-                {user?.role === 'INSTRUCTOR' ? 'Ready to Create Your Next Course?' : 'Inspire Others & Share Your Expertise'}
+                {user?.role === 'INSTRUCTOR' ? t('home.cta.instructor_ready') : t('home.cta.expert_ready')}
               </h2>
               <p className="text-xl mb-10 text-indigo-100/90 leading-relaxed">
                 {user?.role === 'INSTRUCTOR'
-                  ? 'Join our top-tier instructors and scale your teaching career with our advanced course builder.'
-                  : 'Start teaching today and join our community of 100+ expert instructors from around the world.'
+                  ? t('home.cta.instructor_subtitle')
+                  : t('home.cta.expert_subtitle')
                 }
               </p>
               <button
@@ -321,7 +321,7 @@ const Home = () => {
                 }}
                 className="bg-white text-indigo-600 px-10 py-4 rounded-2xl font-black text-lg hover:bg-slate-50 hover:scale-105 transition-all shadow-xl"
               >
-                {user?.role === 'INSTRUCTOR' ? 'Create New Course' : 'Start Teaching Today'}
+                {user?.role === 'INSTRUCTOR' ? t('home.cta.create_course') : t('home.cta.start_teaching')}
               </button>
             </div>
             <div className="w-full max-w-sm">
@@ -331,8 +331,8 @@ const Home = () => {
                     <DollarSign className="w-6 h-6" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold opacity-80 uppercase">Potential Earnings</div>
-                    <div className="text-2xl font-black">$2,000 - $10,000+</div>
+                    <div className="text-sm font-bold opacity-80 uppercase">{t('home.earnings.potential')}</div>
+                    <div className="text-2xl font-black">{t('home.earnings.range')}</div>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -340,8 +340,8 @@ const Home = () => {
                     <div className="h-full bg-white/40 w-3/4"></div>
                   </div>
                   <div className="flex justify-between text-xs font-bold opacity-70">
-                    <span>Active Courses</span>
-                    <span>92% Success Rate</span>
+                    <span>{t('home.earnings.active_courses')}</span>
+                    <span>{t('home.earnings.success_rate')}</span>
                   </div>
                 </div>
               </div>
@@ -367,15 +367,16 @@ const StatCard = ({ icon, number, label, color }) => (
 // Category Card Component
 const CategoryCard = ({ category, index }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const colors = [
-    'bg-blue-50 text-blue-600 border-blue-100',
-    'bg-purple-50 text-purple-600 border-purple-100',
-    'bg-indigo-50 text-indigo-600 border-indigo-100',
-    'bg-emerald-50 text-emerald-600 border-emerald-100',
-    'bg-amber-50 text-amber-600 border-amber-100',
-    'bg-rose-50 text-rose-600 border-rose-100',
-    'bg-cyan-50 text-cyan-600 border-cyan-100',
-    'bg-orange-50 text-orange-600 border-orange-100'
+    'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+    'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
+    'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800',
+    'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+    'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
+    'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800',
+    'bg-cyan-50 text-cyan-600 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800',
+    'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
   ];
 
   const colorStyle = colors[index % colors.length];
@@ -388,11 +389,11 @@ const CategoryCard = ({ category, index }) => {
       <div className={`w-16 h-16 ${colorStyle} rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>
         {category.icon || '📚'}
       </div>
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{category.name}</h3>
+      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{category.name}</h3>
       <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-slate-800 rounded-full">
         <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
         <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-          {category._count?.courses || 0} Open Courses
+          {category._count?.courses || 0} {t('home.categories.open_courses')}
         </p>
       </div>
     </div>
@@ -426,7 +427,7 @@ const CourseCard = ({ course }) => {
         </h3>
 
         <div className="flex items-center gap-3 mb-4">
-          <img src={`https://i.pravatar.cc/150?u=${course.instructor?.id}`} className="w-6 h-6 rounded-full" alt="I" />
+          <img src={`https://i.pravatar.cc/150?u=${course.instructor?.id}`} className="w-6 h-6 rounded-full" alt="Instructor" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-tight">
             {course.instructor?.firstName} {course.instructor?.lastName}
           </p>
@@ -441,7 +442,7 @@ const CourseCard = ({ course }) => {
           </div>
           <div className="flex flex-col items-end">
             <span className="text-2xl font-black text-slate-900 dark:text-white">
-              ${course.discountPrice || course.price}
+              {course.discountPrice || course.price}€
             </span>
           </div>
         </div>

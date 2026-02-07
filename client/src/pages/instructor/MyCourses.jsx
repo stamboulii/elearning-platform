@@ -438,7 +438,7 @@ const CourseCard = ({ course, onDelete }) => {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-4">
-            <StatItem icon={<DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />} label={t('common.price')} value={`$${course.price}`} />
+            <StatItem icon={<DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />} label={t('common.price')} value={`€${course.price}`} />
             <StatItem icon={<Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />} label={t('instructor.dashboard.stats.total_students')} value={course._count.enrollments} />
             <StatItem icon={<Layers className="w-5 h-5 text-purple-600 dark:text-purple-400" />} label={t('course.info.sections')} value={course._count.sections} />
             <StatItem icon={<Star className="w-5 h-5 text-amber-600 dark:text-amber-400" />} label={t('instructor.dashboard.stats.avg_rating')} value={course._count.reviews} />

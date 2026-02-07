@@ -230,8 +230,8 @@ const CouponManager = () => {
               <button
                 onClick={() => setFilterActive('all')}
                 className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${filterActive === 'all'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                   }`}
               >
                 {t('admin.coupons.filters.all')}
@@ -239,8 +239,8 @@ const CouponManager = () => {
               <button
                 onClick={() => setFilterActive('active')}
                 className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${filterActive === 'active'
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                   }`}
               >
                 {t('admin.coupons.filters.active')}
@@ -248,8 +248,8 @@ const CouponManager = () => {
               <button
                 onClick={() => setFilterActive('inactive')}
                 className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${filterActive === 'inactive'
-                    ? 'bg-rose-600 text-white'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  ? 'bg-rose-600 text-white'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
                   }`}
               >
                 {t('admin.coupons.filters.inactive')}
@@ -312,7 +312,7 @@ const CouponManager = () => {
                           <span className="font-semibold">
                             {coupon.discountType === 'PERCENTAGE'
                               ? `${coupon.discountValue}%`
-                              : `$${coupon.discountValue}`}
+                              : `€${coupon.discountValue}`}
                           </span>
                         </div>
                       </td>
@@ -347,8 +347,8 @@ const CouponManager = () => {
                       <td className="p-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${coupon.isActive
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-rose-100 text-rose-800'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-rose-100 text-rose-800'
                             }`}
                         >
                           {coupon.isActive ? t('admin.coupons.status.active') : t('admin.coupons.status.inactive')}
@@ -614,7 +614,7 @@ const CouponFormModal = ({
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-slate-900 truncate">{course.title}</p>
-                            <p className="text-xs text-slate-500">${course.price}</p>
+                            <p className="text-xs text-slate-500">{course.price}€</p>
                           </div>
                         </label>
                       ))

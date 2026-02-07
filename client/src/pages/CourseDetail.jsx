@@ -245,18 +245,18 @@ const CourseCard = ({ course, enrollmentStatus, onEnroll, onGoToCourse, enrollin
           {course.discountPrice && course.discountPrice < course.price ? (
             <div>
               <span className="text-4xl font-bold text-blue-600">
-                ${course.discountPrice}
+                {course.discountPrice}€
               </span>
               <span className="text-xl text-gray-500 dark:text-slate-400 line-through ml-3">
-                ${course.price}
+                {course.price}€
               </span>
               <div className="mt-1 text-sm text-green-600 dark:text-green-400 font-medium">
-                Save ${(course.price - course.discountPrice).toFixed(2)}
+                Save {(course.price - course.discountPrice).toFixed(2)}€
               </div>
             </div>
           ) : (
             <span className="text-4xl font-bold text-blue-600">
-              {course.price === 0 ? 'Free' : `${course.price}`}
+              {course.price === 0 ? 'Free' : `${course.price}€`}
             </span>
           )}
         </div>

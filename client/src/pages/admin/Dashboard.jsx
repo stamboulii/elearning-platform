@@ -119,8 +119,8 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <StatCard
             title={t('admin.dashboard.stats.total_revenue')}
-            value={`$${stats.totalRevenue.toLocaleString()}`}
-            trend={`+$${stats.newRevenue.toLocaleString()}`}
+            value={`€${stats.totalRevenue.toLocaleString()}`}
+            trend={`+€${stats.newRevenue.toLocaleString()}`}
             icon={<DollarSign className="w-6 h-6 text-emerald-600" />}
             bgColor="bg-emerald-50"
             borderColor="border-emerald-100"
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fill: '#64748b', fontSize: 12 }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `€${value}`}
                   />
                   <RechartsTooltip
                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
@@ -241,7 +241,7 @@ const AdminDashboard = () => {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
               <QuickStat label="Conversion" value="4.2%" trend="+0.5%" />
-              <QuickStat label="Avg. Order" value="$84" trend="-2%" />
+              <QuickStat label="Avg. Order" value="84€" trend="-2%" />
             </div>
           </div>
         </div>

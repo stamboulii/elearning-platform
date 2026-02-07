@@ -181,7 +181,7 @@ const WishlistPage = () => {
 
   const formatPrice = (price) => {
     if (price === 0) return 'Free';
-    return `$${parseFloat(price).toFixed(2)}`;
+    return `€${parseFloat(price).toFixed(2)}`;
   };
 
   // Check if course is in cart

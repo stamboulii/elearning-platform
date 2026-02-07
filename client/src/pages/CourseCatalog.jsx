@@ -6,7 +6,7 @@ import categoryService from '../services/categoryService';
 const CourseCatalog = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ const CourseCatalog = () => {
       const data = await courseService.getAllCourses(params);
       setCourses(data.data.courses);
       setTotalPages(data.totalPages);
-      
+
       // Update URL params
       const newParams = {};
       if (filters.search) newParams.search = filters.search;
@@ -235,16 +235,15 @@ const CourseCatalog = () => {
                 >
                   Previous
                 </button>
-                
+
                 {[...Array(totalPages)].map((_, index) => (
                   <button
                     key={index + 1}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-4 py-2 border rounded-lg ${
-                      filters.page === index + 1
+                    className={`px-4 py-2 border rounded-lg ${filters.page === index + 1
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'border-gray-300 hover:bg-gray-50'
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </button>
@@ -313,15 +312,15 @@ const CourseCard = ({ course, navigate }) => {
             {course.discountPrice && course.discountPrice < course.price ? (
               <>
                 <span className="text-lg font-bold text-blue-600">
-                  ${course.discountPrice}
+                  {course.discountPrice}€
                 </span>
-                <span className="text-sm text-gray-500 line-through ml-2">
-                  ${course.price}
+                <span className="text-sm text-gray-500 dark:text-slate-400 line-through ml-2">
+                  {course.price}€
                 </span>
               </>
             ) : (
               <span className="text-lg font-bold text-blue-600">
-                ${course.price}
+                {course.price}€
               </span>
             )}
           </div>

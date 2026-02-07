@@ -67,7 +67,59 @@
       "title_accent": "Sans Limites.",
       "subtitle": "Rejoignez des milliers d'apprenants et maîtrisez de nouvelles compétences grâce à nos cours animés par des experts. Des certificats professionnels, des projets interactifs et une communauté d'experts vous attendent.",
       "get_started": "Commencer maintenant",
-      "watch_demo": "Voir la démo"
+      "watch_demo": "Voir la démo",
+      "browse_catalog": "Parcourir le catalogue",
+      "continue_journey": "Continuer le parcours",
+      "reviews": "de 2 000+ avis"
+    },
+    "categories": {
+      "title": "Explorez les Meilleures Catégories",
+      "subtitle": "Trouvez le cours qu'il vous faut parmi notre large gamme de catégories",
+      "view_all": "Voir toutes les catégories →",
+      "open_courses": "Cours disponibles"
+    },
+    "how_it_works": {
+      "title": "Comment ça marche",
+      "subtitle": "Commencez votre parcours d'apprentissage en trois étapes simples et libérez votre potentiel.",
+      "step1_title": "Créer un compte",
+      "step1_desc": "Rejoignez gratuitement en tant qu'étudiant ou instructeur et configurez votre profil professionnel.",
+      "step2_title": "Choisissez votre cours",
+      "step2_desc": "Parcourez plus de 500 cours dans différents domaines vérifiés par des experts de l'industrie.",
+      "step3_title": "Commencez à apprendre",
+      "step3_desc": "Accédez à des leçons interactives, des quiz et gagnez votre certificat de réussite."
+    },
+    "featured_courses": {
+      "title": "Meilleures Cours",
+      "subtitle": "Un programme de niveau industriel conçu pour élever vos compétences au niveau supérieur.",
+      "explore_library": "Explorer la bibliothèque complète",
+      "no_courses": "Les cours commencent bientôt ! Aucun cours en ligne pour le moment.",
+      "see_all": "Voir tous les 500+ cours"
+    },
+    "cta": {
+      "instructor_ready": "Prêt à créer votre prochain cours ?",
+      "instructor_subtitle": "Rejoignez nos instructeurs de premier plan et faites évoluer votre carrière d'enseignement avec notre éditeur de cours avancé.",
+      "expert_ready": "Inspirez les autres et partagez votre expertise",
+      "expert_subtitle": "Commencez à enseigner aujourd'hui et rejoignez notre communauté de plus de 100 instructeurs experts du monde entier.",
+      "create_course": "Créer un nouveau cours",
+      "start_teaching": "Commencer à enseigner"
+    },
+    "floating_cards": {
+      "expert_verified": "Vérifié par des experts",
+      "premium_content": "Contenu premium",
+      "lessons": "Plus de 500 leçons",
+      "interactive_video": "Vidéo interactive"
+    },
+    "stats": {
+      "students": "Étudiants",
+      "courses": "Cours",
+      "instructors": "Instructeurs",
+      "categories": "Catégories"
+    },
+    "earnings": {
+      "potential": "Gains potentiels",
+      "range": "2 000€ - 10 000€+",
+      "active_courses": "Cours actifs",
+      "success_rate": "Taux de réussite 92%"
     }
   },
   "student": {
@@ -267,7 +319,7 @@
       "duration": "Durée (minutes)",
       "access_control": "Accès à la leçon",
       "free_course_info": "Toutes les leçons de ce cours sont automatiquement gratuites pour tout le monde. Vous pouvez toujours utiliser l'option \"Aperçu\" pour mettre en avant les leçons clés.",
-      "paid_course_info": "C'est un cours payant (${{price}}). Vous pouvez marquer des leçons individuelles comme gratuites pour donner un aperçu aux étudiants !",
+      "paid_course_info": "C'est un cours payant ({{price}}€). Vous pouvez marquer des leçons individuelles comme gratuites pour donner un aperçu aux étudiants !",
       "mark_preview": "Marquer comme Aperçu",
       "preview_desc": "Mettre en avant cette leçon sur la page de détails du cours",
       "mark_free": "Marquer comme Gratuit",

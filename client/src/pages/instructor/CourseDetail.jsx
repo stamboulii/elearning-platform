@@ -125,7 +125,7 @@ const InstructorCourseDetail = () => {
             <MetricCard
               icon={<DollarSign className="w-5 h-5 text-emerald-600" />}
               label="Revenue"
-              value={`$${estimatedRevenue.toFixed(0)}`}
+              value={`€${estimatedRevenue.toFixed(0)}`}
               bgColor="bg-emerald-50"
             />
             <MetricCard
@@ -179,7 +179,7 @@ const InstructorCourseDetail = () => {
                 <div className="space-y-4">
                   <DetailRow icon={<BookOpen className="w-4 h-4 text-indigo-600" />} label="Lessons" value={totalLessons} />
                   <DetailRow icon={<Clock className="w-4 h-4 text-purple-600" />} label="Duration" value={`${Math.floor(totalDuration / 60)}h ${totalDuration % 60}m`} />
-                  <DetailRow icon={<DollarSign className="w-4 h-4 text-emerald-600" />} label="Price" value={`$${course.discountPrice || course.price}`} />
+                  <DetailRow icon={<DollarSign className="w-4 h-4 text-emerald-600" />} label="Price" value={`€${course.discountPrice || course.price}`} />
                   <DetailRow icon={<FileText className="w-4 h-4 text-blue-600" />} label="Category" value={course.category?.name || 'N/A'} />
                   <DetailRow icon={<Award className="w-4 h-4 text-amber-600" />} label="Level" value={course.level || 'N/A'} />
                 </div>

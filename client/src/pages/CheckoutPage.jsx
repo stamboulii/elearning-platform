@@ -94,7 +94,7 @@ const CheckoutPage = () => {
   };
 
   const formatPrice = (price) => {
-    return `$${parseFloat(price).toFixed(2)}`;
+    return `€${parseFloat(price).toFixed(2)}`;
   };
 
   if (loading) {

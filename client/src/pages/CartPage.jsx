@@ -208,7 +208,7 @@ const CartPage = () => {
   };
 
   const formatPrice = (price) => {
-    return `$${parseFloat(price).toFixed(2)}`;
+    return `€${parseFloat(price).toFixed(2)}`;
   };
 
   // Calculate total with coupon
@@ -520,7 +520,7 @@ const CartPage = () => {
                         ) : (
                           <div className="flex items-center gap-1">
                             <DollarSign className="w-3 h-3" />
-                            <span>Save ${appliedCoupon.discountValue} on applicable courses</span>
+                            <span>Save {appliedCoupon.discountValue}€ on applicable courses</span>
                           </div>
                         )}
                       </div>

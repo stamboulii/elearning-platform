@@ -252,7 +252,7 @@ const CreateCourse = () => {
                       Regular Price (USD) <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative group">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-lg font-black transition-colors group-focus-within:text-indigo-500">$</span>
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-lg font-black transition-colors group-focus-within:text-indigo-500">€</span>
                       <input
                         type="number"
                         name="price"
@@ -276,7 +276,7 @@ const CreateCourse = () => {
                       <span className="text-slate-400 dark:text-slate-500 text-[10px] ml-2 uppercase tracking-widest">(optional)</span>
                     </label>
                     <div className="relative group">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-lg font-black transition-colors group-focus-within:text-emerald-500">$</span>
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-lg font-black transition-colors group-focus-within:text-emerald-500">€</span>
                       <input
                         type="number"
                         name="discountPrice"
@@ -404,9 +404,9 @@ const CreateCourse = () => {
               {!formData.isFree && formData.price && (
                 <div>
                   <span className="text-slate-400 dark:text-slate-600 block mb-1">Price</span>
-                  <span className="text-indigo-600 dark:text-indigo-400">${formData.price}</span>
+                  <span className="text-indigo-600 dark:text-indigo-400">{formData.price}€</span>
                   {formData.discountPrice && (
-                    <span className="text-emerald-500 dark:text-emerald-400 ml-2">(${formData.discountPrice})</span>
+                    <span className="text-emerald-500 dark:text-emerald-400 ml-2">({formData.discountPrice}€)</span>
                   )}
                 </div>
               )}

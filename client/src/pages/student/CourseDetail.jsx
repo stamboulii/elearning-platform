@@ -167,7 +167,7 @@ const CourseDetail = () => {
           </div>
           <div className="flex items-center gap-6">
             <div className="hidden md:block">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">${course.discountPrice || course.price}</span>
+              <span className="text-2xl font-black text-slate-900 dark:text-white">{course.discountPrice || course.price}€</span>
             </div>
             <button
               onClick={handleEnroll}
@@ -227,9 +227,9 @@ const CourseDetail = () => {
               <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-5xl font-black text-white">${course.discountPrice || course.price}</span>
+                    <span className="text-5xl font-black text-white">{course.discountPrice || course.price}€</span>
                     {course.discountPrice && (
-                      <span className="text-xl text-indigo-300 line-through">${course.price}</span>
+                      <span className="text-xl text-indigo-300 line-through">{course.price}€</span>
                     )}
                   </div>
                   <div className="flex items-center gap-4 w-full md:w-auto">
