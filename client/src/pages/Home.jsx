@@ -20,6 +20,35 @@ import {
   Sparkles
 } from 'lucide-react';
 
+
+const CategoryIcon = ({ icon, picture }) => {
+  if (picture) {
+    return (
+      <img
+        src={picture}
+        alt="Category"
+        className="w-full h-full rounded-xl object-cover"
+      />
+    );
+  }
+
+  // Default SVG Icon
+  return (
+    <svg
+      className="w-full h-full rounded-xl"
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="64" height="64" rx="16" fill="#EEF2FF" />
+      <path d="M16 20H48C50.2091 20 52 21.7909 52 24V40C52 42.2091 50.2091 44 48 44H16C13.7909 44 12 42.2091 12 40V24C12 21.7909 13.7909 20 16 20Z" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 28H52" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="24" cy="36" r="3" fill="#6366F1" />
+      <circle cx="42" cy="36" r="3" fill="#6366F1" />
+    </svg>
+  );
+};
+
 // Step Card Component
 const StepCard = ({ number, title, description, icon }) => (
   <div className="relative z-10 flex flex-col items-center text-center p-8 bg-white dark:bg-slate-900 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all group">
@@ -369,31 +398,80 @@ const CategoryCard = ({ category, index }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const colors = [
-    'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-    'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
-    'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800',
-    'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
-    'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
-    'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800',
-    'bg-cyan-50 text-cyan-600 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800',
-    'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
+    {
+      bg: 'bg-gradient-to-br from-blue-400 to-blue-600',
+      light: 'bg-blue-50 dark:bg-blue-900/20',
+      text: 'text-blue-600 dark:text-blue-400',
+      border: 'border-blue-100 dark:border-blue-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-purple-400 to-purple-600',
+      light: 'bg-purple-50 dark:bg-purple-900/20',
+      text: 'text-purple-600 dark:text-purple-400',
+      border: 'border-purple-100 dark:border-purple-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-indigo-400 to-indigo-600',
+      light: 'bg-indigo-50 dark:bg-indigo-900/20',
+      text: 'text-indigo-600 dark:text-indigo-400',
+      border: 'border-indigo-100 dark:border-indigo-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
+      light: 'bg-emerald-50 dark:bg-emerald-900/20',
+      text: 'text-emerald-600 dark:text-emerald-400',
+      border: 'border-emerald-100 dark:border-emerald-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-amber-400 to-amber-600',
+      light: 'bg-amber-50 dark:bg-amber-900/20',
+      text: 'text-amber-600 dark:text-amber-400',
+      border: 'border-amber-100 dark:border-amber-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-rose-400 to-rose-600',
+      light: 'bg-rose-50 dark:bg-rose-900/20',
+      text: 'text-rose-600 dark:text-rose-400',
+      border: 'border-rose-100 dark:border-rose-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-cyan-400 to-cyan-600',
+      light: 'bg-cyan-50 dark:bg-cyan-900/20',
+      text: 'text-cyan-600 dark:text-cyan-400',
+      border: 'border-cyan-100 dark:border-cyan-800'
+    },
+    {
+      bg: 'bg-gradient-to-br from-orange-400 to-orange-600',
+      light: 'bg-orange-50 dark:bg-orange-900/20',
+      text: 'text-orange-600 dark:text-orange-400',
+      border: 'border-orange-100 dark:border-orange-800'
+    }
   ];
 
-  const colorStyle = colors[index % colors.length];
+  const colorTheme = colors[index % colors.length];
 
   return (
     <div
       onClick={() => navigate(`/courses?category=${category.id}`)}
-      className="bg-white dark:bg-slate-900 flex flex-col items-center p-8 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl hover:border-indigo-600 dark:hover:border-indigo-500 transition-all cursor-pointer group hover:-translate-y-2"
+      className="bg-white dark:bg-slate-900 relative overflow-hidden flex flex-col items-center p-8 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all cursor-pointer group hover:-translate-y-2"
     >
-      <div className={`w-16 h-16 ${colorStyle} rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>
-        {category.icon || '📚'}
+      {/* Gradient Background Glow */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br ${colorTheme.bg}`}></div>
+
+      {/* Icon Container */}
+      <div className={`relative w-16 h-16 ${colorTheme.light} ${colorTheme.border} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 border-2`}>
+        <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 bg-gradient-to-br ${colorTheme.bg} transition-opacity duration-300`}></div>
+        <span className={`relative z-10 ${colorTheme.text}`}>
+          <CategoryIcon icon={category.icon} picture={category.picture} />
+        </span>
       </div>
-      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{category.name}</h3>
-      <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 dark:bg-slate-800 rounded-full">
-        <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
-        <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-          {category._count?.courses || 0} {t('home.categories.open_courses')}
+
+      <h3 className="relative z-10 text-lg font-bold text-slate-900 dark:text-white mb-3 text-center group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{category.name}</h3>
+
+      <div className="relative z-10 flex items-center gap-2 px-4 py-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-full border border-slate-100 dark:border-slate-700">
+        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${colorTheme.bg}`}></div>
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+          {category._count?.courses || 0} {t('home.categories.courses')}
         </p>
       </div>
     </div>
