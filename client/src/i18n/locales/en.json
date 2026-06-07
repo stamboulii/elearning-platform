@@ -253,7 +253,8 @@
         "sort_newest": "Newest First",
         "sort_oldest": "Oldest First",
         "sort_title": "Title (A-Z)",
-        "sort_students": "Most Students"
+        "sort_students": "Most Students",
+        "archived": "Archived"
       },
       "active_filters": "Active Filters",
       "clear_all": "Clear all",
@@ -279,6 +280,10 @@
         "in_progress": "In Progress:",
         "avg_progress": "Avg Progress:",
         "level": "Level"
+      },
+      "modal": {
+        "delete_title": "Delete Course",
+        "delete_message": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone."
       }
     },
     "course_builder": {
@@ -546,7 +551,8 @@
         "no_parent": "No Parent",
         "cancel": "Cancel",
         "saving": "Saving...",
-        "save": "Save"
+        "save": "Save",
+        "delete_title": "Delete Category"
       },
       "confirm": {
         "delete": "Are you sure you want to delete this category?"
@@ -587,7 +593,8 @@
         "revoke": "Revoke Enrollment"
       },
       "confirm": {
-        "revoke": "Are you sure you want to revoke this enrollment? This will remove the student's access to the course."
+        "revoke": "Are you sure you want to revoke this enrollment? This will remove the student's access to the course.",
+        "revoke_message": "Are you sure you want to revoke this enrollment?"
       },
       "success": {
         "revoked": "Enrollment revoked successfully"
@@ -665,7 +672,8 @@
         "delete": "Delete"
       },
       "confirm": {
-        "delete": "Are you sure you want to delete this coupon?"
+        "delete": "Are you sure you want to delete this coupon?",
+        "delete_message": "Are you sure you want to delete this coupon? This action cannot be undone."
       },
       "success": {
         "created": "Coupon created successfully",
@@ -728,7 +736,9 @@
       },
       "confirm": {
         "refund": "Are you sure you want to refund this transaction?",
-        "approve": "Are you sure you want to approve this offline payment?"
+        "refund_message": "Are you sure you want to refund transaction #{{reference}}?",
+        "approve": "Are you sure you want to approve this offline payment?",
+        "approve_message": "Are you sure you want to approve offline payment #{{reference}}?"
       },
       "success": {
         "exported": "Transactions exported successfully",

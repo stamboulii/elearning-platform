@@ -5,6 +5,8 @@ import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './src/config/swagger.js';
 import dotenv from 'dotenv';
+import http from 'http';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
@@ -26,7 +28,11 @@ import cartRoutes from './src/routes/cartRoutes.js';
 import couponRoutes from './src/routes/couponRoutes.js';
 import checkoutRoutes from './src/routes/checkoutRoutes.js';
 import transactionRoutes from './src/routes/transactionRoutes.js';
-import instructorAnalyticsRoutes from './src/routes/Instructoranalyticsroutes.js';  
+import instructorAnalyticsRoutes from './src/routes/Instructoranalyticsroutes.js';
+import notificationRoutes from './src/routes/notificationRoutes.js';
+import flashcardRoutes from './src/routes/flashcardRoutes.js';
+import studyScheduleRoutes from './src/routes/studyScheduleRoutes.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -56,10 +62,10 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, curl)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -110,6 +116,9 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/instructor-analytics', instructorAnalyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/study-schedules', studyScheduleRoutes);
 
 
 // Health check
@@ -148,10 +157,40 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Create HTTP server for Socket.io
+const server = http.createServer(app);
+
+// Initialize Socket.io
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+
+io.on('connection', (socket) => {
+  const userId = socket.handshake.query.userId;
+  if (userId) {
+    socket.join(userId);
+  }
+
+  socket.on('join', (uid) => {
+    socket.join(uid);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Socket disconnected:', socket.id);
+  });
+});
+
+// Make io accessible globally
+global.io = io;
+
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`); 
+  console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
 });

@@ -42,6 +42,7 @@ model User {
   replies       DiscussionReply[]
   quizAttempts  QuizAttempt[]
   badges        UserBadge[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -197,6 +198,7 @@ model Lesson {
   section         CourseSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   lessonProgress  LessonProgress[]
   quiz            Quiz?
+  flashcardDeck   FlashcardDeck?
 
   @@map("course_lessons")
 }
@@ -239,8 +241,25 @@ model Enrollment {
   // Gamification tracking
   xpEarned        Int             @default(0) @map("xp_earned")
 
+  studySchedule   StudySchedule?
+
   @@unique([userId, courseId])
   @@map("enrollments")
+}
+
+model StudySchedule {
+  id              String      @id @default(uuid())
+  enrollmentId    String      @unique @map("enrollment_id")
+  targetDate      DateTime    @map("target_date")
+  hoursPerDay     Float       @default(1.0) @map("hours_per_day")
+  scheduleData    Json        @map("schedule_data")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  enrollment      Enrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@map("study_schedules")
 }
 
 enum CompletionStatus {
@@ -562,8 +581,68 @@ model UserBadge {
 
   // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id])
 
   @@unique([userId, badgeId])
   @@map("user_badges")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  data      Json?
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+  @@index([userId, createdAt])
+  @@index([userId, isRead])
+}
+
+enum NotificationType {
+  ENROLLMENT
+  PAYMENT
+  REVIEW
+  DISCUSSION
+  CERTIFICATE
+  COURSE_PUBLISHED
+  QUIZ_RESULT
+  WISHLIST_UPDATE
+  SYSTEM
+  OTHER
+}
+// ============================================
+// FLASHCARDS
+// ============================================
+
+model FlashcardDeck {
+  id        String   @id @default(uuid())
+  lessonId  String   @unique @map("lesson_id")
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lesson     Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  flashcards Flashcard[]
+
+  @@map("flashcard_decks")
+}
+
+model Flashcard {
+  id        String   @id @default(uuid())
+  deckId    String   @map("deck_id")
+  front     String   @db.Text
+  back      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  deck FlashcardDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+
+  @@map("flashcards")
 }

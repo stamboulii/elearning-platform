@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import courseService from '../services/courseService';
 import enrollmentService from '../services/enrollmentService';
+import toast from '../utils/toast';
+import Avatar from '../components/common/Avatar';
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -34,7 +36,7 @@ const CourseDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching course:', error);
-      alert('Course not found');
+      toast.error('Course not found');
       navigate('/courses');
     } finally {
       setLoading(false);
@@ -61,7 +63,7 @@ const CourseDetail = () => {
       navigate(`/student/courses/${id}/learn`);
     } catch (error) {
       console.error('Error enrolling:', error);
-      alert(error.response?.data?.message || 'Failed to enroll in course');
+      toast.error(error.response?.data?.message || 'Failed to enroll in course');
     } finally {
       setEnrolling(false);
     }
@@ -132,10 +134,11 @@ const CourseDetail = () => {
 
               {/* Instructor */}
               <div className="flex items-center gap-3">
-                <img
-                  src={course.instructor?.profilePicture || 'https://via.placeholder.com/50'}
-                  alt={course.instructor?.firstName}
-                  className="w-12 h-12 rounded-full object-cover"
+                <Avatar
+                  src={course.instructor?.profilePicture}
+                  firstName={course.instructor?.firstName}
+                  lastName={course.instructor?.lastName}
+                  size="lg"
                 />
                 <div>
                   <p className="text-sm text-gray-400 dark:text-slate-400">Created by</p>
@@ -455,10 +458,11 @@ const ReviewsTab = ({ reviews, courseId }) => {
 const ReviewCard = ({ review }) => (
   <div className="border-b dark:border-slate-700 pb-6 last:border-b-0">
     <div className="flex items-start gap-4">
-      <img
-        src={review.user?.profilePicture || 'https://via.placeholder.com/50'}
-        alt={review.user?.firstName}
-        className="w-12 h-12 rounded-full object-cover"
+      <Avatar
+        src={review.user?.profilePicture}
+        firstName={review.user?.firstName}
+        lastName={review.user?.lastName}
+        size="lg"
       />
       <div className="flex-1">
         <div className="flex items-center justify-between mb-2">
@@ -491,10 +495,11 @@ const InstructorInfo = ({ instructor }) => (
   <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 mt-6 transition-colors">
     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">About the Instructor</h2>
     <div className="flex items-start gap-4">
-      <img
-        src={instructor?.profilePicture || 'https://via.placeholder.com/80'}
-        alt={instructor?.firstName}
-        className="w-20 h-20 rounded-full object-cover"
+      <Avatar
+        src={instructor?.profilePicture}
+        firstName={instructor?.firstName}
+        lastName={instructor?.lastName}
+        size="xl"
       />
       <div>
         <h3 className="text-xl font-semibold text-gray-800 dark:text-white">

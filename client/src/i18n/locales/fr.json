@@ -253,7 +253,8 @@
         "sort_newest": "Le plus récent",
         "sort_oldest": "Le plus ancien",
         "sort_title": "Titre (A-Z)",
-        "sort_students": "Plus d'étudiants"
+        "sort_students": "Plus d'étudiants",
+        "archived": "Archivé"
       },
       "active_filters": "Filtres actifs",
       "clear_all": "Tout effacer",
@@ -279,6 +280,10 @@
         "in_progress": "En cours :",
         "avg_progress": "Progression moyenne :",
         "level": "Niveau"
+      },
+      "modal": {
+        "delete_title": "Supprimer le cours",
+        "delete_message": "Êtes-vous sûr de vouloir supprimer \"{{title}}\" ? Cette action est irréversible."
       }
     },
     "course_builder": {
@@ -546,11 +551,13 @@
         "no_parent": "Aucune parente",
         "cancel": "Annuler",
         "saving": "Enregistrement...",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "delete_title": "Supprimer la catégorie"
       },
       "confirm": {
         "delete": "Êtes-vous sûr de vouloir supprimer cette catégorie ?"
       },
+      
       "success": {
         "created": "Catégorie créée avec succès",
         "updated": "Catégorie mise à jour avec succès",
@@ -587,7 +594,8 @@
         "revoke": "Révoquer l'inscription"
       },
       "confirm": {
-        "revoke": "Êtes-vous sûr de vouloir révoquer cette inscription ? Cela retirera l'accès de l'étudiant au cours."
+        "revoke": "Êtes-vous sûr de vouloir révoquer cette inscription ? Cela retirera l'accès de l'étudiant au cours.",
+        "revoke_message": "Êtes-vous sûr de vouloir révoquer cette inscription ?"
       },
       "success": {
         "revoked": "Inscription révoquée avec succès"
@@ -665,7 +673,8 @@
         "delete": "Supprimer"
       },
       "confirm": {
-        "delete": "Êtes-vous sûr de vouloir supprimer ce coupon ?"
+        "delete": "Êtes-vous sûr de vouloir supprimer ce coupon ?",
+        "delete_message": "Êtes-vous sûr de vouloir supprimer ce coupon ? Cette action est irréversible."
       },
       "success": {
         "created": "Coupon créé avec succès",
@@ -728,7 +737,9 @@
       },
       "confirm": {
         "refund": "Êtes-vous sûr de vouloir rembourser cette transaction ?",
-        "approve": "Êtes-vous sûr d'approuver ce paiement hors ligne ?"
+        "refund_message": "Êtes-vous sûr de vouloir rembourser la transaction #{{reference}} ?",
+        "approve": "Êtes-vous sûr d'approuver ce paiement hors ligne ?",
+        "approve_message": "Êtes-vous sûr d'approuver le paiement hors ligne #{{reference}} ?"
       },
       "success": {
         "exported": "Transactions exportées avec succès",

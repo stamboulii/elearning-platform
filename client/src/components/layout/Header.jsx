@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../context/NotificationContext';
 import { useTheme } from '../../context/ThemeContext';
 import api from '../../services/api';
 import LanguageSwitcher from '../common/LanguageSwitcher';
@@ -19,19 +20,23 @@ import {
     GraduationCap,
     ChevronDown
 } from 'lucide-react';
+import Avatar from '../common/Avatar';
 
 const Header = () => {
     const { t } = useTranslation();
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const { theme } = useTheme();
+    const { unreadCount, notifications, markAsRead } = useNotifications();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
     const [cartCount, setCartCount] = useState(0);
     const [favoriteCount, setFavoriteCount] = useState(0);
     const [loadingFavoriteCount, setLoadingFavoriteCount] = useState(false);
     const [loadingCartCount, setLoadingCartCount] = useState(false);
     const userMenuRef = useRef(null);
+    const notificationMenuRef = useRef(null);
 
     // Fetch favorite count when user is authenticated
     useEffect(() => {
@@ -156,6 +161,17 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (notificationMenuRef.current && !notificationMenuRef.current.contains(event.target)) {
+                setIsNotificationMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -216,7 +232,7 @@ const Header = () => {
                                 to="/instructor/courses"
                                 className="text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold flex items-center gap-2 group"
                             >
-                                {t('common.courses')}
+                                {t('common.my_courses')}
                             </Link>
                         )}
                     </div>
@@ -271,13 +287,66 @@ const Header = () => {
                                 )}
 
                                 {/* Notifications Icon */}
-                                <button
-                                    className="relative p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group hidden sm:block"
-                                    title="Notifications"
-                                >
-                                    <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
-                                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
-                                </button>
+                                <div className="relative" ref={notificationMenuRef}>
+                                    <button
+                                        onClick={() => setIsNotificationMenuOpen(!isNotificationMenuOpen)}
+                                        className="relative p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group hidden sm:block"
+                                        title="Notifications"
+                                    >
+                                        <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                                        {unreadCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                                                {unreadCount > 9 ? '9+' : unreadCount}
+                                            </span>
+                                        )}
+                                    </button>
+
+                                    {/* Notification Dropdown */}
+                                    {isNotificationMenuOpen && (
+                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 max-h-96 overflow-y-auto">
+                                            <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
+                                                <h3 className="font-bold text-slate-900 dark:text-white">Notifications</h3>
+                                            </div>
+                                            {notifications.length === 0 ? (
+                                                <div className="px-4 py-6 text-center">
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">No notifications yet</p>
+                                                </div>
+                                            ) : (
+                                                <div className="max-h-64 overflow-y-auto">
+                                                    {notifications.slice(0, 5).map((notification) => (
+                                                        <div
+                                                            key={notification.id}
+                                                            onClick={() => {
+                                                                if (!notification.isRead) markAsRead(notification.id);
+                                                                if (notification.data?.courseId) {
+                                                                    navigate(`/courses/${notification.data.courseId}`);
+                                                                }
+                                                                setIsNotificationMenuOpen(false);
+                                                            }}
+                                                            className={`px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors ${!notification.isRead ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''}`}
+                                                        >
+                                                            <p className={`text-sm font-semibold text-slate-900 dark:text-white ${!notification.isRead ? 'font-bold' : ''}`}>
+                                                                {notification.title}
+                                                            </p>
+                                                            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-1">
+                                                                {notification.message}
+                                                            </p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <div className="px-4 py-2 border-t border-slate-100 dark:border-slate-700">
+                                                <Link
+                                                    to="/notifications"
+                                                    onClick={() => setIsNotificationMenuOpen(false)}
+                                                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                                                >
+                                                    View all notifications
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
 
                                 {/* User Menu */}
                                 <div className="relative" ref={userMenuRef}>
@@ -286,10 +355,12 @@ const Header = () => {
                                         className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group"
                                     >
                                         <div className="relative">
-                                            <img
-                                                src={user.profilePicture || 'https://via.placeholder.com/40'}
-                                                alt={user.firstName}
-                                                className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 group-hover:border-indigo-300 transition-colors"
+                                            <Avatar
+                                                src={user.profilePicture}
+                                                firstName={user.firstName}
+                                                lastName={user.lastName}
+                                                size="md"
+                                                className="group-hover:border-indigo-300 transition-colors"
                                             />
                                             <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                                         </div>

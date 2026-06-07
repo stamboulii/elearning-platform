@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import courseService from '../../services/courseService';
 import enrollmentService from '../../services/enrollmentService';
+import toast from '../../utils/toast';
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -54,7 +55,7 @@ const Checkout = () => {
       });
     } catch (error) {
       console.error('Purchase error:', error);
-      alert(error.response?.data?.message || 'Payment processing failed. Please try again.');
+      toast.error(error.response?.data?.message || 'Payment processing failed. Please try again.');
     } finally {
       setProcessing(false);
     }

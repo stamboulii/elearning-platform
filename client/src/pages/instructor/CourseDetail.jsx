@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import courseService from '../../services/courseService';
 import enrollmentService from '../../services/enrollmentService';
 import toast from '../../utils/toast';
+import Avatar from '../../components/common/Avatar';
 import {
   BookOpen,
   Users,
@@ -45,7 +46,7 @@ const InstructorCourseDetail = () => {
 
         // Verify instructor owns this course
         if (courseData.instructor?.id !== user?.id) {
-          alert('You do not have permission to view this course');
+          toast.error('You do not have permission to view this course');
           navigate('/instructor/courses');
           return;
         }
@@ -53,7 +54,7 @@ const InstructorCourseDetail = () => {
         setCourse(courseData);
       } catch (error) {
         console.error('Error fetching course:', error);
-        alert('Course not found');
+          toast.error('Course not found');
         navigate('/instructor/courses');
       } finally {
         setLoading(false);
@@ -446,10 +447,11 @@ const StudentsTab = ({ courseId, totalStudents }) => {
               <tr key={enrollment.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                 <td className="py-4">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={enrollment.user?.profilePicture || 'https://via.placeholder.com/32'}
-                      className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700"
-                      alt="Avatar"
+                    <Avatar
+                      src={enrollment.user?.profilePicture}
+                      firstName={enrollment.user?.firstName}
+                      lastName={enrollment.user?.lastName}
+                      size="sm"
                     />
                     <div>
                       <div className="text-sm font-bold text-slate-900 dark:text-white">
@@ -484,7 +486,7 @@ const StudentsTab = ({ courseId, totalStudents }) => {
           </tbody>
         </table>
       </div>
-    </div>
+    </div >
   );
 };
 
@@ -535,10 +537,11 @@ const ReviewsTab = ({ reviews }) => {
       <div className="space-y-4">
         {reviews.map(review => (
           <div key={review.id} className="flex gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <img
-              src={review.user?.profilePicture || 'https://via.placeholder.com/40'}
-              className="w-10 h-10 rounded-full object-cover"
-              alt="User"
+            <Avatar
+              src={review.user?.profilePicture}
+              firstName={review.user?.firstName}
+              lastName={review.user?.lastName}
+              size="md"
             />
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
@@ -559,7 +562,7 @@ const ReviewsTab = ({ reviews }) => {
           </div>
         ))}
       </div>
-    </div>
+    </div >
   );
 };
 

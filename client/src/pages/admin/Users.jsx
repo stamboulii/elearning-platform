@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
+import Avatar from '../../components/common/Avatar';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import toast from '../../utils/toast';
 
 const AdminUsers = () => {
   const { t } = useTranslation();
@@ -16,6 +19,12 @@ const AdminUsers = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [showToggleModal, setShowToggleModal] = useState(false);
+  const [userToToggle, setUserToToggle] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -36,28 +45,46 @@ const AdminUsers = () => {
 
 
   const handleToggleStatus = async (userId) => {
-    if (!confirm(t('admin.users.confirm.toggle_status'))) return;
+    setUserToToggle(userId);
+    setShowToggleModal(true);
+  };
 
+  const confirmToggleStatus = async () => {
+    if (!userToToggle) return;
     try {
-      await adminService.toggleUserStatus(userId);
+      setActionLoading(true);
+      await adminService.toggleUserStatus(userToToggle);
       fetchUsers();
-      alert(t('admin.users.success.status_updated'));
+      toast.success(t('admin.users.success.status_updated'));
     } catch (error) {
       console.error('Error toggling user status:', error);
-      alert(t('admin.users.error.status_update_failed'));
+      toast.error(t('admin.users.error.status_update_failed'));
+    } finally {
+      setActionLoading(false);
+      setShowToggleModal(false);
+      setUserToToggle(null);
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!confirm(t('admin.users.confirm.delete'))) return;
+    setUserToDelete(userId);
+    setShowDeleteModal(true);
+  };
 
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
     try {
-      await adminService.deleteUser(userId);
+      setActionLoading(true);
+      await adminService.deleteUser(userToDelete);
       fetchUsers();
-      alert(t('admin.users.success.deleted'));
+      toast.success(t('admin.users.success.deleted'));
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert(t('admin.users.error.delete_failed'));
+      toast.error(t('admin.users.error.delete_failed'));
+    } finally {
+      setActionLoading(false);
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     }
   };
 
@@ -149,10 +176,11 @@ const AdminUsers = () => {
                     <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <img
-                            src={user.profilePicture || 'https://via.placeholder.com/40'}
-                            alt={user.firstName}
-                            className="w-10 h-10 rounded-full object-cover"
+                          <Avatar
+                            src={user.profilePicture}
+                            firstName={user.firstName}
+                            lastName={user.lastName}
+                            size="md"
                           />
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -280,11 +308,11 @@ const EditUserModal = ({ user, onClose, onSuccess }) => {
     try {
       setLoading(true);
       await adminService.updateUser(user.id, formData);
-      alert(t('admin.users.success.updated'));
+      toast.success(t('admin.users.success.updated'));
       onSuccess();
     } catch (error) {
       console.error('Error updating user:', error);
-      alert(t('admin.users.error.update_failed'));
+      toast.error(t('admin.users.error.update_failed'));
     } finally {
       setLoading(false);
     }

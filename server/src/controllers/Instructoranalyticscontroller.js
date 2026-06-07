@@ -77,7 +77,7 @@ export const getRevenueAnalytics = async (req, res) => {
 
     courses.forEach((course) => {
       const coursePrice = parseFloat(course.price);
-      
+
       course.enrollments.forEach((enrollment) => {
         if (enrollment.isPaid) {
           totalRevenue += parseFloat(enrollment.paidAmount || coursePrice);
@@ -135,11 +135,11 @@ export const getMonthlyRevenue = async (instructorId) => {
 
   // Group by month
   const monthlyData = {};
-  
+
   enrollments.forEach((enrollment) => {
     const date = new Date(enrollment.enrolledAt);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-    
+
     if (!monthlyData[monthKey]) {
       monthlyData[monthKey] = {
         month: monthKey,
@@ -147,7 +147,7 @@ export const getMonthlyRevenue = async (instructorId) => {
         enrollments: 0,
       };
     }
-    
+
     monthlyData[monthKey].revenue += parseFloat(
       enrollment.paidAmount || enrollment.course.price
     );
@@ -188,12 +188,12 @@ export const getEnrollmentStatistics = async (req, res) => {
     const statistics = courses.map((course) => {
       const paidEnrollments = course.enrollments.filter((e) => e.isPaid);
       const pendingEnrollments = course.enrollments.filter((e) => !e.isPaid);
-      
+
       const revenue = paidEnrollments.reduce(
         (sum, e) => sum + parseFloat(e.paidAmount || course.price),
         0
       );
-      
+
       const pendingRevenue = pendingEnrollments.length * parseFloat(course.price);
 
       return {
@@ -275,6 +275,98 @@ export const getPendingPayments = async (req, res) => {
   }
 };
 
+export const getCourseAnalytics = async (req, res) => {
+  try {
+    const instructorId = req.user.id;
+    const { courseId } = req.params;
+
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+      },
+      include: {
+        _count: {
+          select: {
+            enrollments: true,
+            sections: true,
+            reviews: true,
+          },
+        },
+        enrollments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                profilePicture: true,
+              },
+            },
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    if (course.instructorId !== instructorId) {
+      return res.status(403).json({ error: 'Not authorized to view this course analytics' });
+    }
+
+    // Calculate revenue
+    const paidEnrollments = course.enrollments.filter((e) => e.isPaid);
+    const revenue = paidEnrollments.reduce(
+      (sum, e) => sum + parseFloat(e.paidAmount || course.price),
+      0
+    );
+
+    // Calculate average progress
+    const totalProgress = course.enrollments.reduce((sum, e) => sum + (e.progressPercentage || 0), 0);
+    const averageProgress = course.enrollments.length > 0
+      ? (totalProgress / course.enrollments.length).toFixed(2)
+      : 0;
+
+    res.json({
+      course: {
+        id: course.id,
+        title: course.title,
+        price: course.price,
+        thumbnailImage: course.thumbnailImage,
+        category: course.category?.name,
+        createdAt: course.createdAt,
+      },
+      stats: {
+        totalEnrollments: course._count.enrollments,
+        paidEnrollments: paidEnrollments.length,
+        totalRevenue: revenue,
+        averageProgress: parseFloat(averageProgress),
+        totalReviews: course._count.reviews,
+      },
+      students: course.enrollments.map(e => ({
+        id: e.user.id,
+        name: `${e.user.firstName} ${e.user.lastName}`,
+        email: e.user.email,
+        profilePicture: e.user.profilePicture,
+        enrolledAt: e.enrolledAt,
+        progress: e.progressPercentage,
+        isPaid: e.isPaid,
+        paidAmount: e.paidAmount,
+      })),
+    });
+  } catch (error) {
+    console.error('Error fetching course analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch course analytics' });
+  }
+};
+
 // Get top performing courses
 export const getTopPerformingCourses = async (req, res) => {
   try {
@@ -313,7 +405,7 @@ export const getTopPerformingCourses = async (req, res) => {
         (sum, e) => sum + parseFloat(e.paidAmount || course.price),
         0
       );
-      
+
       const avgRating =
         course.reviews.length > 0
           ? course.reviews.reduce((sum, r) => sum + r.rating, 0) / course.reviews.length

@@ -1,57 +1,55 @@
-# E-Learning Platform
+# 🎓 E-Learning Platform
 
-A comprehensive, full-stack e-learning platform built with modern technologies. This platform enables students to learn from various courses, instructors to create and manage content, and administrators to oversee the entire ecosystem with gamification elements and detailed analytics.
+A state-of-the-art, full-stack learning management system built with focus on rich aesthetics, real-time engagement, and detailed analytics. This platform serves students, instructors, and administrators with a seamless, premium experience.
+
+> [!NOTE]
+> For a detailed technical overview of recent AI features and system improvements, please refer to the [SYSTEM_OVERVIEW.md](file:///home/hazar/Documents/personal-project/elearning-platform/SYSTEM_OVERVIEW.md).
 
 ## 🚀 Overview
 
-This project is a robust Learning Management System (LMS) designed for scalability and user engagement. It features a complete course management lifecycle, from creation and approval to enrollment and certification.
+This project is a robust e-learning ecosystem designed for high performance and user engagement. It features a complete course management lifecycle, real-time notifications via Socket.IO, and a premium design system with dark mode support and micro-animations.
 
 ## ✨ Key Features
 
+### 🔔 Real-time Engagement
+- **Instant Notifications:** Real-time alerts for course publication, student enrollments, and system updates powered by Socket.IO.
+- **Smart Routing:** Notifications automatically route users to contextually relevant pages (e.g., instructors go to course analytics on enrollment).
+
 ### 🎓 Student Features
-- **Course Discovery:** Browse and search courses by category, level, or keywords.
-- **Interactive Learning:** Progress tracking through lessons, sections, and quizzes.
-- **Gamification:** Earn XP, level up, and unlock badges based on learning milestones.
-- **Certificates:** Automatically generate and download PDF certificates upon course completion.
-- **Personalized Dashboard:** Track enrollments, progress, and achievements.
+- **Course Discovery:** Premium catalog with advanced filtering by category and difficulty.
+- **Interactive Learning:** Seamless course player with progress tracking and curriculum navigation.
+- **Gamification:** XP system, leveling, and badge unlocking for milestones.
+- **Certification:** Dynamic PDF certificate generation upon course mastery.
 
 ### 👨‍🏫 Instructor Features
-- **Course Builder:** Comprehensive tools to create sections, lessons, and quizzes.
-- **Analytics:** Individual course performance metrics and student engagement data.
-- **Dashboard:** Manage content and monitor earnings.
+- **Visual Course Builder:** Intuitive interface for creating multi-section curricula and uploading high-quality video content.
+- **Detailed Analytics:** Dedicated course performance dashboard with revenue tracking, enrollment trends, and student progress metrics.
+- **Content Management:** Full control over drafts, publication, and student engagement notifications.
 
 ### 🛠️ Admin Features
-- **Global Management:** Oversee all users, courses, and platform categories.
-- **Financial Tracking:** Monitor transactions and handle refunds.
-- **Advanced Analytics:** Real-time revenue trends, user growth, and platform health.
-- **Course Moderation:** Review and approve/reject instructor content.
+- **Global Control:** Comprehensive management of users, courses, and platform categories.
+- **Financial Oversight:** Real-time transaction monitoring and enrollment tracking.
+- **Course Moderation:** Quality control gate for all platform content.
 
 ## 💻 Tech Stack
 
 ### Frontend
 - **Framework:** React 19 + Vite
-- **Styling:** Tailwind CSS
-- **Routing:** React Router 7
-- **Icons:** Lucide-React
-- **Charts:** Recharts
-- **State Management:** React Hooks (useState, useEffect, useMemo, useCallback)
+- **Real-time:** Socket.IO Client
+- **Styling:** Tailwind CSS + Vanilla CSS (Custom Design System)
+- **Icons & UI:** Lucide-React + Framer Motion (Animations)
+- **Data Viz:** Recharts (Analytics)
 
 ### Backend
-- **Runtime:** Node.js (Express 5)
-- **Database:** PostgreSQL via Prisma ORM
-- **Authentication:** JSON Web Token (JWT) with secure password hashing (bcryptjs)
-- **Media:** Cloudinary (Storage for thumbnails and profiles)
-- **Containerization:** Docker & Docker Compose
-- **Documentation:** Swagger (OpenAPI 3.0)
-- **Payments:** Stripe integration
+- **Framework:** Node.js + Express 5
+- **ORM:** Prisma
+- **Database:** PostgreSQL
+- **Real-time:** Socket.IO
+- **AI Integration:** Groq (AI-generated course descriptions)
+- **Authentication:** JWT + Bcryptjs
+- **Storage:** Cloudinary / Local Storage
 
 ## 🛠️ Installation & Setup
-
-### Prerequisites
-- Docker & Docker Compose
-- Node.js (v18+)
-
-### Development Setup
 
 1. **Clone the repository:**
    ```bash
@@ -59,45 +57,23 @@ This project is a robust Learning Management System (LMS) designed for scalabili
    cd elearning-platform
    ```
 
-2. **Backend Setup:**
+2. **Environment Configuration:**
+   - Configure `.env` files in both `client` and `server` directories.
+
+3. **Backend Setup:**
    ```bash
    cd server
-   # Create a .env file based on .env.example (if available)
-   docker-compose up -d
+   npm install
+   npx prisma generate
+   npm run dev
    ```
 
-3. **Frontend Setup:**
+4. **Frontend Setup:**
    ```bash
    cd client
    npm install
    npm run dev
    ```
 
-## 🏗️ Project Structure
-
-```text
-elearning-platform/
-├── client/             # React frontend applications
-│   ├── src/
-│   │   ├── components/ # Reusable UI components
-│   │   ├── pages/      # Page-level components (Admin, Student, Instructor)
-│   │   ├── services/   # API communication logic
-│   │   └── utils/      # Helper functions
-├── server/             # Express backend application
-│   ├── prisma/         # Database schema and migrations
-│   ├── src/
-│   │   ├── controllers/# Request handlers
-│   │   ├── services/   # Business logic
-│   │   ├── routes/     # API endpoints
-│   │   └── middleware/ # Authentication and security
-│   └── docker-compose.yml
-└── README.md           # Project documentation
-```
-
-## 📚 API Documentation
-
-Once the backend is running, you can access the interactive Swagger documentation at:
-`http://localhost:5000/api-docs`
-
 ---
-*Built with ❤️ for Modern Education.*
+*Built with ❤️ for the future of education.*

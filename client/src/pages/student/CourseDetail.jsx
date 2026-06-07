@@ -6,6 +6,7 @@ import courseService from '../../services/courseService';
 import enrollmentService from '../../services/enrollmentService';
 import api from '../../services/api';
 import toast from '../../utils/toast';
+import Avatar from '../../components/common/Avatar';
 import {
   BookOpen,
   Users,
@@ -41,6 +42,7 @@ const CourseDetail = () => {
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   const heroRef = useRef(null);
+  const isInstructor = user?.id === course?.instructor?.id;
 
   const fetchCourseDetails = async () => {
     try {
@@ -87,6 +89,11 @@ const CourseDetail = () => {
       return;
     }
 
+    if (enrollmentStatus?.isEnrolled) {
+      navigate(`/student/courses/${id}/learn`);
+      return;
+    }
+
     if (isInCart) {
       navigate('/cart');
       return;
@@ -104,7 +111,7 @@ const CourseDetail = () => {
         }
       } catch (error) {
         console.error('Error adding to cart:', error);
-        alert(error.response?.data?.message || 'Failed to add to cart');
+        toast.error(error.response?.data?.message || 'Failed to add to cart');
       } finally {
         setEnrolling(false);
       }
@@ -118,7 +125,7 @@ const CourseDetail = () => {
       navigate(`/student/courses/${id}/learn`);
     } catch (error) {
       console.error('Error enrolling:', error);
-      alert(error.response?.data?.message || 'Failed to enroll in course');
+      toast.error(error.response?.data?.message || 'Failed to enroll in course');
     } finally {
       setEnrolling(false);
     }
@@ -156,28 +163,43 @@ const CourseDetail = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 pb-20">
       {/* Sticky Purchase Bar */}
-      <div className={`fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-lg z-50 transform transition-transform duration-300 border-b border-slate-100 dark:border-slate-800 ${showStickyBar ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h2 className="font-bold text-slate-900 dark:text-white line-clamp-1 max-w-[300px]">{course.title}</h2>
-            <div className="hidden sm:flex items-center gap-2">
-              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-              <span className="font-bold text-slate-900 dark:text-white">{course.averageRating?.toFixed(1)}</span>
+      {user?.role !== 'ADMIN' && (
+        <div className={`fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-lg z-50 transform transition-transform duration-300 border-b border-slate-100 dark:border-slate-800 ${showStickyBar ? 'translate-y-0' : '-translate-y-full'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="font-bold text-slate-900 dark:text-white line-clamp-1 max-w-[300px]">{course.title}</h2>
+              <div className="hidden sm:flex items-center gap-2">
+                <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                <span className="font-bold text-slate-900 dark:text-white">{course.averageRating?.toFixed(1)}</span>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="hidden md:block">
-              <span className="text-2xl font-black text-slate-900 dark:text-white">{course.discountPrice || course.price}€</span>
+            <div className="flex items-center gap-6">
+              <div className="hidden md:block">
+                <span className="text-2xl font-black text-slate-900 dark:text-white">{course.discountPrice || course.price}€</span>
+              </div>
+              <button
+                onClick={isInstructor ? () => navigate(`/instructor/courses/${id}/builder`) : handleEnroll}
+                disabled={enrolling}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
+              >
+                {enrolling ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : isInstructor ? (
+                  'Manage Course'
+                ) : enrollmentStatus?.isEnrolled ? (
+                  t('student.course_detail.go_to_course')
+                ) : isInCart ? (
+                  t('student.course_detail.go_to_cart')
+                ) : (course.isFree || course.price === 0) ? (
+                  t('student.course_detail.enroll_now')
+                ) : (
+                  t('student.course_detail.buy_now')
+                )}
+              </button>
             </div>
-            <button
-              onClick={handleEnroll}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
-            >
-              {enrollmentStatus?.isEnrolled ? t('student.course_detail.go_to_course') : isInCart ? t('student.course_detail.go_to_cart') : (course.isFree || course.price === 0) ? t('student.course_detail.enroll_now') : t('student.course_detail.buy_now')}
-            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Hero Section */}
       <div ref={heroRef} className="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-900 text-white overflow-hidden">
@@ -224,63 +246,72 @@ const CourseDetail = () => {
               </div>
 
               {/* Purchase Box */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-5xl font-black text-white">{course.discountPrice || course.price}€</span>
-                    {course.discountPrice && (
-                      <span className="text-xl text-indigo-300 line-through">{course.price}€</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-4 w-full md:w-auto">
-                    <button
-                      onClick={handleEnroll}
-                      disabled={enrolling}
-                      className="flex-1 md:flex-none bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white px-10 py-4 rounded-2xl font-black text-lg hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-2"
-                    >
-                      {enrolling ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      ) : enrollmentStatus?.isEnrolled ? (
-                        <>
-                          <Play className="w-5 h-5" />
-                          {t('student.course_detail.go_to_course')}
-                        </>
-                      ) : isInCart ? (
-                        <>
-                          <ShoppingCart className="w-5 h-5" />
-                          {t('student.course_detail.go_to_cart')}
-                        </>
-                      ) : (course.isFree || course.price === 0) ? (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          {t('student.course_detail.enroll_free')}
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="w-5 h-5" />
-                          {t('student.course_detail.buy_now')}
-                        </>
+              {user?.role !== 'ADMIN' && (
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-5xl font-black text-white">{course.discountPrice || course.price}€</span>
+                      {course.discountPrice && (
+                        <span className="text-xl text-indigo-300 line-through">{course.price}€</span>
                       )}
-                    </button>
-                    {!enrollmentStatus?.isEnrolled && freeLessonsCount > 0 && (
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto">
                       <button
-                        onClick={handleStartFreeLessons}
-                        className="bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-2xl font-bold transition-all border border-white/20 flex items-center gap-2"
+                        onClick={isInstructor ? () => navigate(`/instructor/courses/${id}/builder`) : handleEnroll}
+                        disabled={enrolling}
+                        className="flex-1 md:flex-none bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white px-10 py-4 rounded-2xl font-black text-lg hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-2"
                       >
-                        <Eye className="w-5 h-5" />
-                        {t('student.course_detail.try_preview')}
+                        {enrolling ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        ) : isInstructor ? (
+                          <>
+                            <Sparkles className="w-5 h-5" />
+                            Manage Course
+                          </>
+                        ) : enrollmentStatus?.isEnrolled ? (
+                          <>
+                            <Play className="w-5 h-5" />
+                            {t('student.course_detail.go_to_course')}
+                          </>
+                        ) : isInCart ? (
+                          <>
+                            <ShoppingCart className="w-5 h-5" />
+                            {t('student.course_detail.go_to_cart')}
+                          </>
+                        ) : (course.isFree || course.price === 0) ? (
+                          <>
+                            <Sparkles className="w-5 h-5" />
+                            {t('student.course_detail.enroll_free')}
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-5 h-5" />
+                            {t('student.course_detail.buy_now')}
+                          </>
+                        )}
                       </button>
-                    )}
+                      {!enrollmentStatus?.isEnrolled && freeLessonsCount > 0 && (
+                        <button
+                          onClick={handleStartFreeLessons}
+                          className="bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-2xl font-bold transition-all border border-white/20 flex items-center gap-2"
+                        >
+                          <Eye className="w-5 h-5" />
+                          {t('student.course_detail.try_preview')}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Instructor */}
               <div className="mt-8 flex items-center gap-4">
-                <img
-                  src={course.instructor?.profilePicture || 'https://via.placeholder.com/60'}
-                  className="w-14 h-14 rounded-full border-2 border-indigo-400 shadow-xl object-cover ring-4 ring-indigo-500/20"
-                  alt="Instructor"
+                <Avatar
+                  src={course.instructor?.profilePicture}
+                  firstName={course.instructor?.firstName}
+                  lastName={course.instructor?.lastName}
+                  size="lg"
+                  className="border-2 border-indigo-400 shadow-xl ring-4 ring-indigo-50/20"
                 />
                 <div>
                   <p className="text-sm text-indigo-300 font-medium">{t('student.course_detail.created_by')}</p>
@@ -558,10 +589,11 @@ const ReviewsTab = ({ reviews }) => {
       <div className="space-y-4">
         {reviews?.map(review => (
           <div key={review.id} className="flex gap-4 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <img
-              src={review.user?.profilePicture || 'https://via.placeholder.com/40'}
-              className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
-              alt="User"
+            <Avatar
+              src={review.user?.profilePicture}
+              firstName={review.user?.firstName}
+              lastName={review.user?.lastName}
+              size="lg"
             />
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
@@ -578,7 +610,7 @@ const ReviewsTab = ({ reviews }) => {
           </div>
         ))}
       </div>
-    </div>
+    </div >
   );
 };
 
@@ -594,10 +626,12 @@ const InstructorInfo = ({ instructor }) => {
       </h2>
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="flex flex-col items-center">
-          <img
-            src={instructor?.profilePicture || 'https://via.placeholder.com/120'}
-            className="w-32 h-32 rounded-full object-cover mb-4 ring-4 ring-indigo-50 dark:ring-indigo-900/30 shadow-lg"
-            alt="Instructor"
+          <Avatar
+            src={instructor?.profilePicture}
+            firstName={instructor?.firstName}
+            lastName={instructor?.lastName}
+            size="2xl"
+            className="mb-4 ring-4 ring-indigo-50 dark:ring-indigo-900/30 shadow-lg"
           />
           <div className="text-center space-y-2">
             <div className="flex items-center gap-1 justify-center">

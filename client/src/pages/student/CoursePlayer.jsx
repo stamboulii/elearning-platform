@@ -1,290 +1,3 @@
-// /* eslint-disable react-hooks/exhaustive-deps */
-// /* eslint-disable no-unused-vars */
-// import { useState, useEffect } from 'react';
-// import { useParams, useNavigate, Link } from 'react-router-dom';
-// import courseService from '../../services/courseService';
-// import sectionService from '../../services/sectionService';
-// import progressService from '../../services/progressService';
-// import enrollmentService from '../../services/enrollmentService';
-// import { useAuth } from '../../hooks/useAuth';
-
-// const CoursePlayer = () => {
-//   const { courseId } = useParams();
-//   const navigate = useNavigate();
-//   const { user } = useAuth();
-
-//   const [course, setCourse] = useState(null);
-//   const [sections, setSections] = useState([]);
-//   const [currentLesson, setCurrentLesson] = useState(null);
-//   const [enrollment, setEnrollment] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [videoProgress, setVideoProgress] = useState(0);
-//   const [isCompleted, setIsCompleted] = useState(false);
-
-//   useEffect(() => {
-//     fetchCourseData();
-//   }, [courseId]);
-
-//   useEffect(() => {
-//     if (currentLesson && currentLesson.contentType === 'VIDEO') {
-//       fetchLessonProgress();
-//     }
-//   }, [currentLesson]);
-
-//   const fetchCourseData = async () => {
-//     try {
-//       setLoading(true);
-
-//       const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
-//       if (!enrollmentCheck.isEnrolled) {
-//         navigate(`/courses/${courseId}`);
-//         return;
-//       }
-
-//       const [courseData, sectionsData, enrollmentsData] = await Promise.all([
-//         courseService.getCourse(courseId),
-//         sectionService.getCourseSections(courseId),
-//         enrollmentService.getMyEnrollments()
-//       ]);
-
-//       setCourse(courseData);
-//       setSections(sectionsData);
-
-//       const userEnrollment =
-//         enrollmentsData.data?.enrollments?.find(e => e.courseId === courseId) ||
-//         enrollmentsData.find(e => e.course?.id === courseId);
-
-//       setEnrollment(userEnrollment);
-
-//       if (sectionsData.length > 0 && sectionsData[0].lessons?.length > 0) {
-//         setCurrentLesson(sectionsData[0].lessons[0]);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching course data:', error);
-//       alert('Failed to load course');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const fetchLessonProgress = async () => {
-//     if (!currentLesson) return;
-
-//     try {
-//       const progress = await progressService.getLessonProgress(currentLesson.id);
-//       setVideoProgress(progress?.lastPosition || 0);
-//       setIsCompleted(progress?.isCompleted || false);
-//     } catch (error) {
-//       console.error('Error fetching lesson progress:', error);
-//     }
-//   };
-
-//   /* =========================
-//      ACCESS CONTROL (ADDED)
-//   ========================== */
-//   const isLessonLocked = (lesson) => {
-//     // Instructor can access everything
-//     if (course?.instructorId === user?.id) return false;
-
-//     // Preview lessons are public
-//     if (lesson.isPreview) return false;
-
-//     // Not enrolled => locked
-//     if (!enrollment) return true;
-
-//     return false;
-//   };
-
-//   const handleLessonClick = async (lesson) => {
-//     if (isLessonLocked(lesson)) {
-//       alert('This lesson is locked. Please enroll to access it.');
-//       navigate(`/courses/${courseId}`);
-//       return;
-//     }
-
-//     setCurrentLesson(lesson);
-//     setVideoProgress(0);
-//     setIsCompleted(false);
-
-//     try {
-//       const progress = await progressService.getLessonProgress(lesson.id);
-//       setVideoProgress(progress?.lastPosition || 0);
-//       setIsCompleted(progress?.isCompleted || false);
-//     } catch (error) {
-//       console.error('Error fetching lesson progress:', error);
-//     }
-//   };
-
-//   const handleVideoProgress = async (position) => {
-//     if (!currentLesson || currentLesson.contentType !== 'VIDEO') return;
-
-//     setVideoProgress(position);
-
-//     try {
-//       await progressService.updateVideoProgress(currentLesson.id, {
-//         lastPosition: position,
-//         timeSpent: position
-//       });
-//     } catch (error) {
-//       console.error('Error updating video progress:', error);
-//     }
-//   };
-
-//   const handleCompleteLesson = async () => {
-//     if (!currentLesson) return;
-
-//     try {
-//       await progressService.markLessonComplete(currentLesson.id);
-//       setIsCompleted(true);
-
-//       const enrollmentsData = await enrollmentService.getMyEnrollments();
-//       const userEnrollment =
-//         enrollmentsData.data?.enrollments?.find(e => e.courseId === courseId) ||
-//         enrollmentsData.find(e => e.course?.id === courseId);
-
-//       setEnrollment(userEnrollment);
-//     } catch (error) {
-//       console.error('Error completing lesson:', error);
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center">
-//         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-//       </div>
-//     );
-//   }
-
-//   if (!course || !enrollment) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center">
-//         <Link to="/student/courses" className="text-blue-600">
-//           Back to My Courses
-//         </Link>
-//       </div>
-//     );
-//   }
-
-//   const overallProgress = enrollment.progressPercentage || 0;
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* HEADER */}
-//       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
-//         <div className="container mx-auto px-4 py-4 flex justify-between">
-//           <div>
-//             <Link to={`/courses/${courseId}`} className="text-blue-600">
-//               ← Back to Course
-//             </Link>
-//             <h1 className="text-xl font-bold mt-1">{course.title}</h1>
-//           </div>
-//           <div>
-//             <div className="text-sm text-gray-600">Progress: {overallProgress}%</div>
-//             <div className="w-48 bg-gray-200 rounded-full h-2 mt-1">
-//               <div
-//                 className="bg-blue-600 h-2 rounded-full"
-//                 style={{ width: `${overallProgress}%` }}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-//         {/* SIDEBAR */}
-//         <div className="lg:col-span-1 bg-white rounded-lg shadow-md p-4">
-//           <h2 className="font-bold mb-4">Course Content</h2>
-
-//           {sections.map((section, sectionIndex) => (
-//             <div key={section.id} className="mb-4">
-//               <h3 className="text-sm font-semibold mb-2">
-//                 Section {sectionIndex + 1}: {section.title}
-//               </h3>
-
-//               <div className="space-y-1">
-//                 {section.lessons.map((lesson) => {
-//                   const locked = isLessonLocked(lesson);
-//                   const current = currentLesson?.id === lesson.id;
-
-//                   return (
-//                     <button
-//                       key={lesson.id}
-//                       onClick={() => handleLessonClick(lesson)}
-//                       disabled={locked}
-//                       className={`w-full text-left p-3 rounded transition ${
-//                         current
-//                           ? 'bg-blue-100 border-l-4 border-blue-600'
-//                           : locked
-//                           ? 'opacity-50 cursor-not-allowed'
-//                           : 'hover:bg-gray-50'
-//                       }`}
-//                     >
-//                       <div className="flex items-center gap-2">
-//                         {locked ? (
-//                           <span className="text-gray-400">🔒</span>
-//                         ) : (
-//                           <span className="text-green-600">○</span>
-//                         )}
-//                         <span className="flex-1 text-sm">{lesson.title}</span>
-
-//                         {lesson.isPreview && (
-//                           <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-//                             Preview
-//                           </span>
-//                         )}
-//                       </div>
-//                     </button>
-//                   );
-//                 })}
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* PLAYER */}
-//         <div className="lg:col-span-3 bg-white rounded-lg shadow-md p-6">
-//           <h2 className="text-2xl font-bold mb-4">{currentLesson.title}</h2>
-
-//           {currentLesson.contentType === 'VIDEO' && (
-//             <video
-//               src={currentLesson.contentUrl}
-//               controls
-//               className="w-full rounded"
-//               onTimeUpdate={(e) =>
-//                 handleVideoProgress(Math.floor(e.target.currentTime))
-//               }
-//               onLoadedMetadata={(e) => {
-//                 if (videoProgress > 0) {
-//                   e.target.currentTime = videoProgress;
-//                 }
-//               }}
-//             />
-//           )}
-
-//           {currentLesson.contentType === 'TEXT' && (
-//             <div className="prose max-w-none whitespace-pre-line">
-//               {currentLesson.content}
-//             </div>
-//           )}
-
-//           {!isCompleted && (
-//             <button
-//               onClick={handleCompleteLesson}
-//               className="mt-4 bg-green-600 text-white px-6 py-2 rounded"
-//             >
-//               Mark as Complete
-//             </button>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CoursePlayer;
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
@@ -297,6 +10,10 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import toast from 'react-hot-toast';
+import StudyScheduleView from '../../components/course/StudyScheduleView';
+import FlashcardDeckView from '../../components/course/FlashcardDeckView';
+import flashcardService from '../../services/flashcardService';
+import { BrainCircuit, Calendar } from 'lucide-react';
 
 const CoursePlayer = () => {
   const { t } = useTranslation();
@@ -311,22 +28,24 @@ const CoursePlayer = () => {
   const [loading, setLoading] = useState(true);
   const [videoProgress, setVideoProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [activeTab, setActiveTab] = useState('content'); // 'content' or 'flashcards'
+  const [flashcardDeck, setFlashcardDeck] = useState(null);
+  const [flashcardLoading, setFlashcardLoading] = useState(false);
 
   useEffect(() => {
     fetchCourseData();
   }, [courseId]);
 
   useEffect(() => {
-    if (currentLesson && currentLesson.contentType === 'VIDEO') {
+    if (currentLesson && currentLesson.contentType === 'VIDEO' && enrollment) {
       fetchLessonProgress();
     }
-  }, [currentLesson]);
+  }, [currentLesson, enrollment]);
 
   const fetchCourseData = async () => {
     try {
       setLoading(true);
 
-      // Fetch course and sections first
       const [courseData, sectionsData] = await Promise.all([
         courseService.getCourse(courseId),
         sectionService.getCourseSections(courseId)
@@ -335,20 +54,14 @@ const CoursePlayer = () => {
       setCourse(courseData);
       setSections(sectionsData);
 
-      // Check enrollment status (but don't block)
       if (user) {
         try {
           const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
-
           if (enrollmentCheck.isEnrolled) {
-            const enrollmentsData = await enrollmentService.getMyEnrollments();
-            const userEnrollment =
-              enrollmentsData.data?.enrollments?.find(e => e.courseId === courseId) ||
-              enrollmentsData.find(e => e.course?.id === courseId);
-            setEnrollment(userEnrollment);
+            setEnrollment(enrollmentCheck.enrollment);
           }
         } catch (error) {
-          console.log('Not enrolled');
+          console.error('Error checking enrollment:', error);
         }
       }
 
@@ -379,7 +92,7 @@ const CoursePlayer = () => {
       }
     } catch (error) {
       console.error('Error fetching course data:', error);
-      alert(t('common.error_occurred'));
+      toast.error(t('common.error_occurred'));
     } finally {
       setLoading(false);
     }
@@ -396,6 +109,26 @@ const CoursePlayer = () => {
       console.error('Error fetching lesson progress:', error);
     }
   };
+  const fetchFlashcards = async () => {
+    if (!currentLesson) return;
+    try {
+      setFlashcardLoading(true);
+      const response = await flashcardService.getDeckByLesson(currentLesson.id);
+      if (response.success) {
+        setFlashcardDeck(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching flashcards:', error);
+    } finally {
+      setFlashcardLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'flashcards' && currentLesson && !flashcardDeck) {
+      fetchFlashcards();
+    }
+  }, [activeTab, currentLesson]);
 
   /* =========================
      FIXED ACCESS CONTROL
@@ -424,21 +157,15 @@ const CoursePlayer = () => {
     const locked = isLessonLocked(lesson);
 
     if (locked) {
-      // Show modal with enrollment prompt
-      const confirmEnroll = window.confirm(
-        `${t('student.course_player.locked_desc')}\n\n` +
-        t('student.course_player.enjoy_prompt')
-      );
-
-      if (confirmEnroll) {
-        navigate(`/courses/${courseId}`);
-      }
+      navigate(`/courses/${courseId}`);
       return;
     }
 
     setCurrentLesson(lesson);
     setVideoProgress(0);
     setIsCompleted(false);
+    setActiveTab('content');
+    setFlashcardDeck(null);
 
     // Only try to fetch progress if enrolled
     if (enrollment) {
@@ -469,7 +196,7 @@ const CoursePlayer = () => {
 
   const handleCompleteLesson = async () => {
     if (!currentLesson || !enrollment) {
-      alert(t('student.course_player.track_prompt'));
+      toast.error(t('student.course_player.track_prompt'));
       return;
     }
 
@@ -477,12 +204,11 @@ const CoursePlayer = () => {
       await progressService.markLessonComplete(currentLesson.id);
       setIsCompleted(true);
 
-      const enrollmentsData = await enrollmentService.getMyEnrollments();
-      const userEnrollment =
-        enrollmentsData.data?.enrollments?.find(e => e.courseId === courseId) ||
-        enrollmentsData.find(e => e.course?.id === courseId);
-
-      setEnrollment(userEnrollment);
+      // Refresh enrollment data to update progress percentage
+      const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
+      if (enrollmentCheck.isEnrolled) {
+        setEnrollment(enrollmentCheck.enrollment);
+      }
 
       // GAMIFICATION: Confetti!
       confetti({
@@ -508,7 +234,7 @@ const CoursePlayer = () => {
 
     } catch (error) {
       console.error('Error completing lesson:', error);
-      alert(t('student.course_player.failed_mark'));
+      toast.error(t('student.course_player.failed_mark'));
     }
   };
 
@@ -661,94 +387,131 @@ const CoursePlayer = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h2 className="text-2xl font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
-                  <div className="flex items-center gap-2 mt-2">
-                    {currentLesson.isPreview && (
-                      <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 dark:border-indigo-800">
-                        👁 {t('student.course_player.preview_lesson')}
-                      </span>
-                    )}
-                    {currentLesson.isFree && !currentLesson.isPreview && (
-                      <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 dark:border-emerald-800">
-                        🎁 {t('student.course_player.free_lesson')}
-                      </span>
-                    )}
+                  <div className="flex items-center gap-4 mt-4 border-b dark:border-slate-800">
+                    <button
+                      onClick={() => setActiveTab('content')}
+                      className={`pb-2 px-1 text-sm font-bold transition-all ${activeTab === 'content'
+                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                        }`}
+                    >
+                      Lesson Content
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('flashcards')}
+                      className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'flashcards'
+                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                        }`}
+                    >
+                      <BrainCircuit className="w-4 h-4" />
+                      Flashcards
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('schedule')}
+                      className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'schedule'
+                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                        }`}
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Study Plan
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {isLessonLocked(currentLesson) ? (
-                <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-                  <div className="mb-4 text-6xl">🔒</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('student.course_player.locked_title')}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">{t('student.course_player.locked_desc')}</p>
-                  <Link
-                    to={`/courses/${courseId}`}
-                    className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
-                  >
-                    {t('student.course_player.view_enroll')}
-                  </Link>
+              {activeTab === 'flashcards' ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                  {flashcardLoading ? (
+                    <div className="py-20 flex justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
+                  ) : (
+                    <FlashcardDeckView deck={flashcardDeck} />
+                  )}
+                </div>
+              ) : activeTab === 'schedule' ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                  <StudyScheduleView enrollmentId={enrollment?.id} />
                 </div>
               ) : (
                 <>
-                  {currentLesson.contentType === 'VIDEO' && (
-                    <div className="mb-6">
-                      <video
-                        key={currentLesson.id}
-                        src={currentLesson.contentUrl}
-                        controls
-                        className="w-full rounded-lg shadow-lg"
-                        onTimeUpdate={(e) =>
-                          handleVideoProgress(Math.floor(e.target.currentTime))
-                        }
-                        onLoadedMetadata={(e) => {
-                          if (videoProgress > 0 && enrollment) {
-                            e.target.currentTime = videoProgress;
-                          }
-                        }}
-                      />
+                  {isLessonLocked(currentLesson) ? (
+                    <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                      <div className="mb-4 text-6xl">🔒</div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('student.course_player.locked_title')}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">{t('student.course_player.locked_desc')}</p>
+                      <Link
+                        to={`/courses/${courseId}`}
+                        className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
+                      >
+                        {t('student.course_player.view_enroll')}
+                      </Link>
                     </div>
-                  )}
-
-                  {currentLesson.contentType === 'TEXT' && (
-                    <div className="prose dark:prose-invert max-w-none mb-6 whitespace-pre-line text-slate-700 dark:text-slate-300">
-                      {currentLesson.content}
-                    </div>
-                  )}
-
-                  {currentLesson.contentType === 'QUIZ' && (
-                    <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
-                      <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
-                    </div>
-                  )}
-
-                  {enrollment ? (
+                  ) : (
                     <>
-                      {!isCompleted ? (
-                        <button
-                          onClick={handleCompleteLesson}
-                          className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
-                        >
-                          ✓ Mark as Complete
-                        </button>
+                      {currentLesson.contentType === 'VIDEO' && (
+                        <div className="mb-6">
+                          <video
+                            key={currentLesson.id}
+                            src={currentLesson.contentUrl}
+                            controls
+                            className="w-full rounded-lg shadow-lg"
+                            onTimeUpdate={(e) =>
+                              handleVideoProgress(Math.floor(e.target.currentTime))
+                            }
+                            onLoadedMetadata={(e) => {
+                              if (videoProgress > 0 && enrollment) {
+                                e.target.currentTime = videoProgress;
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {currentLesson.contentType === 'TEXT' && (
+                        <div className="prose dark:prose-invert max-w-none mb-6 whitespace-pre-line text-slate-700 dark:text-slate-300">
+                          {currentLesson.content}
+                        </div>
+                      )}
+
+                      {currentLesson.contentType === 'QUIZ' && (
+                        <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
+                          <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
+                        </div>
+                      )}
+
+                      {enrollment ? (
+                        <>
+                          {!isCompleted ? (
+                            <button
+                              onClick={handleCompleteLesson}
+                              className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
+                            >
+                              ✓ Mark as Complete
+                            </button>
+                          ) : (
+                            <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
+                              <span className="font-bold">✓</span>
+                              <span className="font-black text-sm uppercase tracking-wider">{t('course.status.completed')}</span>
+                            </div>
+                          )}
+                        </>
                       ) : (
-                        <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                          <span className="font-bold">✓</span>
-                          <span className="font-black text-sm uppercase tracking-wider">{t('course.status.completed')}</span>
+                        <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
+                          <p className="text-indigo-800 dark:text-indigo-400 font-medium">
+                            💡 <strong>{t('student.course_player.enjoy_prompt')}</strong>
+                          </p>
+                          <Link
+                            to={`/courses/${courseId}`}
+                            className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
+                          >
+                            {t('student.course_player.enroll_now')}
+                          </Link>
                         </div>
                       )}
                     </>
-                  ) : (
-                    <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
-                      <p className="text-indigo-800 dark:text-indigo-400 font-medium">
-                        💡 <strong>{t('student.course_player.enjoy_prompt')}</strong>
-                      </p>
-                      <Link
-                        to={`/courses/${courseId}`}
-                        className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
-                      >
-                        {t('student.course_player.enroll_now')}
-                      </Link>
-                    </div>
                   )}
                 </>
               )}

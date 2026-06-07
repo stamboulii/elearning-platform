@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import authService from '../services/authService';
 import api from '../services/api';
+import Avatar from '../components/common/Avatar';
 
 const Profile = () => {
   const { user: authUser, logout, updateUser } = useAuth();
@@ -204,10 +205,12 @@ const Profile = () => {
           <div className="flex items-start gap-6">
             {/* Profile Picture */}
             <div className="relative">
-              <img
-                src={user.profilePicture || 'https://via.placeholder.com/150'}
-                alt={`${user.firstName} ${user.lastName}`}
-                className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-800"
+              <Avatar
+                src={user.profilePicture}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                size="2xl"
+                className="border-4 border-slate-200 dark:border-slate-800"
               />
               {editing && (
                 <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition">

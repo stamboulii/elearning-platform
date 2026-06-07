@@ -7,6 +7,7 @@ import {
   getEnrollmentStatistics,
   getPendingPayments,
   getTopPerformingCourses,
+  getCourseAnalytics,
 } from '../controllers/Instructoranalyticscontroller.js';
 
 

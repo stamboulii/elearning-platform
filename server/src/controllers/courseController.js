@@ -1,4 +1,5 @@
 import courseService from '../services/courseService.js';
+import { generateCourseDescription } from '../services/groqService.js';
 
 // @desc    Create course
 // @route   POST /api/courses
@@ -182,6 +183,35 @@ export const addCourseOutcome = async (req, res) => {
   } catch (error) {
     console.error('Add outcome error:', error);
     res.status(error.message === 'Not authorized' ? 403 : 500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Generate course description with AI
+// @route   POST /api/courses/generate-description
+// @access  Private (Instructor/Admin)
+export const generateDescription = async (req, res) => {
+  try {
+    const { title, category } = req.body;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course title is required'
+      });
+    }
+
+    const generated = await generateCourseDescription(title, category);
+
+    res.json({
+      success: true,
+      data: generated
+    });
+  } catch (error) {
+    console.error('Generate description error:', error);
+    res.status(500).json({
       success: false,
       message: error.message
     });

@@ -42,7 +42,8 @@ import {
   deleteCourse,
   getInstructorCourses,
   addCourseRequirement,
-  addCourseOutcome
+  addCourseOutcome,
+  generateDescription
 } from '../controllers/courseController.js';
 import { protect, authorize } from '../middleware/auth.js';
 import sectionRoutes from './sectionRoutes.js';
@@ -349,5 +350,38 @@ router.post('/:id/requirements', protect, authorize('INSTRUCTOR', 'ADMIN'), addC
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.post('/:id/outcomes', protect, authorize('INSTRUCTOR', 'ADMIN'), addCourseOutcome);
+
+/**
+ * @swagger
+ * /courses/generate-description:
+ *   post:
+ *     summary: Generate course description with AI
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Description generated successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+router.post('/generate-description', protect, authorize('INSTRUCTOR', 'ADMIN'), generateDescription);
 
 export default router;

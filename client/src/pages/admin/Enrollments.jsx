@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import adminService from '../../services/adminService';
 import toast from '../../utils/toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const Enrollments = () => {
     const { t } = useTranslation();
@@ -18,6 +19,8 @@ const Enrollments = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [itemsPerPage] = useState(10);
+    const [showRevokeModal, setShowRevokeModal] = useState(false);
+    const [selectedEnrollmentId, setSelectedEnrollmentId] = useState(null);
 
     const fetchEnrollments = async () => {
         try {
@@ -45,18 +48,23 @@ const Enrollments = () => {
     }, [currentPage, filterStatus, searchTerm]);
 
     const handleRevokeEnrollment = async (enrollmentId) => {
-        if (!window.confirm(t('admin.enrollments.confirm.revoke'))) {
-            return;
-        }
+      setSelectedEnrollmentId(enrollmentId);
+      setShowRevokeModal(true);
+    };
 
-        try {
-            await adminService.revokeEnrollment(enrollmentId);
-            toast.success(t('admin.enrollments.success.revoked'));
-            fetchEnrollments();
-        } catch (error) {
-            console.error('Error revoking enrollment:', error);
-            toast.error(t('admin.enrollments.error.revoke_failed'));
-        }
+    const handleConfirmRevoke = async () => {
+      if (!selectedEnrollmentId) return;
+
+      try {
+        await adminService.revokeEnrollment(selectedEnrollmentId);
+        toast.success(t('admin.enrollments.success.revoked'));
+        fetchEnrollments();
+      } catch (error) {
+        console.error('Error revoking enrollment:', error);
+        toast.error(t('admin.enrollments.error.revoke_failed'));
+      }
+      setShowRevokeModal(false);
+      setSelectedEnrollmentId(null);
     };
 
     const formatDate = (dateString) => {
@@ -256,6 +264,21 @@ const Enrollments = () => {
                     )}
                 </div>
             </div>
+
+            {/* Revoke Confirm Modal */}
+            <ConfirmModal
+                isOpen={showRevokeModal}
+                onClose={() => {
+                    setShowRevokeModal(false);
+                    setSelectedEnrollmentId(null);
+                }}
+                onConfirm={handleConfirmRevoke}
+                title={t('admin.enrollments.confirm.revoke')}
+                message={t('admin.enrollments.confirm.revoke_message')}
+                confirmText={t('admin.enrollments.confirm.revoke')}
+                cancelText={t('common.cancel')}
+                type="danger"
+            />
         </div>
     );
 };

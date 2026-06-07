@@ -346,6 +346,7 @@ import {
   AlertCircle,
   TrendingDown
 } from 'lucide-react';
+import Avatar from '../../components/common/Avatar';
 import {
   LineChart,
   Line,
@@ -455,10 +456,12 @@ const InstructorDashboard = () => {
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-md group-hover:blur-lg transition-all"></div>
-                  <img
-                    src={user?.profilePicture || 'https://via.placeholder.com/96'}
-                    alt="Profile"
-                    className="relative w-24 h-24 rounded-full border-4 border-white shadow-2xl"
+                  <Avatar
+                    src={user?.profilePicture}
+                    firstName={user?.firstName}
+                    lastName={user?.lastName}
+                    size="xl"
+                    className="relative border-4 border-white shadow-2xl"
                   />
                   <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-emerald-400 to-emerald-500 text-white p-2 rounded-full shadow-lg border-4 border-purple-600">
                     <Award className="w-5 h-5" />

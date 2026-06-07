@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from '../../utils/toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const TransactionManager = () => {
   const { t } = useTranslation();
@@ -29,6 +30,8 @@ const TransactionManager = () => {
   });
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
   const [expandedRow, setExpandedRow] = useState(null);
 
   // Pagination
@@ -100,12 +103,13 @@ const TransactionManager = () => {
   };
 
   const handleRefund = async (transactionId) => {
-    if (!window.confirm(t('admin.transactions.confirm.refund'))) {
-      return;
-    }
+    setSelectedTransaction(transactions.find(t => t.id === transactionId) || { id: transactionId });
+    setShowRefundModal(true);
+  };
 
+  const handleConfirmRefund = async () => {
     try {
-      const response = await api.post(`/transactions/${transactionId}/refund`);
+      const response = await api.post(`/transactions/${selectedTransaction.id}/refund`);
       if (response.data.success) {
         toast.success(t('admin.transactions.success.refunded'));
         fetchTransactions();
@@ -115,15 +119,18 @@ const TransactionManager = () => {
       console.error('Error refunding transaction:', error);
       toast.error(error.response?.data?.message || t('admin.transactions.error.refund_failed'));
     }
+    setShowRefundModal(false);
+    setSelectedTransaction(null);
   };
 
   const handleApproveOfflinePayment = async (transactionId) => {
-    if (!window.confirm(t('admin.transactions.confirm.approve'))) {
-      return;
-    }
+    setSelectedTransaction(transactions.find(t => t.id === transactionId) || { id: transactionId });
+    setShowApproveModal(true);
+  };
 
+  const handleConfirmApprove = async () => {
     try {
-      const response = await api.post(`/transactions/${transactionId}/approve`);
+      const response = await api.post(`/transactions/${selectedTransaction.id}/approve`);
       if (response.data.success) {
         toast.success(t('admin.transactions.success.approved'));
         fetchTransactions();
@@ -133,6 +140,8 @@ const TransactionManager = () => {
       console.error('Error approving payment:', error);
       toast.error(error.response?.data?.message || t('admin.transactions.error.approve_failed'));
     }
+    setShowApproveModal(false);
+    setSelectedTransaction(null);
   };
 
   const handleExport = async () => {
@@ -617,6 +626,36 @@ const TransactionManager = () => {
           getStatusBadge={getStatusBadge}
         />
       )}
+
+      {/* Refund Confirm Modal */}
+      <ConfirmModal
+        isOpen={showRefundModal}
+        onClose={() => {
+          setShowRefundModal(false);
+          setSelectedTransaction(null);
+        }}
+        onConfirm={handleConfirmRefund}
+        title={t('admin.transactions.confirm.refund')}
+        message={t('admin.transactions.confirm.refund_message', { reference: selectedTransaction?.transactionReference })}
+        confirmText={t('admin.transactions.confirm.refund')}
+        cancelText={t('common.cancel')}
+        type="danger"
+      />
+
+      {/* Approve Confirm Modal */}
+      <ConfirmModal
+        isOpen={showApproveModal}
+        onClose={() => {
+          setShowApproveModal(false);
+          setSelectedTransaction(null);
+        }}
+        onConfirm={handleConfirmApprove}
+        title={t('admin.transactions.confirm.approve')}
+        message={t('admin.transactions.confirm.approve_message', { reference: selectedTransaction?.transactionReference })}
+        confirmText={t('admin.transactions.confirm.approve')}
+        cancelText={t('common.cancel')}
+        type="success"
+      />
     </div>
   );
 };

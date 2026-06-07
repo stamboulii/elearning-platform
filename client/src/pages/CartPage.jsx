@@ -4,6 +4,7 @@ import { ShoppingCart, X, Heart, BookOpen, ChevronRight, Sparkles, CreditCard, T
 import api from '../services/api';
 import toast from '../utils/toast';
 import ConfirmModal from '../components/common/ConfirmModal';
+import Avatar from '../components/common/Avatar';
 
 const CartPage = () => {
   const [cart, setCart] = useState({ items: [], summary: {}, itemCount: 0 });
@@ -329,19 +330,13 @@ const CartPage = () => {
                         {/* Instructor */}
                         {item.instructor && (
                           <div className="flex items-center gap-2 mb-3">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex-shrink-0">
-                              {item.instructor.profilePicture ? (
-                                <img
-                                  src={item.instructor.profilePicture}
-                                  alt={item.instructor.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-[10px] text-white font-bold">
-                                  {item.instructor.name?.charAt(0) || 'I'}
-                                </div>
-                              )}
-                            </div>
+                            <Avatar
+                              src={item.instructor.profilePicture}
+                              firstName={item.instructor.name}
+                              size="xs"
+                              border={false}
+                              className="flex-shrink-0"
+                            />
                             <span className="text-sm text-slate-600 dark:text-slate-300">
                               {item.instructor.name}
                             </span>

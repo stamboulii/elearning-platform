@@ -23,6 +23,9 @@ const MyCourses = () => {
   const [filter, setFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -41,17 +44,25 @@ const MyCourses = () => {
   };
 
   const handleDeleteCourse = async (courseId, courseTitle) => {
-    if (!confirm(t('instructor.my_courses.card.delete_confirm', { title: courseTitle }))) {
-      return;
-    }
+    setCourseToDelete({ id: courseId, title: courseTitle });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteCourse = async () => {
+    if (!courseToDelete) return;
 
     try {
-      await courseService.deleteCourse(courseId);
-      alert(t('instructor.my_courses.card.delete_success'));
+      setDeleting(true);
+      await courseService.deleteCourse(courseToDelete.id);
+      toast.success(t('instructor.my_courses.card.delete_success'));
       fetchCourses();
     } catch (error) {
       console.error('Error deleting course:', error);
-      alert(error.response?.data?.message || t('instructor.my_courses.card.delete_failed'));
+      toast.error(error.response?.data?.message || t('instructor.my_courses.card.delete_failed'));
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+      setCourseToDelete(null);
     }
   };
 
@@ -275,6 +286,18 @@ const MyCourses = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteCourseModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setCourseToDelete(null);
+        }}
+        onConfirm={confirmDeleteCourse}
+        courseTitle={courseToDelete?.title}
+        isLoading={deleting}
+      />
     </div>
   );
 };
@@ -441,7 +464,7 @@ const CourseCard = ({ course, onDelete }) => {
             <StatItem icon={<DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />} label={t('common.price')} value={`€${course.price}`} />
             <StatItem icon={<Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />} label={t('instructor.dashboard.stats.total_students')} value={course._count.enrollments} />
             <StatItem icon={<Layers className="w-5 h-5 text-purple-600 dark:text-purple-400" />} label={t('course.info.sections')} value={course._count.sections} />
-            <StatItem icon={<Star className="w-5 h-5 text-amber-600 dark:text-amber-400" />} label={t('instructor.dashboard.stats.avg_rating')} value={course._count.reviews} />
+            <StatItem icon={<Star className="w-5 h-5 text-amber-600 dark:text-amber-400" />} label={t('student.course_detail.rating')} value={course._count.reviews} />
             <StatItem icon={<Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />} label={t('instructor.my_courses.card.level') || 'Level'} value={course.level} />
           </div>
 
@@ -505,5 +528,24 @@ const StatItem = ({ icon, label, value }) => (
     <div className="text-sm font-black text-slate-900 dark:text-white">{value}</div>
   </div>
 );
+
+// Delete Confirmation Modal
+const DeleteCourseModal = ({ isOpen, onClose, onConfirm, courseTitle, isLoading }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <ConfirmModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title={t('instructor.my_courses.modal.delete_title')}
+      message={t('instructor.my_courses.modal.delete_message', { title: courseTitle })}
+      confirmText={t('common.delete')}
+      cancelText={t('common.cancel')}
+      type="danger"
+      isLoading={isLoading}
+    />
+  );
+};
 
 export default MyCourses;

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import courseService from '../../services/courseService';
 import categoryService from '../../services/categoryService';
+import api from '../../services/api';
+import toast from '../../utils/toast';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const CreateCourse = () => {
     estimatedDuration: ''
   });
   const [errors, setErrors] = useState({});
+  const [generatingDescription, setGeneratingDescription] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -80,6 +83,40 @@ const CreateCourse = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleGenerateDescription = async () => {
+    if (!formData.title.trim()) {
+      toast.error('Please enter a course title first');
+      return;
+    }
+
+    try {
+      setGeneratingDescription(true);
+      const categoryName = categories.find(c => c.id === formData.categoryId)?.name || '';
+      
+      const response = await api.post('/courses/generate-description', {
+        title: formData.title,
+        category: categoryName
+      });
+
+      if (response.data.success) {
+        const { shortDescription, fullDescription } = response.data.data;
+        
+        setFormData(prev => ({
+          ...prev,
+          shortDescription: prev.shortDescription || shortDescription,
+          fullDescription: prev.fullDescription || fullDescription
+        }));
+
+        toast.success('Description generated successfully! Please review and edit as needed.');
+      }
+    } catch (error) {
+      console.error('Error generating description:', error);
+      toast.error(error.response?.data?.message || 'Failed to generate description');
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,7 +137,7 @@ const CreateCourse = () => {
       navigate(`/instructor/courses/${course.id}/builder`);
     } catch (error) {
       console.error('Error creating course:', error);
-      alert(error.response?.data?.message || 'Failed to create course');
+      toast.error(error.response?.data?.message || 'Failed to create course');
     } finally {
       setLoading(false);
     }
@@ -182,9 +219,29 @@ const CreateCourse = () => {
 
           {/* Short Description */}
           <div className="mb-8">
-            <label className="block text-slate-700 dark:text-slate-300 font-bold mb-3">
-              Short Description <span className="text-rose-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-slate-700 dark:text-slate-300 font-bold">
+                Short Description <span className="text-rose-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={generatingDescription || !formData.title.trim()}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-bold rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-200 dark:shadow-none"
+              >
+                {generatingDescription ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <span>✨</span>
+                    Generate with AI
+                  </>
+                )}
+              </button>
+            </div>
             <textarea
               name="shortDescription"
               value={formData.shortDescription}

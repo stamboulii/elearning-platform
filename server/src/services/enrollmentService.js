@@ -235,6 +235,7 @@
 
 
 import prisma from '../config/database.js';
+import { createNotification } from './notificationService.js';
 
 class EnrollmentService {
   // Enroll in a course - UPDATED
@@ -273,7 +274,7 @@ class EnrollmentService {
 
     // NEW: Handle free vs paid enrollment
     const isPaidCourse = !course.isFree && parseFloat(course.price) > 0;
-    
+
     // If it's a paid course and no transaction is provided, throw error
     if (isPaidCourse && !transactionId) {
       throw new Error('Payment required for this course');
@@ -304,12 +305,12 @@ class EnrollmentService {
       userId,
       courseId,
       enrolledAt: new Date(),
-      isPaid: !isPaidCourse || !!transaction, // Free courses are automatically "paid"
+      isPaid: !isPaidCourse || !!transaction,
       paidAmount: transaction ? transaction.amount : (course.isFree ? 0 : null),
       transactionId: transactionId || null
     };
 
-    return await prisma.enrollment.create({
+    const enrollment = await prisma.enrollment.create({
       data: enrollmentData,
       include: {
         course: {
@@ -328,6 +329,26 @@ class EnrollmentService {
         transaction: true
       }
     });
+
+    // Notify the student
+    createNotification({
+      userId: userId,
+      type: 'ENROLLMENT',
+      title: 'Enrollment Confirmed',
+      message: `You successfully enrolled in "${course.title}"`,
+      data: { courseId: course.id }
+    }).catch(err => console.error('Failed to send student enrollment notification:', err));
+
+    // Notify the instructor
+    createNotification({
+      userId: course.instructorId,
+      type: 'ENROLLMENT',
+      title: 'New Student Enrolled',
+      message: `A new student just enrolled in your course "${course.title}"`,
+      data: { courseId: course.id }
+    }).catch(err => console.error('Failed to send instructor enrollment notification:', err));
+
+    return enrollment;
   }
 
   // Get user's enrolled courses
@@ -449,7 +470,7 @@ class EnrollmentService {
     });
 
     // NEW: Calculate access status
-    const hasAccess = enrollment 
+    const hasAccess = enrollment
       ? (enrollment.course.isFree || enrollment.isPaid)
       : false;
 
@@ -477,8 +498,8 @@ class EnrollmentService {
     }
 
     const [
-      totalEnrollments, 
-      completedEnrollments, 
+      totalEnrollments,
+      completedEnrollments,
       inProgressEnrollments,
       paidEnrollments // NEW
     ] = await Promise.all([

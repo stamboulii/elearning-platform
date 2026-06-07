@@ -7,6 +7,7 @@ import toast from '../../utils/toast';
 import courseService from '../../services/courseService';
 import sectionService from '../../services/sectionService';
 import lessonService from '../../services/lessonService';
+import flashcardService from '../../services/flashcardService';
 import {
   BookOpen,
   Plus,
@@ -405,7 +406,23 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
 const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress }) => {
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
+  const [generatingFlashcards, setGeneratingFlashcards] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleGenerateFlashcards = async () => {
+    try {
+      setGeneratingFlashcards(true);
+      const response = await flashcardService.generateDeck(lesson.id);
+      if (response.success) {
+        toast.success('AI Flashcards generated successfully! 🧠');
+      }
+    } catch (error) {
+      console.error('Error generating flashcards:', error);
+      toast.error('Failed to generate AI flashcards');
+    } finally {
+      setGeneratingFlashcards(false);
+    }
+  };
 
   const handleVideoUpload = async (e) => {
     const file = e.target.files[0];
@@ -514,6 +531,22 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
               </span>
             </label>
           )}
+          <button
+            onClick={handleGenerateFlashcards}
+            disabled={generatingFlashcards}
+            title="Generate AI Flashcards"
+            className={`p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm ${generatingFlashcards
+              ? 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+              : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800'
+              }`}
+          >
+            {generatingFlashcards ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+            ) : (
+              <BrainCircuit className="w-4 h-4" />
+            )}
+            AI Cards
+          </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
             className="bg-rose-600 text-white px-4 py-2.5 rounded-xl hover:bg-rose-700 transition-all text-sm font-bold shadow-sm shadow-rose-200 dark:shadow-rose-900/20 flex items-center gap-2"
@@ -787,7 +820,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('instructor.course_builder.content_type')}</label>
+            <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('student.course_detail.description')}</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {['VIDEO', 'TEXT', 'QUIZ', 'DOCUMENT'].map((type) => (
                 <button
@@ -828,7 +861,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
 
           {formData.contentType === 'TEXT' && (
             <div className="mb-4">
-              <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('instructor.course_builder.content') || 'Content'}</label>
+              <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">{t('student.course_detail.description') || 'Content'}</label>
               <textarea
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}

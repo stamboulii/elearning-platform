@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import adminService from '../../services/adminService';
 import categoryService from '../../services/categoryService';
+import Avatar from '../../components/common/Avatar';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import toast from '../../utils/toast';
 import {
   BookOpen,
   Search,
@@ -43,6 +46,9 @@ const AdminCourses = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -75,15 +81,13 @@ const AdminCourses = () => {
   }, [fetchCourses]);
 
   const handleApproveCourse = async (courseId) => {
-    if (!confirm(t('admin.courses.confirm.approve'))) return;
-
     try {
       await adminService.approveCourse(courseId);
-      alert(t('admin.courses.success.approved'));
+      toast.success(t('admin.courses.success.approved'));
       fetchCourses();
     } catch (error) {
       console.error('Error approving course:', error);
-      alert(t('admin.courses.error.approve_failed'));
+      toast.error(t('admin.courses.error.approve_failed'));
     }
   };
 
@@ -93,15 +97,25 @@ const AdminCourses = () => {
   };
 
   const handleDeleteCourse = async (courseId) => {
-    if (!confirm(t('admin.courses.confirm.delete'))) return;
+    setCourseToDelete(courseId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteCourse = async () => {
+    if (!courseToDelete) return;
 
     try {
-      await adminService.deleteUser(courseId);
-      alert(t('admin.courses.success.deleted'));
+      setDeleting(true);
+      await adminService.deleteUser(courseToDelete);
+      toast.success(t('admin.courses.success.deleted'));
       fetchCourses();
     } catch (error) {
       console.error('Error deleting course:', error);
-      alert(t('admin.courses.error.delete_failed'));
+      toast.error(t('admin.courses.error.delete_failed'));
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+      setCourseToDelete(null);
     }
   };
 
@@ -345,6 +359,17 @@ const AdminCourses = () => {
             }}
           />
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteCourseModal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setCourseToDelete(null);
+          }}
+          onConfirm={confirmDeleteCourse}
+          isLoading={deleting}
+        />
       </div>
     </div>
   );
@@ -422,12 +447,12 @@ const CourseCard = ({ course, onApprove, onReject, onDelete, onViewDetails }) =>
               {course.shortDescription}
             </p>
 
-            {/* Instructor */}
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src={course.instructor?.profilePicture || 'https://via.placeholder.com/32'}
-                alt={course.instructor?.firstName}
-                className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
+              <Avatar
+                src={course.instructor?.profilePicture}
+                firstName={course.instructor?.firstName}
+                lastName={course.instructor?.lastName}
+                size="md"
               />
               <div>
                 <p className="text-sm font-bold text-slate-900 dark:text-white">
@@ -520,18 +545,18 @@ const RejectCourseModal = ({ course, onClose, onSuccess }) => {
 
   const handleReject = async () => {
     if (!reason.trim()) {
-      alert(t('admin.courses.error.reason_required'));
+      toast.error(t('admin.courses.error.reason_required'));
       return;
     }
 
     try {
       setLoading(true);
       await adminService.rejectCourse(course.id, { reason });
-      alert(t('admin.courses.success.rejected'));
+      toast.success(t('admin.courses.success.rejected'));
       onSuccess();
     } catch (error) {
       console.error('Error rejecting course:', error);
-      alert(t('admin.courses.error.reject_failed'));
+      toast.error(t('admin.courses.error.reject_failed'));
     } finally {
       setLoading(false);
     }
@@ -589,6 +614,23 @@ const RejectCourseModal = ({ course, onClose, onSuccess }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+const DeleteCourseModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
+  const { t } = useTranslation();
+  return (
+    <ConfirmModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title={t('admin.courses.modal.delete_title')}
+      message={t('admin.courses.confirm.delete')}
+      confirmText={t('common.delete')}
+      cancelText={t('common.cancel')}
+      type="danger"
+      isLoading={isLoading}
+    />
   );
 };
 

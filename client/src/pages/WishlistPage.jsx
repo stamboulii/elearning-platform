@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Heart, Clock, Users, Star, BookOpen, Eye, X, ChevronRight, Sparkles, ShoppingCart, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import toast from '../utils/toast';
+import Avatar from '../components/common/Avatar';
 
 const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -313,19 +314,12 @@ const WishlistPage = () => {
                       {/* Instructor */}
                       {item.course.instructor && (
                         <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex-shrink-0">
-                            {item.course.instructor.profilePicture ? (
-                              <img
-                                src={item.course.instructor.profilePicture}
-                                alt={item.course.instructor.firstName}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xs text-white font-bold">
-                                {item.course.instructor.firstName?.charAt(0) || 'I'}
-                              </div>
-                            )}
-                          </div>
+                          <Avatar
+                            src={item.course.instructor.profilePicture}
+                            firstName={item.course.instructor.firstName}
+                            size="sm"
+                            border={false}
+                          />
                           <span className="text-sm text-slate-600 dark:text-slate-300 truncate">
                             {item.course.instructor.firstName} {item.course.instructor.lastName}
                           </span>

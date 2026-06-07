@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from '../../utils/toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const CouponManager = () => {
   const { t } = useTranslation();
@@ -16,6 +17,8 @@ const CouponManager = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteCouponId, setDeleteCouponId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterActive, setFilterActive] = useState('all');
   const [courseSearch, setCourseSearch] = useState('');
@@ -128,12 +131,15 @@ const CouponManager = () => {
   };
 
   const handleDeleteCoupon = async (id) => {
-    if (!window.confirm(t('admin.coupons.confirm.delete'))) {
-      return;
-    }
+    setDeleteCouponId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteCouponId) return;
 
     try {
-      const response = await api.delete(`/coupons/${id}`);
+      const response = await api.delete(`/coupons/${deleteCouponId}`);
       if (response.data.success) {
         toast.success(t('admin.coupons.success.deleted'));
         fetchCoupons();
@@ -142,6 +148,8 @@ const CouponManager = () => {
       console.error('Error deleting coupon:', error);
       toast.error(error.response?.data?.message || t('admin.coupons.error.delete_failed'));
     }
+    setShowDeleteModal(false);
+    setDeleteCouponId(null);
   };
 
   const handleCopyCode = (code) => {
@@ -433,6 +441,21 @@ const CouponManager = () => {
           isEditing={true}
         />
       )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setDeleteCouponId(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title={t('admin.coupons.confirm.delete')}
+        message={t('admin.coupons.confirm.delete_message')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        type="danger"
+      />
     </div>
   );
 };

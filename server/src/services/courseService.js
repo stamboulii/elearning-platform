@@ -346,6 +346,7 @@
 // export default new CourseService();
 
 import prisma from '../config/database.js';
+import { createNotification } from './notificationService.js';
 
 class CourseService {
   // Create course
@@ -377,7 +378,7 @@ class CourseService {
     const coursePrice = parseFloat(price) || 0;
     const isFreeCourse = isFree === true || coursePrice === 0;
 
-    return await prisma.course.create({
+    const course = await prisma.course.create({
       data: {
         instructorId,
         categoryId,
@@ -388,7 +389,7 @@ class CourseService {
         thumbnailImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1000&auto=format&fit=crop',
         price: coursePrice,
         discountPrice: discountPrice ? parseFloat(discountPrice) : null,
-        isFree: isFreeCourse, // NEW
+        isFree: isFreeCourse,
         level: level || 'BEGINNER',
         language: language || 'en',
         estimatedDuration: estimatedDuration ? parseInt(estimatedDuration) : null,
@@ -407,6 +408,8 @@ class CourseService {
         }
       }
     });
+
+    return course;
   }
 
   // Get all courses with filters and pagination
@@ -425,18 +428,18 @@ class CourseService {
 
     // Build where clause
     const where = {};
-    
+
     const statusToUse = (status && status.trim() !== '') ? status : 'PUBLISHED';
     where.status = statusToUse;
 
     if (category && category.trim() !== '') where.categoryId = category;
     if (level && level.trim() !== '') where.level = level;
-    
+
     // NEW: Filter by free/paid courses
     if (isFree !== undefined) {
       where.isFree = isFree === 'true' || isFree === true;
     }
-    
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -573,7 +576,7 @@ class CourseService {
     // NEW: Check user enrollment and payment status
     let userEnrollment = null;
     let hasAccess = false;
-    
+
     if (userId) {
       userEnrollment = await prisma.enrollment.findUnique({
         where: {
@@ -591,14 +594,14 @@ class CourseService {
       // 1. Course is free and user is enrolled
       // 2. Course is paid and user has paid (isPaid = true)
       // 3. User is the instructor
-      hasAccess = 
+      hasAccess =
         course.instructorId === userId ||
         (userEnrollment && (course.isFree || userEnrollment.isPaid));
     }
 
     // NEW: Calculate effective price
     const effectivePrice = course.discountPrice || course.price;
-    const discountPercentage = course.discountPrice 
+    const discountPercentage = course.discountPrice
       ? Math.round(((course.price - course.discountPrice) / course.price) * 100)
       : 0;
 
@@ -662,11 +665,11 @@ class CourseService {
 
     // NEW: Validate pricing logic
     const coursePrice = price !== undefined ? parseFloat(price) : undefined;
-    const isFreeCourse = isFree !== undefined 
+    const isFreeCourse = isFree !== undefined
       ? isFree === true || (coursePrice !== undefined && coursePrice === 0)
       : undefined;
 
-    return await prisma.course.update({
+    const updatedCourse = await prisma.course.update({
       where: { id },
       data: {
         categoryId,
@@ -677,10 +680,10 @@ class CourseService {
         thumbnailImage,
         previewVideo,
         price: coursePrice,
-        discountPrice: discountPrice !== undefined 
+        discountPrice: discountPrice !== undefined
           ? (discountPrice ? parseFloat(discountPrice) : null)
           : undefined,
-        isFree: isFreeCourse, // NEW
+        isFree: isFreeCourse,
         level,
         language,
         status,
@@ -698,6 +701,25 @@ class CourseService {
         }
       }
     });
+
+    // Notify all students when a course is published for the first time
+    const isBeingPublished = status === 'PUBLISHED' && existingCourse.status !== 'PUBLISHED';
+    if (isBeingPublished) {
+      (async () => {
+        const students = await prisma.user.findMany({ where: { role: 'STUDENT' }, select: { id: true } });
+        students.forEach(({ id: studentId }) => {
+          createNotification({
+            userId: studentId,
+            type: 'COURSE_PUBLISHED',
+            title: 'New Course Available',
+            message: `A new course "${updatedCourse.title}" is now available!`,
+            data: { courseId: updatedCourse.id, title: updatedCourse.title }
+          }).catch(() => { });
+        });
+      })();
+    }
+
+    return updatedCourse;
   }
 
   // Delete course (unchanged)

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import certificateService from '../../services/certificateService';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import toast from '../../utils/toast';
 
 const CertificateView = () => {
     const { id } = useParams();
@@ -50,7 +51,7 @@ const CertificateView = () => {
             pdf.save(`Certificate-${certificate.certificateNumber}.pdf`);
         } catch (error) {
             console.error('Error generating PDF:', error);
-            alert('Failed to download certificate. Please try again.');
+            toast.error('Failed to download certificate. Please try again.');
         } finally {
             setDownloading(false);
         }
