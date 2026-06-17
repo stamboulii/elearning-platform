@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import * as notificationService from '../services/notificationService';
-import { connectSocket } from '../services/socketService';
+import { connectSocket, getSocket } from '../services/socketService';
 
 const NotificationContext = createContext();
 
@@ -89,19 +89,24 @@ export const NotificationProvider = ({ children }) => {
     };
     fetchData();
 
-    const socket = connectSocket(user.id);
+    const socket = getSocket() || connectSocket(user.id);
+    if (!socket) return;
 
-    socket.on('notification:new', (notification) => {
+    const handleNewNotification = (notification) => {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
-    });
+    };
 
-    socket.on('notification:unread_count', (count) => {
+    const handleUnreadCount = (count) => {
       setUnreadCount(count);
-    });
+    };
+
+    socket.on('notification:new', handleNewNotification);
+    socket.on('notification:unread_count', handleUnreadCount);
 
     return () => {
-      socket.disconnect();
+      socket.off('notification:new', handleNewNotification);
+      socket.off('notification:unread_count', handleUnreadCount);
     };
   }, [user, fetchNotifications, fetchUnreadCount]);
 
