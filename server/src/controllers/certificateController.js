@@ -1,4 +1,5 @@
 import certificateService from '../services/certificateService.js';
+import prisma from '../config/database.js';
 
 /**
  * @desc    Get certificate by ID
@@ -51,6 +52,43 @@ export const getMyCertificate = async (req, res) => {
     });
   } catch (error) {
     console.error('Get my certificate error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching certificate'
+    });
+  }
+};
+
+export const getCertificateByEnrollment = async (req, res) => {
+  try {
+    const certificate = await certificateService.getCertificateByEnrollment(req.params.enrollmentId);
+
+    if (!certificate) {
+      return res.status(404).json({
+        success: false,
+        message: 'Certificate not found for this enrollment'
+      });
+    }
+
+    // Security: make sure the certificate belongs to the requesting user
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id: req.params.enrollmentId },
+      select: { userId: true }
+    });
+
+    if (!enrollment || enrollment.userId !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to view this certificate'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { certificate }
+    });
+  } catch (error) {
+    console.error('Get certificate by enrollment error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error fetching certificate'

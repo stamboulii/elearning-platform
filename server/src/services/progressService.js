@@ -188,12 +188,12 @@ class ProgressService {
 
     // Award bonus XP for course completion
     if (becameCompleted && userId) {
-      await gamificationService.awardXP(userId, 500, 'COURSE_COMPLETED', enrollment.id);
-      await certificateService.issueCertificate(enrollment.id);
+      await gamificationService.awardXP(userId, 500, 'COURSE_COMPLETED', enrollmentId);
     }
 
-    // Update enrollment
-    return await prisma.enrollment.update({
+    // Update enrollment FIRST so completionStatus is 'COMPLETED' in the DB
+    // before issueCertificate reads it
+    const updatedEnrollment = await prisma.enrollment.update({
       where: { id: enrollmentId },
       data: {
         progressPercentage,
@@ -201,6 +201,13 @@ class ProgressService {
         completedAt
       }
     });
+
+    // Issue certificate AFTER enrollment is marked COMPLETED
+    if (becameCompleted) {
+      await certificateService.issueCertificate(enrollmentId);
+    }
+
+    return updatedEnrollment;
   }
 
   // Get lesson progress for a user

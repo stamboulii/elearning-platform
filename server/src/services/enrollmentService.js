@@ -465,7 +465,8 @@ class EnrollmentService {
             price: true
           }
         },
-        transaction: true
+        transaction: true,
+        certificate: true
       }
     });
 

@@ -4,10 +4,9 @@ import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Public route for verification
-router.get('/:id', certificateController.getCertificate);
+router.get('/enrollment/:enrollmentId', protect, certificateController.getCertificateByEnrollment);
+router.get('/my', protect, certificateController.getMyCertificate);
 
-// Protected routes
-router.get('/enrollment/:enrollmentId', protect, certificateController.getMyCertificate);
+router.get('/:id', protect, certificateController.getCertificate);
 
 export default router;

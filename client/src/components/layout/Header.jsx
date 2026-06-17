@@ -24,7 +24,7 @@ import Avatar from '../common/Avatar';
 
 const Header = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { theme } = useTheme();
     const { unreadCount, notifications, markAsRead } = useNotifications();
     const navigate = useNavigate();
