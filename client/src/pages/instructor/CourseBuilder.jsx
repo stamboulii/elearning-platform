@@ -8,6 +8,8 @@ import courseService from '../../services/courseService';
 import sectionService from '../../services/sectionService';
 import lessonService from '../../services/lessonService';
 import flashcardService from '../../services/flashcardService';
+import { generateQuiz as generateQuizAI } from '../../services/quizService';
+import { createQuiz } from '../../services/quizService';
 import {
   BookOpen,
   Plus,
@@ -407,6 +409,7 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [generatingFlashcards, setGeneratingFlashcards] = useState(false);
+  const [generatingQuiz, setGeneratingQuiz] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleGenerateFlashcards = async () => {
@@ -421,6 +424,22 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
       toast.error('Failed to generate AI flashcards');
     } finally {
       setGeneratingFlashcards(false);
+    }
+  };
+
+  const handleGenerateQuiz = async () => {
+    try {
+      setGeneratingQuiz(true);
+      const response = await generateQuizAI(lesson.id);
+      if (response.success) {
+        toast.success('AI Quiz generated successfully! 🎯');
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error generating quiz:', error);
+      toast.error('Failed to generate AI quiz');
+    } finally {
+      setGeneratingQuiz(false);
     }
   };
 
@@ -516,23 +535,41 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
         </div>
 
         <div className="flex gap-2">
-          {lesson.contentType === 'VIDEO' && !lesson.contentUrl && (
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoUpload}
-                className="hidden"
-                disabled={uploading}
-              />
-              <span className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all text-sm font-bold shadow-sm shadow-emerald-200 dark:shadow-emerald-900/20">
-                <Upload className="w-4 h-4" />
-                {uploading ? `${uploadProgress}%` : t('instructor.course_builder.upload_video')}
-              </span>
-            </label>
-          )}
-          <button
-            onClick={handleGenerateFlashcards}
+{lesson.contentType === 'VIDEO' && !lesson.contentUrl && (
+             <label className="cursor-pointer">
+               <input
+                 type="file"
+                 accept="video/*"
+                 onChange={handleVideoUpload}
+                 className="hidden"
+                 disabled={uploading}
+               />
+               <span className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all text-sm font-bold shadow-sm shadow-emerald-200 dark:shadow-emerald-900/20">
+                 <Upload className="w-4 h-4" />
+                 {uploading ? `${uploadProgress}%` : t('instructor.course_builder.upload_video')}
+               </span>
+</label>
+            )}
+            {lesson.contentType === 'QUIZ' && lesson.content && (
+              <button
+                onClick={handleGenerateQuiz}
+                disabled={generatingQuiz}
+                title="Generate AI Quiz"
+                className={`p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm ${generatingQuiz
+                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                  : 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-100 dark:border-purple-800'
+                  }`}
+              >
+                {generatingQuiz ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                ) : (
+                  <BrainCircuit className="w-4 h-4" />
+                )}
+                AI Quiz
+              </button>
+            )}
+            <button
+             onClick={handleGenerateFlashcards}
             disabled={generatingFlashcards}
             title="Generate AI Flashcards"
             className={`p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm ${generatingFlashcards
@@ -582,6 +619,7 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
 
 // Upload Thumbnail Component
 const UploadThumbnail = ({ courseId, onUpload }) => {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
 
   const handleUpload = async (e) => {
@@ -759,8 +797,17 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
         await lessonService.uploadLessonResources(lesson.id, [documentFile]);
       }
 
-      if (formData.contentType === 'QUIZ') {
-        console.log('Quiz Data:', { title: formData.quizTitle, questions: quizQuestions });
+      if (formData.contentType === 'QUIZ' && quizQuestions.length > 0) {
+        try {
+          await createQuiz(lesson.id, {
+            title: formData.quizTitle || lesson.title,
+            passingScore: formData.passingScore,
+            questions: quizQuestions
+          });
+        } catch (error) {
+          console.error('Failed to save quiz:', error);
+          toast.error('Quiz created but questions failed to save');
+        }
       }
 
       toast.success('Lesson created successfully! ✨');

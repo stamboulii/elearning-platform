@@ -31,7 +31,9 @@ import transactionRoutes from './src/routes/transactionRoutes.js';
 import instructorAnalyticsRoutes from './src/routes/Instructoranalyticsroutes.js';
 import notificationRoutes from './src/routes/notificationRoutes.js';
 import flashcardRoutes from './src/routes/flashcardRoutes.js';
+import quizRoutes from './src/routes/quizRoutes.js';
 import studyScheduleRoutes from './src/routes/studyScheduleRoutes.js';
+import lessonRoutes from './src/routes/lessonRoutes.js';
 
 
 const app = express();
@@ -118,7 +120,9 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/instructor-analytics', instructorAnalyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/quizzes', quizRoutes);
 app.use('/api/study-schedules', studyScheduleRoutes);
+app.use('/api/lessons', lessonRoutes);
 
 
 // Health check

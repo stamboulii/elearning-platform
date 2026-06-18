@@ -24,7 +24,7 @@ import Avatar from '../common/Avatar';
 
 const Header = () => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { theme } = useTheme();
     const { unreadCount, notifications, markAsRead } = useNotifications();
     const navigate = useNavigate();
@@ -96,6 +96,7 @@ const Header = () => {
         return () => {
             window.removeEventListener('favorites-updated', handleFavoriteUpdate);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     // Listen for cart updates from other components
@@ -112,6 +113,7 @@ const Header = () => {
         return () => {
             window.removeEventListener('cart-updated', handleCartUpdate);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     // Function to refetch favorite count

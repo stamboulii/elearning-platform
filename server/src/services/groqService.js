@@ -160,8 +160,66 @@ Expected JSON Format:
   }
 };
 
+export const generateQuiz = async (lessonTitle, lessonContent, lessonType = 'TEXT') => {
+  try {
+    const contentDescription = lessonType === 'VIDEO' 
+      ? 'video transcript/content' 
+      : lessonType === 'DOCUMENT' 
+        ? 'document content' 
+        : 'lesson text';
+
+    const prompt = `You are an educational assessment expert. Based on the following lesson "${lessonType.toLowerCase()}" content, generate a quiz with 5-8 questions to evaluate student understanding.
+
+Lesson Title: ${lessonTitle}
+Lesson Content (${lessonType}): ${lessonType === 'TEXT' ? lessonContent : contentDescription}
+
+Please provide a response in valid JSON format with exactly one field "quiz", which is an object with:
+- "title": Brief quiz title
+- "description": Optional description
+- "passingScore": Number (default 70)
+- "timeLimit": Number in minutes (default 10)
+- "questions": Array of 5-8 question objects, each with:
+  - "questionText": The question
+  - "questionType": One of "MULTIPLE_CHOICE", "TRUE_FALSE", or "SHORT_ANSWER"
+  - "options": Array of 2-4 strings (for MULTIPLE_CHOICE), or null for other types
+  - "correctAnswer": The correct answer (string or array index for MULTIPLE_CHOICE)
+  - "points": Number of points (default 1)
+
+Focus on testing comprehension of key concepts. Mix question types.`;
+
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a precise quiz generation assistant. Output only valid JSON.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.5,
+      max_tokens: 2500,
+      response_format: { type: 'json_object' }
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error('No response from Groq AI');
+    }
+
+    const parsed = JSON.parse(content);
+    return parsed.quiz || null;
+  } catch (error) {
+    console.error('Groq quiz generation error:', error);
+    throw new Error('Failed to generate quiz. Please try again.');
+  }
+};
+
 export default {
   generateCourseDescription,
   generateFlashcards,
   generateStudySchedule,
+  generateQuiz,
 };

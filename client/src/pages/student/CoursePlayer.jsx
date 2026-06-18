@@ -12,6 +12,7 @@ import confetti from 'canvas-confetti';
 import toast from 'react-hot-toast';
 import StudyScheduleView from '../../components/course/StudyScheduleView';
 import FlashcardDeckView from '../../components/course/FlashcardDeckView';
+import QuizPlayer from '../../components/course/QuizPlayer';
 import flashcardService from '../../services/flashcardService';
 import { BrainCircuit, Calendar } from 'lucide-react';
 
@@ -219,15 +220,16 @@ const CoursePlayer = () => {
       });
 
       // Show XP Gain Toast
-      toast.success((t) => (
+      toast.success(
         <div className="flex items-center gap-3">
           <span className="text-2xl">✨</span>
           <div>
             <p className="font-bold">{t('student.course_player.xp_earned')}</p>
             <p className="text-xs text-gray-500">{t('student.course_player.lesson_completed')}</p>
           </div>
-        </div>
-      ), { duration: 4000 });
+        </div>,
+        { duration: 4000 }
+      );
 
       // Refresh user data (XP and Level)
       await refreshUser();
@@ -477,9 +479,7 @@ const CoursePlayer = () => {
                       )}
 
                       {currentLesson.contentType === 'QUIZ' && (
-                        <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
-                          <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
-                        </div>
+                        <QuizPlayer lesson={currentLesson} />
                       )}
 
                       {enrollment ? (
