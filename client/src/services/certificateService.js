@@ -9,7 +9,12 @@ const certificateService = {
   getMyCertificate: async (enrollmentId) => {
     const response = await api.get(`/certificates/enrollment/${enrollmentId}`);
     return response.data;
-  }
+  },
+
+  generateCertificate: async (enrollmentId) => {
+    const response = await api.post(`/certificates/generate/${enrollmentId}`);
+    return response.data.data;
+  },
 };
 
 export default certificateService;

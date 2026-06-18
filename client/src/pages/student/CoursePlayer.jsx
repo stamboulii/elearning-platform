@@ -32,13 +32,15 @@ const CoursePlayer = () => {
   const [activeTab, setActiveTab] = useState('content'); // 'content' or 'flashcards'
   const [flashcardDeck, setFlashcardDeck] = useState(null);
   const [flashcardLoading, setFlashcardLoading] = useState(false);
+  const [certLoading, setCertLoading] = useState(false);
 
   useEffect(() => {
     fetchCourseData();
   }, [courseId]);
 
   useEffect(() => {
-    if (currentLesson && currentLesson.contentType === 'VIDEO' && enrollment) {
+    // Fetch progress for all content types (not just VIDEO)
+    if (currentLesson && enrollment) {
       fetchLessonProgress();
     }
   }, [currentLesson, enrollment]);
@@ -60,6 +62,7 @@ const CoursePlayer = () => {
           const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
           if (enrollmentCheck.isEnrolled) {
             setEnrollment(enrollmentCheck.enrollment);
+            console.log('Certificate:', enrollmentCheck.enrollment?.certificate);
           }
         } catch (error) {
           console.error('Error checking enrollment:', error);
@@ -131,6 +134,32 @@ const CoursePlayer = () => {
     }
   }, [activeTab, currentLesson]);
 
+    // Poll for certificate when course is complete but cert not yet available
+  useEffect(() => {
+    if (!enrollment || enrollment.progressPercentage !== 100 || enrollment.certificate) return;
+
+    const poll = setInterval(async () => {
+      try {
+        const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
+        if (enrollmentCheck.isEnrolled && enrollmentCheck.enrollment?.certificate) {
+          setEnrollment(enrollmentCheck.enrollment);
+          clearInterval(poll);
+        }
+      } catch (err) {
+        console.error('Certificate poll error:', err);
+        clearInterval(poll);
+      }
+    }, 3000); // check every 3 seconds
+
+    // Stop polling after 30 seconds to avoid infinite loop
+    const timeout = setTimeout(() => clearInterval(poll), 30000);
+
+    return () => {
+      clearInterval(poll);
+      clearTimeout(timeout);
+    };
+  }, [enrollment?.progressPercentage, enrollment?.certificate, courseId]);
+
   /* =========================
      FIXED ACCESS CONTROL
   ========================== */
@@ -164,7 +193,8 @@ const CoursePlayer = () => {
 
     setCurrentLesson(lesson);
     setVideoProgress(0);
-    setIsCompleted(false);
+    // Don't reset isCompleted here — it causes a flash of "Mark as Complete"
+    // on already-completed lessons. fetchLessonProgress() will set the correct value.
     setActiveTab('content');
     setFlashcardDeck(null);
 
@@ -207,8 +237,8 @@ const CoursePlayer = () => {
 
       // Refresh enrollment data to update progress percentage
       const enrollmentCheck = await enrollmentService.checkEnrollment(courseId);
-      if (enrollmentCheck.isEnrolled) {
-        setEnrollment(enrollmentCheck.enrollment);
+        if (enrollmentCheck.isEnrolled) {
+          setEnrollment(enrollmentCheck.enrollment);
       }
 
       // GAMIFICATION: Confetti!
@@ -219,13 +249,15 @@ const CoursePlayer = () => {
         colors: ['#3b82f6', '#fbbf24', '#10b981']
       });
 
-      // Show XP Gain Toast
+      // Show XP Gain Toast (resolve translations before the toast call to avoid shadowing `t`)
+      const xpEarnedMsg = t('student.course_player.xp_earned');
+      const lessonCompletedMsg = t('student.course_player.lesson_completed');
       toast.success(
         <div className="flex items-center gap-3">
           <span className="text-2xl">✨</span>
           <div>
-            <p className="font-bold">{t('student.course_player.xp_earned')}</p>
-            <p className="text-xs text-gray-500">{t('student.course_player.lesson_completed')}</p>
+            <p className="font-bold">{xpEarnedMsg}</p>
+            <p className="text-xs text-gray-500">{lessonCompletedMsg}</p>
           </div>
         </div>,
         { duration: 4000 }
@@ -288,11 +320,12 @@ const CoursePlayer = () => {
                 </div>
               )}
             </div>
-
             {enrollment && (
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-sm text-slate-500 dark:text-slate-400">{t('student.course_card.progress')}: {overallProgress}%</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {t('student.course_card.progress')}: {overallProgress}%
+                  </div>
                   <div className="w-48 bg-slate-200 dark:bg-slate-800 rounded-full h-2">
                     <div
                       className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full transition-all"
@@ -300,15 +333,6 @@ const CoursePlayer = () => {
                     />
                   </div>
                 </div>
-
-                {overallProgress === 100 && enrollment.certificate && (
-                  <Link
-                    to={`/student/certificates/${enrollment.certificate.id}`}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition font-bold text-sm shadow-lg shadow-emerald-100 dark:shadow-none flex items-center gap-2"
-                  >
-                    📜 {t('common.certificate')}
-                  </Link>
-                )}
               </div>
             )}
           </div>
@@ -383,144 +407,172 @@ const CoursePlayer = () => {
         </div>
 
         {/* PLAYER */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
-          {currentLesson ? (
-            <>
-              <div className="flex items-start justify-between mb-4">
+        <div className="lg:col-span-3 space-y-4">
+
+          {/* Certificate Banner — always visible when course is 100% complete */}
+          {enrollment && overallProgress === 100 && enrollment.certificate && (
+            <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
+              <div className="flex items-center gap-4">
+                <div className="text-5xl">🏆</div>
                 <div className="flex-1">
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
-                  <div className="flex items-center gap-4 mt-4 border-b dark:border-slate-800">
-                    <button
-                      onClick={() => setActiveTab('content')}
-                      className={`pb-2 px-1 text-sm font-bold transition-all ${activeTab === 'content'
-                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
-                        }`}
-                    >
-                      Lesson Content
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('flashcards')}
-                      className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'flashcards'
-                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
-                        }`}
-                    >
-                      <BrainCircuit className="w-4 h-4" />
-                      Flashcards
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('schedule')}
-                      className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'schedule'
-                        ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
-                        }`}
-                    >
-                      <Calendar className="w-4 h-4" />
-                      Study Plan
-                    </button>
-                  </div>
+                  <h3 className="text-lg font-black text-amber-900 dark:text-amber-300">
+                    {t('common.congratulations') || 'Congratulations!'}
+                  </h3>
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+                    {t('student.course_player.course_completed_desc') || 'You have completed this course. Your certificate is ready!'}
+                  </p>
                 </div>
+                <Link
+                  to={`/student/certificates/${enrollment.certificate.id}`}
+                  className="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-100 dark:shadow-none flex items-center gap-2 text-sm"
+                >
+                  📜 {t('common.certificate') || 'View Certificate'}
+                </Link>
               </div>
-
-              {activeTab === 'flashcards' ? (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                  {flashcardLoading ? (
-                    <div className="py-20 flex justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                    </div>
-                  ) : (
-                    <FlashcardDeckView deck={flashcardDeck} />
-                  )}
-                </div>
-              ) : activeTab === 'schedule' ? (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                  <StudyScheduleView enrollmentId={enrollment?.id} />
-                </div>
-              ) : (
-                <>
-                  {isLessonLocked(currentLesson) ? (
-                    <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-                      <div className="mb-4 text-6xl">🔒</div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('student.course_player.locked_title')}</h3>
-                      <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">{t('student.course_player.locked_desc')}</p>
-                      <Link
-                        to={`/courses/${courseId}`}
-                        className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
-                      >
-                        {t('student.course_player.view_enroll')}
-                      </Link>
-                    </div>
-                  ) : (
-                    <>
-                      {currentLesson.contentType === 'VIDEO' && (
-                        <div className="mb-6">
-                          <video
-                            key={currentLesson.id}
-                            src={currentLesson.contentUrl}
-                            controls
-                            className="w-full rounded-lg shadow-lg"
-                            onTimeUpdate={(e) =>
-                              handleVideoProgress(Math.floor(e.target.currentTime))
-                            }
-                            onLoadedMetadata={(e) => {
-                              if (videoProgress > 0 && enrollment) {
-                                e.target.currentTime = videoProgress;
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {currentLesson.contentType === 'TEXT' && (
-                        <div className="prose dark:prose-invert max-w-none mb-6 whitespace-pre-line text-slate-700 dark:text-slate-300">
-                          {currentLesson.content}
-                        </div>
-                      )}
-
-                      {currentLesson.contentType === 'QUIZ' && (
-                        <QuizPlayer lesson={currentLesson} />
-                      )}
-
-                      {enrollment ? (
-                        <>
-                          {!isCompleted ? (
-                            <button
-                              onClick={handleCompleteLesson}
-                              className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
-                            >
-                              ✓ Mark as Complete
-                            </button>
-                          ) : (
-                            <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                              <span className="font-bold">✓</span>
-                              <span className="font-black text-sm uppercase tracking-wider">{t('course.status.completed')}</span>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
-                          <p className="text-indigo-800 dark:text-indigo-400 font-medium">
-                            💡 <strong>{t('student.course_player.enjoy_prompt')}</strong>
-                          </p>
-                          <Link
-                            to={`/courses/${courseId}`}
-                            className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
-                          >
-                            {t('student.course_player.enroll_now')}
-                          </Link>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-slate-500 dark:text-slate-400 font-medium italic">{t('student.course_player.select_lesson')}</p>
             </div>
           )}
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
+            {currentLesson ? (
+              <>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
+                    <div className="flex items-center gap-4 mt-4 border-b dark:border-slate-800">
+                      <button
+                        onClick={() => setActiveTab('content')}
+                        className={`pb-2 px-1 text-sm font-bold transition-all ${activeTab === 'content'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                          : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                          }`}
+                      >
+                        Lesson Content
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('flashcards')}
+                        className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'flashcards'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                          : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                          }`}
+                      >
+                        <BrainCircuit className="w-4 h-4" />
+                        Flashcards
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('schedule')}
+                        className={`pb-2 px-1 text-sm font-bold transition-all flex items-center gap-1 ${activeTab === 'schedule'
+                          ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                          : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                          }`}
+                      >
+                        <Calendar className="w-4 h-4" />
+                        Study Plan
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {activeTab === 'flashcards' ? (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    {flashcardLoading ? (
+                      <div className="py-20 flex justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                      </div>
+                    ) : (
+                      <FlashcardDeckView deck={flashcardDeck} />
+                    )}
+                  </div>
+                ) : activeTab === 'schedule' ? (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <StudyScheduleView enrollmentId={enrollment?.id} />
+                  </div>
+                ) : (
+                  <>
+                    {isLessonLocked(currentLesson) ? (
+                      <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                        <div className="mb-4 text-6xl">🔒</div>
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('student.course_player.locked_title')}</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">{t('student.course_player.locked_desc')}</p>
+                        <Link
+                          to={`/courses/${courseId}`}
+                          className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 dark:shadow-none"
+                        >
+                          {t('student.course_player.view_enroll')}
+                        </Link>
+                      </div>
+                    ) : (
+                      <>
+                        {currentLesson.contentType === 'VIDEO' && (
+                          <div className="mb-6">
+                            <video
+                              key={currentLesson.id}
+                              src={currentLesson.contentUrl}
+                              controls
+                              className="w-full rounded-lg shadow-lg"
+                              onTimeUpdate={(e) =>
+                                handleVideoProgress(Math.floor(e.target.currentTime))
+                              }
+                              onLoadedMetadata={(e) => {
+                                if (videoProgress > 0 && enrollment) {
+                                  e.target.currentTime = videoProgress;
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {currentLesson.contentType === 'TEXT' && (
+                          <div className="prose dark:prose-invert max-w-none mb-6 whitespace-pre-line text-slate-700 dark:text-slate-300">
+                            {currentLesson.content}
+                          </div>
+                        )}
+
+                        {currentLesson.contentType === 'QUIZ' && (
+                          <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
+                            <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
+                          </div>
+                        )}
+
+                        {enrollment ? (
+                          <>
+                            {!isCompleted ? (
+                              <button
+                                onClick={handleCompleteLesson}
+                                className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
+                              >
+                                ✓ Mark as Complete
+                              </button>
+                            ) : (
+                              <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-400 px-6 py-2 rounded-xl border border-emerald-100 dark:border-emerald-800">
+                                <span className="font-bold">✓</span>
+                                <span className="font-black text-sm uppercase tracking-wider">{t('course.status.completed')}</span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-2xl p-6 mt-6">
+                            <p className="text-indigo-800 dark:text-indigo-400 font-medium">
+                              💡 <strong>{t('student.course_player.enjoy_prompt')}</strong>
+                            </p>
+                            <Link
+                              to={`/courses/${courseId}`}
+                              className="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-bold"
+                            >
+                              {t('student.course_player.enroll_now')}
+                            </Link>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-slate-500 dark:text-slate-400 font-medium italic">{t('student.course_player.select_lesson')}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
