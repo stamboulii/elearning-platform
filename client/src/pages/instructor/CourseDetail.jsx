@@ -15,6 +15,7 @@ import {
   Play,
   Award,
   Edit,
+  Edit3,
   Eye,
   TrendingUp,
   DollarSign,
@@ -26,7 +27,8 @@ import {
   MessageCircle,
   AlertCircle,
   CheckCircle,
-  XCircle
+  XCircle,
+  Archive
 } from 'lucide-react';
 
 const InstructorCourseDetail = () => {
@@ -104,15 +106,22 @@ const InstructorCourseDetail = () => {
                 {course.shortDescription}
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate(`/courses/${id}`)}
-                className="flex items-center gap-2 px-4 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                Preview
-              </button>
-            </div>
+<div className="flex items-center gap-3">
+               <button
+                 onClick={() => navigate(`/instructor/courses/${id}/edit`)}
+                 className="flex items-center gap-2 px-4 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+               >
+                 <Edit className="w-4 h-4" />
+                 Edit
+               </button>
+               <button
+                 onClick={() => navigate(`/courses/${id}`)}
+                 className="flex items-center gap-2 px-4 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+               >
+                 <Eye className="w-4 h-4" />
+                 Preview
+               </button>
+             </div>
           </div>
 
           {/* Key Metrics */}
@@ -201,6 +210,48 @@ const InstructorCourseDetail = () => {
                   <button className="w-full mt-3 bg-amber-600 dark:bg-amber-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-amber-700 dark:hover:bg-amber-700 transition-colors">
                     Publish Course
                   </button>
+                </div>
+              )}
+              
+              {/* Quick Actions */}
+              {course.status !== 'ARCHIVED' && (
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+                  <h3 className="font-bold text-slate-900 dark:text-white mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
+                    Quick Actions
+                  </h3>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => navigate(`/instructor/courses/${id}/builder`)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                    >
+                      <Edit className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Edit Content</span>
+                    </button>
+                    <button
+                      onClick={() => navigate(`/instructor/courses/${id}/edit`)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                    >
+                      <Edit3 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Edit Info</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Are you sure you want to archive this course?')) {
+                          try {
+                            await courseService.archiveCourse(id);
+                            toast.success('Course archived successfully');
+                            window.location.reload();
+                          } catch (error) {
+                            toast.error('Failed to archive course');
+                          }
+                        }
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors text-left"
+                    >
+                      <Archive className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-semibold text-orange-600">Archive Course</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

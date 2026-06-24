@@ -43,7 +43,8 @@ import {
   getInstructorCourses,
   addCourseRequirement,
   addCourseOutcome,
-  generateDescription
+  generateDescription,
+  archiveCourse
 } from '../controllers/courseController.js';
 import { protect, authorize } from '../middleware/auth.js';
 import sectionRoutes from './sectionRoutes.js';
@@ -383,5 +384,7 @@ router.post('/:id/outcomes', protect, authorize('INSTRUCTOR', 'ADMIN'), addCours
  *         $ref: '#/components/responses/ForbiddenError'
  */
 router.post('/generate-description', protect, authorize('INSTRUCTOR', 'ADMIN'), generateDescription);
+
+router.patch('/:id/archive', protect, authorize('INSTRUCTOR', 'ADMIN'), archiveCourse);
 
 export default router;

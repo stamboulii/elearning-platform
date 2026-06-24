@@ -528,9 +528,7 @@ const CoursePlayer = () => {
                         )}
 
                         {currentLesson.contentType === 'QUIZ' && (
-                          <div className="p-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl mb-6">
-                            <p className="text-amber-800 dark:text-amber-400 font-medium">{t('student.course_player.quiz_placeholder')}</p>
-                          </div>
+                          <QuizPlayer lesson={currentLesson} />
                         )}
 
                         {enrollment ? (

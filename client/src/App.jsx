@@ -20,6 +20,7 @@ import Profile from './pages/Profile';
 import MyCourses from './pages/instructor/MyCourses';
 import CourseBuilder from './pages/instructor/CourseBuilder';
 import CreateCourse from './pages/instructor/CreateCourse';
+import EditCourse from './pages/instructor/EditCourse';
 import Checkout from './pages/student/Checkout';
 import CertificateView from './pages/student/CertificateView';
 import NotificationsPage from './pages/Notifications';
@@ -220,6 +221,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
                     <InstructorCourseDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/instructor/courses/:courseId/edit"
+                element={
+                  <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
+                    <EditCourse />
                   </ProtectedRoute>
                 }
               />

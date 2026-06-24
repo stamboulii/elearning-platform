@@ -217,3 +217,32 @@ export const generateDescription = async (req, res) => {
     });
   }
 };
+
+// @desc    Archive course
+// @route   PATCH /api/courses/:id/archive
+// @access  Private (Instructor - own courses only)
+export const archiveCourse = async (req, res) => {
+  try {
+    const course = await courseService.archiveCourse(
+      req.params.id,
+      req.user.id,
+      req.user.role
+    );
+
+    res.json({
+      success: true,
+      message: 'Course archived successfully',
+      data: { course }
+    });
+  } catch (error) {
+    console.error('Archive course error:', error);
+    const statusCode = error.message === 'Course not found' ? 404
+      : error.message.includes('Not authorized') ? 403
+      : error.message.includes('Cannot archive') ? 400
+      : 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

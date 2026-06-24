@@ -801,6 +801,44 @@ class CourseService {
       }
     });
   }
+
+  // Archive course
+  async archiveCourse(id, userId, userRole) {
+    const course = await prisma.course.findUnique({
+      where: { id },
+      include: {
+        enrollments: true
+      }
+    });
+
+    if (!course) {
+      throw new Error('Course not found');
+    }
+
+    if (course.instructorId !== userId && userRole !== 'ADMIN') {
+      throw new Error('Not authorized');
+    }
+
+    // Can archive any course (published or draft)
+    const updatedCourse = await prisma.course.update({
+      where: { id },
+      data: {
+        status: 'ARCHIVED'
+      },
+      include: {
+        category: true,
+        instructor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true
+          }
+        }
+      }
+    });
+
+    return updatedCourse;
+  }
 }
 
 export default new CourseService();

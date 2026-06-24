@@ -159,7 +159,7 @@ const CertificateView = () => {
 
                         <div className="absolute bottom-10 left-0 right-0 text-center">
                             <p className="text-[10px] text-gray-400 font-mono">
-                                Certificate Number: {certificateNumber} | Issued by Antigravity LMS
+                                Certificate Number: {certificateNumber} | Issued by FirstFormation LMS
                             </p>
                         </div>
                     </div>

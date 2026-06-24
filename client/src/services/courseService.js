@@ -68,6 +68,12 @@ const courseService = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
+  },
+
+  // Archive course
+  archiveCourse: async (courseId) => {
+    const response = await api.patch(`/courses/${courseId}/archive`);
+    return response.data;
   }
 };
 

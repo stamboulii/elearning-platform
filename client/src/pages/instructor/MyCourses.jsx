@@ -24,12 +24,10 @@ const MyCourses = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [courseToAction, setCourseToAction] = useState(null);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  const [archiving, setArchiving] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -43,17 +41,26 @@ const MyCourses = () => {
     }
   };
 
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
   const handleDeleteCourse = async (courseId, courseTitle) => {
-    setCourseToDelete({ id: courseId, title: courseTitle });
+    setCourseToAction({ id: courseId, title: courseTitle, action: 'delete' });
     setShowDeleteModal(true);
   };
 
+  const handleArchiveCourse = async (courseId, courseTitle) => {
+    setCourseToAction({ id: courseId, title: courseTitle, action: 'archive' });
+    setShowArchiveModal(true);
+  };
+
   const confirmDeleteCourse = async () => {
-    if (!courseToDelete) return;
+    if (!courseToAction || courseToAction.action !== 'delete') return;
 
     try {
       setDeleting(true);
-      await courseService.deleteCourse(courseToDelete.id);
+      await courseService.deleteCourse(courseToAction.id);
       toast.success(t('instructor.my_courses.card.delete_success'));
       fetchCourses();
     } catch (error) {
@@ -62,7 +69,25 @@ const MyCourses = () => {
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);
-      setCourseToDelete(null);
+      setCourseToAction(null);
+    }
+  };
+
+  const confirmArchiveCourse = async () => {
+    if (!courseToAction || courseToAction.action !== 'archive') return;
+
+    try {
+      setArchiving(true);
+      await courseService.archiveCourse(courseToAction.id);
+      toast.success('Course archived successfully');
+      fetchCourses();
+    } catch (error) {
+      console.error('Error archiving course:', error);
+      toast.error(error.response?.data?.message || 'Failed to archive course');
+    } finally {
+      setArchiving(false);
+      setShowArchiveModal(false);
+      setCourseToAction(null);
     }
   };
 
@@ -281,6 +306,7 @@ const MyCourses = () => {
                 key={course.id}
                 course={course}
                 onDelete={handleDeleteCourse}
+                onArchive={handleArchiveCourse}
               />
             ))}
           </div>
@@ -292,11 +318,23 @@ const MyCourses = () => {
         isOpen={showDeleteModal}
         onClose={() => {
           setShowDeleteModal(false);
-          setCourseToDelete(null);
+          setCourseToAction(null);
         }}
         onConfirm={confirmDeleteCourse}
-        courseTitle={courseToDelete?.title}
+        courseTitle={courseToAction?.title}
         isLoading={deleting}
+      />
+
+      {/* Archive Confirmation Modal */}
+      <ArchiveCourseModal
+        isOpen={showArchiveModal}
+        onClose={() => {
+          setShowArchiveModal(false);
+          setCourseToAction(null);
+        }}
+        onConfirm={confirmArchiveCourse}
+        courseTitle={courseToAction?.title}
+        isLoading={archiving}
       />
     </div>
   );
@@ -317,7 +355,7 @@ const StatCard = ({ title, value, icon, bgColor, borderColor }) => (
 );
 
 // Course Card Component
-const CourseCard = ({ course, onDelete }) => {
+const CourseCard = ({ course, onDelete, onArchive }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -443,6 +481,18 @@ const CourseCard = ({ course, onDelete }) => {
                       <span className="font-semibold text-sm">{t('instructor.my_courses.card.edit_info')}</span>
                     </button>
                     <div className="my-2 border-t border-slate-100 dark:border-slate-800"></div>
+                    {course.status !== 'ARCHIVED' && (
+                      <button
+                        onClick={() => {
+                          onArchive(course.id, course.title);
+                          setShowMenu(false);
+                        }}
+                        className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                      >
+                        <Archive className="w-4 h-4" />
+                        <span className="font-semibold text-sm">Archive Course</span>
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         onDelete(course.id, course.title);
@@ -532,7 +582,7 @@ const StatItem = ({ icon, label, value }) => (
 // Delete Confirmation Modal
 const DeleteCourseModal = ({ isOpen, onClose, onConfirm, courseTitle, isLoading }) => {
   const { t } = useTranslation();
-  
+
   return (
     <ConfirmModal
       isOpen={isOpen}
@@ -543,6 +593,25 @@ const DeleteCourseModal = ({ isOpen, onClose, onConfirm, courseTitle, isLoading 
       confirmText={t('common.delete')}
       cancelText={t('common.cancel')}
       type="danger"
+      isLoading={isLoading}
+    />
+  );
+};
+
+// Archive Confirmation Modal
+const ArchiveCourseModal = ({ isOpen, onClose, onConfirm, courseTitle, isLoading }) => {
+  const { t } = useTranslation();
+
+  return (
+    <ConfirmModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onConfirm={onConfirm}
+      title="Archive Course"
+      message={`Are you sure you want to archive "${courseTitle}"? This will hide it from students.`}
+      confirmText="Archive"
+      cancelText={t('common.cancel')}
+      type="primary"
       isLoading={isLoading}
     />
   );
