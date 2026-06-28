@@ -265,6 +265,7 @@ class LessonService {
       duration,
       orderNumber,
       isPreview,
+      isFree,
       resources
     } = data;
 
@@ -294,19 +295,20 @@ class LessonService {
       order = lastLesson ? lastLesson.orderNumber + 1 : 1;
     }
 
-    return await prisma.lesson.create({
-      data: {
-        sectionId,
-        title,
-        contentType: contentType || 'VIDEO',
-        contentUrl,
-        content,
-        duration: duration ? parseInt(duration) : null,
-        orderNumber: order,
-        isPreview: isPreview || false,
-        resources: resources || null
-      }
-    });
+    const createData = {
+      sectionId,
+      title,
+      contentType: contentType || 'VIDEO',
+      contentUrl,
+      content,
+      duration: duration ? parseInt(duration) : null,
+      orderNumber: order,
+      isPreview: isPreview || false,
+      isFree: isFree || false,
+      resources: resources || null
+    };
+
+    return await prisma.lesson.create({ data: createData });
   }
 
   // Get all lessons for a section
@@ -386,9 +388,13 @@ class LessonService {
     }
 
     // Determine if lesson can be accessed
-    const canAccess = lesson.isPreview || hasAccess;
+    let canAccess = lesson.isPreview || lesson.isFree || hasAccess;
+    let accessReasonDetail = accessReason;
 
-    // NEW: If user doesn't have access and it's not a preview, hide sensitive content
+    if (!hasAccess && lesson.isPreview) accessReasonDetail = 'preview';
+    if (!hasAccess && lesson.isFree) accessReasonDetail = 'free_lesson';
+
+    // NEW: If user doesn't have access and it's not preview/free, hide sensitive content
     if (!canAccess) {
       return {
         id: lesson.id,
@@ -420,7 +426,7 @@ class LessonService {
       ...lesson,
       isLocked: false,
       canAccess: true,
-      accessReason,
+      accessReason: accessReasonDetail,
       enrollment
     };
   }
@@ -435,6 +441,7 @@ class LessonService {
       duration,
       orderNumber,
       isPreview,
+      isFree,
       resources
     } = data;
 
@@ -468,6 +475,7 @@ class LessonService {
         duration: duration ? parseInt(duration) : undefined,
         orderNumber,
         isPreview,
+        isFree: isFree || false,
         resources
       }
     });

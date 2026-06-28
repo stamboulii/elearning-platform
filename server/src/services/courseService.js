@@ -532,6 +532,7 @@ class CourseService {
                 duration: true,
                 orderNumber: true,
                 isPreview: true,
+                isFree: true,
                 createdAt: true
               }
             }
