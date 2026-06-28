@@ -217,18 +217,18 @@ function App() {
                 }
               />
               <Route
-                path="/instructor/courses/:courseId"
-                element={
-                  <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
-                    <InstructorCourseDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/instructor/courses/:courseId/edit"
                 element={
                   <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
                     <EditCourse />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/instructor/courses/:courseId"
+                element={
+                  <ProtectedRoute allowedRoles={['INSTRUCTOR', 'ADMIN']}>
+                    <InstructorCourseDetail />
                   </ProtectedRoute>
                 }
               />
