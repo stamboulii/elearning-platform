@@ -16,18 +16,21 @@ const EditCourse = () => {
 
   useEffect(() => {
     const fetchCourse = async () => {
-      try {
-        setLoading(true);
-        const courseData = await courseService.getCourse(courseId);
-        
-        if (courseData.instructor?.id !== user?.id) {
-          toast.error('You do not have permission to edit this course');
-          navigate('/instructor/courses');
-          return;
-        }
-        
-        setCourse(courseData);
-        setThumbnailPreview(courseData.thumbnailImage);
+    try {
+      setLoading(true);
+      const courseData = await courseService.getCourse(courseId);
+      
+      if (courseData.instructor?.id !== user?.id) {
+        toast.error('You do not have permission to edit this course');
+        navigate('/instructor/courses');
+        return;
+      }
+      
+      setCourse({
+        ...courseData,
+        isFree: courseData.isFree || parseFloat(courseData.price || 0) === 0
+      });
+      setThumbnailPreview(courseData.thumbnailImage);
       } catch (error) {
         console.error('Error fetching course:', error);
         toast.error('Course not found');
@@ -62,6 +65,9 @@ const EditCourse = () => {
         title: course.title,
         shortDescription: course.shortDescription,
         fullDescription: course.fullDescription,
+        price: course.isFree ? 0 : (parseFloat(course.price) || 0),
+        discountPrice: course.discountPrice ? parseFloat(course.discountPrice) : null,
+        isFree: course.isFree || false,
       };
       
       if (course.thumbnailFile) {
@@ -168,6 +174,65 @@ const EditCourse = () => {
               rows={6}
               className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-600 outline-none resize-none"
             />
+          </div>
+
+          {/* Pricing */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
+            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4">Pricing</h3>
+            
+            <div className="flex items-center gap-3 mb-4">
+              <input
+                type="checkbox"
+                id="isFree"
+                checked={course.isFree || false}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setCourse(prev => ({
+                    ...prev,
+                    isFree: checked,
+                    price: checked ? 0 : (parseFloat(prev.price) || 0)
+                  }));
+                }}
+                className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="isFree" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                This course is free
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                  Price (€)
+                </label>
+                 <input
+                   type="number"
+                   name="price"
+                   value={course.price || 0}
+                   onChange={handleChange}
+                   disabled={course.isFree || false}
+                   min="0"
+                   step="0.01"
+                   className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-800"
+                 />
+               </div>
+               <div>
+                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                   Discount Price (€)
+                 </label>
+                 <input
+                   type="number"
+                   name="discountPrice"
+                   value={course.discountPrice || ''}
+                   onChange={handleChange}
+                   disabled={course.isFree || false}
+                  min="0"
+                  step="0.01"
+                  placeholder="Optional"
+                  className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-800"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Actions */}

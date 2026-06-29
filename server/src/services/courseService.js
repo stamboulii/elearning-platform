@@ -532,7 +532,6 @@ class CourseService {
                 duration: true,
                 orderNumber: true,
                 isPreview: true,
-                isFree: true,
                 createdAt: true
               }
             }
@@ -592,11 +591,13 @@ class CourseService {
       });
 
       // User has access if:
-      // 1. Course is free and user is enrolled
-      // 2. Course is paid and user has paid (isPaid = true)
-      // 3. User is the instructor
+      // 1. User is the instructor
+      // 2. Course is free (anyone can access)
+      // 3. User is enrolled in a free course
+      // 4. User is enrolled and paid in a paid course
       hasAccess =
         course.instructorId === userId ||
+        course.isFree ||
         (userEnrollment && (course.isFree || userEnrollment.isPaid));
     }
 

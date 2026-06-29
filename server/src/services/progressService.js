@@ -13,7 +13,8 @@ class ProgressService {
           include: {
             course: true
           }
-        }
+        },
+        quiz: true
       }
     });
 
@@ -44,6 +45,44 @@ class ProgressService {
         }
       }
     });
+
+    // Validate content consumption based on lesson type
+    const timeSpent = existingProgress?.timeSpent || 0;
+
+    if (lesson.contentType === 'VIDEO') {
+      const durationInSeconds = (lesson.duration || 0) * 60;
+      const minRequiredTime = Math.floor(durationInSeconds * 0.9);
+
+      if (timeSpent < minRequiredTime) {
+        const watchedPercent = durationInSeconds > 0 ? Math.round((timeSpent / durationInSeconds) * 100) : 0;
+        throw new Error(`You must watch at least 90% of this video before marking it as complete. Currently watched: ${watchedPercent}%`);
+      }
+    }
+
+    if (lesson.contentType === 'QUIZ') {
+      if (lesson.quiz) {
+        const passingScore = lesson.quiz.passingScore;
+        const hasPassed = await prisma.quizAttempt.findFirst({
+          where: {
+            quizId: lesson.quiz.id,
+            userId: userId,
+            passed: true,
+            score: { gte: passingScore }
+          }
+        });
+
+        if (!hasPassed) {
+          throw new Error(`You must pass the quiz with a score of at least ${passingScore}% before marking it as complete.`);
+        }
+      }
+    }
+
+    if (lesson.contentType === 'TEXT' || lesson.contentType === 'DOCUMENT') {
+      const minReadTime = Math.max(60, (lesson.duration || 1) * 60 * 0.5);
+      if (timeSpent < minReadTime) {
+        throw new Error(`You must spend at least ${Math.ceil(minReadTime / 60)} minutes reading this content before marking it as complete.`);
+      }
+    }
 
     // Create or update lesson progress
     const progress = await prisma.lessonProgress.upsert({

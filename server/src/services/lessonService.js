@@ -265,7 +265,6 @@ class LessonService {
       duration,
       orderNumber,
       isPreview,
-      isFree,
       resources
     } = data;
 
@@ -304,7 +303,6 @@ class LessonService {
       duration: duration ? parseInt(duration) : null,
       orderNumber: order,
       isPreview: isPreview || false,
-      isFree: isFree || false,
       resources: resources || null
     };
 
@@ -361,25 +359,25 @@ class LessonService {
         hasAccess = true;
         accessReason = 'instructor';
       } else {
-        // Check enrollment
-        enrollment = await prisma.enrollment.findUnique({
-          where: {
-            userId_courseId: {
-              userId,
-              courseId: course.id
+        // Free courses: anyone can access
+        if (course.isFree) {
+          hasAccess = true;
+          accessReason = 'free_course';
+        } else {
+          // Paid courses: check enrollment
+          enrollment = await prisma.enrollment.findUnique({
+            where: {
+              userId_courseId: {
+                userId,
+                courseId: course.id
+              }
+            },
+            include: {
+              transaction: true
             }
-          },
-          include: {
-            transaction: true
-          }
-        });
+          });
 
-        if (enrollment) {
-          // User is enrolled - check if course is free or paid
-          if (course.isFree) {
-            hasAccess = true;
-            accessReason = 'enrolled_free';
-          } else if (enrollment.isPaid) {
+          if (enrollment && enrollment.isPaid) {
             hasAccess = true;
             accessReason = 'enrolled_paid';
           }
@@ -388,11 +386,7 @@ class LessonService {
     }
 
     // Determine if lesson can be accessed
-    let canAccess = lesson.isPreview || lesson.isFree || hasAccess;
-    let accessReasonDetail = accessReason;
-
-    if (!hasAccess && lesson.isPreview) accessReasonDetail = 'preview';
-    if (!hasAccess && lesson.isFree) accessReasonDetail = 'free_lesson';
+    const canAccess = lesson.isPreview || hasAccess;
 
     // NEW: If user doesn't have access and it's not preview/free, hide sensitive content
     if (!canAccess) {
@@ -426,7 +420,7 @@ class LessonService {
       ...lesson,
       isLocked: false,
       canAccess: true,
-      accessReason: accessReasonDetail,
+      accessReason,
       enrollment
     };
   }
@@ -441,7 +435,6 @@ class LessonService {
       duration,
       orderNumber,
       isPreview,
-      isFree,
       resources
     } = data;
 
@@ -475,7 +468,6 @@ class LessonService {
         duration: duration ? parseInt(duration) : undefined,
         orderNumber,
         isPreview,
-        isFree: isFree || false,
         resources
       }
     });

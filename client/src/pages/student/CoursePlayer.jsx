@@ -77,7 +77,7 @@ const CoursePlayer = () => {
         for (const section of sectionsData) {
           if (section.lessons && section.lessons.length > 0) {
             firstAccessibleLesson = section.lessons.find(lesson =>
-              lesson.isPreview || lesson.isFree ||
+              lesson.isPreview ||
               courseData.instructorId === user?.id ||
               courseData.isFree ||
               parseFloat(courseData.price) === 0
@@ -164,22 +164,12 @@ const CoursePlayer = () => {
      FIXED ACCESS CONTROL
   ========================== */
   const isLessonLocked = (lesson) => {
-    // 1. Instructor can access everything
     if (course?.instructorId === user?.id) return false;
-
-    // 2. Preview lessons are always accessible
     if (lesson.isPreview) return false;
-
-    // 3. If course is completely free, all lessons are accessible
     if (course?.isFree || parseFloat(course?.price || 0) === 0) return false;
 
-    // 4. If lesson has isFree flag set to true (individual free lesson in paid course)
-    if (lesson.isFree) return false;
-
-    // 5. If enrolled, all lessons accessible
     if (enrollment) return false;
 
-    // 6. Otherwise, locked
     return true;
   };
 
@@ -296,6 +286,11 @@ const CoursePlayer = () => {
   const overallProgress = enrollment?.progressPercentage || 0;
   const isCourseOwner = course?.instructorId === user?.id;
   const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
+  const videoDuration = currentLesson?.duration ? currentLesson.duration * 60 : 0;
+  const watchPercent = videoDuration > 0 ? Math.min(100, Math.round((videoProgress / videoDuration) * 100)) : 0;
+  const canCompleteNow = currentLesson?.contentType === 'VIDEO'
+    ? watchPercent >= 90
+    : true;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -371,8 +366,6 @@ const CoursePlayer = () => {
                           <span className="text-slate-400 dark:text-slate-600 text-lg">🔒</span>
                         ) : lesson.isPreview ? (
                           <span className="text-indigo-600 dark:text-indigo-400 text-lg">👁</span>
-                        ) : lesson.isFree ? (
-                          <span className="text-emerald-500 dark:text-emerald-400 text-lg">🎁</span>
                         ) : (
                           <span className="text-emerald-500 dark:text-emerald-400 text-lg">▶</span>
                         )}
@@ -385,11 +378,6 @@ const CoursePlayer = () => {
                         {lesson.isPreview && (
                           <span className="text-[10px] uppercase tracking-wider bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">
                             👁 {t('common.preview')}
-                          </span>
-                        )}
-                        {lesson.isFree && !lesson.isPreview && (
-                          <span className="text-[10px] uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
-                            🎁 {t('instructor.dashboard.analytics.paid_enrollments')}
                           </span>
                         )}
                         {lesson.duration && (
@@ -533,10 +521,26 @@ const CoursePlayer = () => {
 
                         {enrollment ? (
                           <>
+                            {currentLesson.contentType === 'VIDEO' && !isCompleted && (
+                              <div className="mb-4">
+                                <div className="flex items-center justify-between text-sm text-slate-600 mb-1">
+                                  <span>Video watched: {watchPercent}%</span>
+                                  <span className="font-bold text-slate-900">90% required</span>
+                                </div>
+                                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                                  <div
+                                    className="bg-indigo-600 dark:bg-indigo-400 h-2.5 rounded-full transition-all duration-300"
+                                    style={{ width: `${watchPercent}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
+                            
                             {!isCompleted ? (
                               <button
                                 onClick={handleCompleteLesson}
-                                className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none"
+                                disabled={!canCompleteNow}
+                                className="bg-emerald-600 text-white px-8 py-3 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-100 dark:shadow-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-emerald-600"
                               >
                                 ✓ Mark as Complete
                               </button>

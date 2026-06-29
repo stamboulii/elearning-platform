@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import toast from '../../utils/toast';
@@ -99,6 +99,7 @@ const CourseBuilder = () => {
   const [loading, setLoading] = useState(true);
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [showLessonModal, setShowLessonModal] = useState(false);
+  const [editingLesson, setEditingLesson] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
 
@@ -130,6 +131,13 @@ const CourseBuilder = () => {
 
   const handleAddLesson = (section) => {
     setSelectedSection(section);
+    setEditingLesson(null);
+    setShowLessonModal(true);
+  };
+
+  const handleEditLesson = (section, lesson) => {
+    setSelectedSection(section);
+    setEditingLesson(lesson);
     setShowLessonModal(true);
   };
 
@@ -248,16 +256,17 @@ const CourseBuilder = () => {
             </div>
           ) : (
             sections.map((section, index) => (
-              <SectionCard
-                key={section.id}
-                section={section}
-                index={index}
-                courseId={courseId}
-                onAddLesson={() => handleAddLesson(section)}
-                onRefresh={fetchCourseData}
-                uploadProgress={uploadProgress}
-                setUploadProgress={setUploadProgress}
-              />
+                  <SectionCard
+                    key={section.id}
+                    section={section}
+                    index={index}
+                    courseId={courseId}
+                    onAddLesson={handleAddLesson}
+                    onRefresh={fetchCourseData}
+                    uploadProgress={uploadProgress[section.id] || {}}
+                    setUploadProgress={setUploadProgress}
+                    onEditLesson={handleEditLesson}
+                  />
             ))
           )}
         </div>
@@ -276,9 +285,13 @@ const CourseBuilder = () => {
             courseId={courseId}
             section={selectedSection}
             course={course}
-            onClose={() => setShowLessonModal(false)}
+            onClose={() => {
+              setShowLessonModal(false);
+              setEditingLesson(null);
+            }}
             onSuccess={fetchCourseData}
             setUploadProgress={setUploadProgress}
+            lesson={editingLesson}
           />
         )}
       </div>
@@ -287,7 +300,7 @@ const CourseBuilder = () => {
 };
 
 // Section Card Component
-const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadProgress, setUploadProgress }) => {
+const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadProgress, setUploadProgress, onEditLesson }) => {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -378,8 +391,10 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
                   <LessonRow
                     key={lesson.id}
                     lesson={lesson}
+                    section={section}
                     index={lessonIndex}
                     onDelete={() => handleDeleteLesson(lesson.id)}
+                    onEdit={(lesson) => onEditLesson && onEditLesson(section, lesson)}
                     uploadProgress={uploadProgress[lesson.id]}
                     setUploadProgress={setUploadProgress}
                   />
@@ -405,7 +420,7 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
 };
 
 // Lesson Row Component
-const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress }) => {
+const LessonRow = ({ lesson, section, index, onDelete, onEdit, uploadProgress, setUploadProgress }) => {
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [generatingFlashcards, setGeneratingFlashcards] = useState(false);
@@ -585,6 +600,13 @@ const LessonRow = ({ lesson, index, onDelete, uploadProgress, setUploadProgress 
             AI Cards
           </button>
           <button
+            onClick={() => onEdit(lesson)}
+            className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-4 py-2.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm font-bold shadow-sm border border-indigo-100 dark:border-indigo-800 flex items-center gap-2"
+          >
+            <Edit3 className="w-4 h-4" />
+            Edit
+          </button>
+          <button
             onClick={() => setShowDeleteConfirm(true)}
             className="bg-rose-600 text-white px-4 py-2.5 rounded-xl hover:bg-rose-700 transition-all text-sm font-bold shadow-sm shadow-rose-200 dark:shadow-rose-900/20 flex items-center gap-2"
           >
@@ -736,7 +758,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-all font-bold disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20"
             >
-              {loading ? '...' : t('instructor.course_builder.create_module')}
+              {loading ? '...' : isEditing ? 'Update Lesson' : t('instructor.course_builder.create_module')}
             </button>
             <button
               type="button"
@@ -753,15 +775,15 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
 };
 
 // Lesson Modal Component
-const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress, course }) => {
+const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress, course, lesson }) => {
   const { t } = useTranslation();
+  const isEditing = !!lesson;
   const [formData, setFormData] = useState({
     title: '',
     contentType: 'VIDEO',
     content: '',
     duration: '',
     isPreview: false,
-    isFree: false,
     quizTitle: '',
     passingScore: 80,
   });
@@ -772,7 +794,23 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
     { questionText: '', questionType: 'MULTIPLE_CHOICE', options: ['', ''], correctAnswer: 0, points: 1 }
   ]);
 
-  const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
+  const isCourseFullyFree = course ? (course.isFree || parseFloat(course.price || 0) === 0) : false;
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    if (lesson && !isInitialized.current) {
+      isInitialized.current = true;
+      setFormData({
+        title: lesson.title || '',
+        contentType: lesson.contentType || 'VIDEO',
+        content: lesson.content || '',
+        duration: lesson.duration?.toString() || '',
+        isPreview: lesson.isPreview || false,
+        quizTitle: lesson.quiz?.title || '',
+        passingScore: lesson.quiz?.passingScore || 80,
+      });
+    }
+  }, [lesson]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -785,22 +823,30 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
     try {
       setLoading(true);
 
-      const lesson = await lessonService.createLesson(courseId, section.id, formData);
+      let savedLesson;
+      if (isEditing) {
+        savedLesson = await lessonService.updateLesson(lesson.id, {
+          ...formData,
+          sectionId: section.id,
+        });
+      } else {
+        savedLesson = await lessonService.createLesson(courseId, section.id, formData);
+      }
 
       if (videoFile && formData.contentType === 'VIDEO') {
-        await lessonService.uploadLessonVideo(lesson.id, videoFile, (progress) => {
-          setUploadProgress(prev => ({ ...prev, [lesson.id]: progress }));
+        await lessonService.uploadLessonVideo(savedLesson.id, videoFile, (progress) => {
+          setUploadProgress(prev => ({ ...prev, [savedLesson.id]: progress }));
         });
       }
 
       if (documentFile && formData.contentType === 'DOCUMENT') {
-        await lessonService.uploadLessonResources(lesson.id, [documentFile]);
+        await lessonService.uploadLessonResources(savedLesson.id, [documentFile]);
       }
 
       if (formData.contentType === 'QUIZ' && quizQuestions.length > 0) {
         try {
-          await createQuiz(lesson.id, {
-            title: formData.quizTitle || lesson.title,
+          await createQuiz(savedLesson.id, {
+            title: formData.quizTitle || savedLesson.title,
             passingScore: formData.passingScore,
             questions: quizQuestions
           });
@@ -1097,12 +1143,16 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
             )}
 
             <div className="space-y-3">
+              <div className="text-xs text-slate-400 mb-2">
+                Debug: isCourseFullyFree={isCourseFullyFree ? 'TRUE (disabled)' : 'FALSE (enabled)'} | course.isFree={course?.isFree} | price={course?.price}
+              </div>
               <label className="flex items-start gap-3 cursor-pointer p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-2xl hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors">
                 <input
                   type="checkbox"
                   checked={formData.isPreview}
+                  disabled={isCourseFullyFree}
                   onChange={(e) => setFormData({ ...formData, isPreview: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 dark:text-blue-400 rounded mt-0.5"
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400 rounded mt-0.5 disabled:opacity-40"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
@@ -1110,30 +1160,12 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                     {t('instructor.course_builder.mark_preview')}
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                    {t('instructor.course_builder.preview_desc')}
+                    {isCourseFullyFree 
+                      ? 'All lessons are free in this course' 
+                      : t('instructor.course_builder.preview_desc')}
                   </p>
                 </div>
               </label>
-
-              {!isCourseFullyFree && (
-                <label className="flex items-start gap-3 cursor-pointer p-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-2xl hover:bg-emerald-100 dark:hover:bg-emerald-900/20 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={formData.isFree}
-                    onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
-                    className="w-5 h-5 text-emerald-600 dark:text-emerald-400 rounded mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-                      <Gift className="w-4 h-4" />
-                      {t('instructor.course_builder.mark_free')}
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                      {t('instructor.course_builder.free_desc')}
-                    </p>
-                  </div>
-                </label>
-              )}
             </div>
           </div>
 
