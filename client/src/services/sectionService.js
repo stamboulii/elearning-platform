@@ -20,10 +20,11 @@ const sectionService = {
   },
 
   // Delete section
-  deleteSection: async (sectionId) => {
+  deleteSection: async (courseId, sectionId) => {
     const response = await api.delete(`/sections/${sectionId}`);
     return response.data;
   },
+
 
   // Reorder sections
   reorderSections: async (courseId, sections) => {

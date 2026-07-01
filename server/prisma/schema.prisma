@@ -43,6 +43,9 @@ model User {
   quizAttempts  QuizAttempt[]
   badges        UserBadge[]
   notifications Notification[]
+  userSkills    UserSkill[]
+  skillAssessments SkillAssessment[]
+  xpEvents      XpEvent[]
 
   @@map("users")
 }
@@ -199,6 +202,7 @@ model Lesson {
   lessonProgress  LessonProgress[]
   quiz            Quiz?
   flashcardDeck   FlashcardDeck?
+  lessonSkills    LessonSkill[]
 
   @@map("course_lessons")
 }
@@ -440,6 +444,7 @@ model Quiz {
   lesson    Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   questions QuizQuestion[]
   attempts  QuizAttempt[]
+  skillAssessments SkillAssessment[]
 
   @@map("quizzes")
 }
@@ -645,4 +650,146 @@ model Flashcard {
   deck FlashcardDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
 
   @@map("flashcards")
+}
+
+// ============================================
+// SKILL GRAPH
+// ============================================
+
+model Skill {
+  id              String    @id @default(uuid())
+  name            String    @unique
+  slug            String    @unique
+  description     String?
+  category        String?   @map("category")
+  difficultyLevel CourseLevel @default(BEGINNER) @map("difficulty_level")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  lessonSkills      LessonSkill[]
+  prerequisites     SkillPrerequisite[] @relation("RequiresSkill")
+  requiredFor       SkillPrerequisite[] @relation("PrerequisiteOf")
+  careerPathSkills  CareerPathSkill[]
+  userSkills        UserSkill[]
+  skillAssessments  SkillAssessment[]
+
+  @@map("skills")
+}
+
+model LessonSkill {
+  id       String @id @default(uuid())
+  lessonId String @map("lesson_id")
+  skillId  String @map("skill_id")
+  weight   Int    @default(1)
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, skillId])
+  @@map("lesson_skills")
+}
+
+model SkillPrerequisite {
+  id             String @id @default(uuid())
+  skillId        String
+  skill          Skill  @relation("RequiresSkill", fields: [skillId], references: [id], onDelete: Cascade)
+
+  prerequisiteId String @map("prerequisite_id")
+  prerequisite   Skill  @relation("PrerequisiteOf", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([skillId, prerequisiteId])
+  @@map("skill_prerequisites")
+}
+
+model CareerPath {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  description    String?  @db.Text
+  targetRole     String?  @map("target_role")
+  estimatedHours Int?      @map("estimated_hours")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  skills CareerPathSkill[]
+
+  @@map("career_paths")
+}
+
+model CareerPathSkill {
+  id           String  @id @default(uuid())
+  careerPathId String  @map("career_path_id")
+  skillId      String  @map("skill_id")
+  orderNumber  Int     @map("order_number")
+  isMandatory  Boolean @default(true) @map("is_mandatory")
+
+  careerPath CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  skill      Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([careerPathId, skillId])
+  @@map("career_path_skills")
+}
+
+model UserSkill {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  skillId         String    @map("skill_id")
+  proficiencyLevel Int      @default(1) @map("proficiency_level")
+  xpEarned        Int       @default(0) @map("xp_earned")
+  acquiredAt      DateTime? @map("acquired_at")
+  lastPracticedAt DateTime? @map("last_practiced_at")
+
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@map("user_skills")
+}
+
+model SkillAssessment {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  skillId     String   @map("skill_id")
+  quizId      String?  @map("quiz_id")
+  assessedAt  DateTime @default(now()) @map("assessed_at")
+  score       Int
+  passed      Boolean
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  quiz  Quiz? @relation(fields: [quizId], references: [id], onDelete: SetNull)
+
+  @@map("skill_assessments")
+}
+
+// ============================================
+// XP EVENT LOG
+// ============================================
+
+model XpEvent {
+  id        String      @id @default(uuid())
+  userId    String      @map("user_id")
+  amount    Int
+  source    XpSource    @map("source")
+  sourceId  String?     @map("source_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("xp_events")
+  @@index([userId, createdAt])
+  @@index([userId, source, sourceId])
+}
+
+enum XpSource {
+  LESSON_COMPLETED
+  COURSE_COMPLETED
+  QUIZ_PASSED
+  SKILL_LEVELED_UP
+  BADGE_AWARDED
+  REVIEW_COMPLETED
 }

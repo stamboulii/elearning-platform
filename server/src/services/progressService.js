@@ -1,5 +1,5 @@
 import prisma from '../config/database.js';
-import gamificationService from './gamificationService.js';
+import { awardXp, recalculateEnrollmentXp } from './xpService.js';
 import certificateService from './certificateService.js';
 
 class ProgressService {
@@ -106,7 +106,40 @@ class ProgressService {
 
     // Award XP only if it's the first time completing this lesson
     if (!existingProgress || !existingProgress.isCompleted) {
-      await gamificationService.awardXP(userId, 50, 'LESSON_COMPLETED', enrollment.id);
+      await awardXp(userId, 50, 'LESSON_COMPLETED', lessonId);
+      await recalculateEnrollmentXp(enrollment.id);
+    }
+
+    // Update UserSkill for each skill taught by this lesson
+    const lessonSkills = await prisma.lessonSkill.findMany({
+      where: { lessonId },
+      include: { skill: true },
+    });
+
+    const ACQUISITION_THRESHOLD = 3;
+
+    for (const ls of lessonSkills) {
+      const existing = await prisma.userSkill.findUnique({
+        where: { userId_skillId: { userId, skillId: ls.skillId } },
+      });
+
+      const newProficiency = Math.min((existing?.proficiencyLevel || 0) + 1, 5);
+
+      await prisma.userSkill.upsert({
+        where: { userId_skillId: { userId, skillId: ls.skillId } },
+        create: {
+          userId,
+          skillId: ls.skillId,
+          proficiencyLevel: 1,
+          lastPracticedAt: new Date(),
+          acquiredAt: ACQUISITION_THRESHOLD <= 1 ? new Date() : null,
+        },
+        update: {
+          proficiencyLevel: newProficiency,
+          lastPracticedAt: new Date(),
+          acquiredAt: existing?.acquiredAt || (newProficiency >= ACQUISITION_THRESHOLD ? new Date() : null),
+        },
+      });
     }
 
     // Update overall course progress
@@ -227,7 +260,8 @@ class ProgressService {
 
     // Award bonus XP for course completion
     if (becameCompleted && userId) {
-      await gamificationService.awardXP(userId, 500, 'COURSE_COMPLETED', enrollmentId);
+      await awardXp(userId, 500, 'COURSE_COMPLETED', enrollmentId);
+      await recalculateEnrollmentXp(enrollmentId);
     }
 
     // Update enrollment FIRST so completionStatus is 'COMPLETED' in the DB

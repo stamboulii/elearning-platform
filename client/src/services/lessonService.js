@@ -8,8 +8,8 @@ const lessonService = {
   },
 
   // Create lesson
-  createLesson: async (courseId, sectionId, lessonData) => {
-    const response = await api.post(`/courses/${courseId}/sections/${sectionId}/lessons`, lessonData);
+  createLesson: async (sectionId, data) => {
+    const response = await api.post(`/lessons`, { ...data, sectionId });
     return response.data.data.lesson;
   },
 
@@ -40,6 +40,13 @@ const lessonService = {
     return response.data;
   },
 
+  createLessonForSection: async (courseId, sectionId, data) => {
+    const response = await api.post(
+      `/courses/${courseId}/sections/${sectionId}/lessons`,
+      data
+    );
+    return response.data.data.lesson;
+  },
   // Upload lesson resources
   uploadLessonResources: async (lessonId, files) => {
     const formData = new FormData();

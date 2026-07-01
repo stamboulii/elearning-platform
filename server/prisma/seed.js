@@ -32,6 +32,14 @@ async function clearExistingData() {
   await prisma.category.deleteMany();
   await prisma.userProfile.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.xpEvent.deleteMany();
+  await prisma.skillAssessment.deleteMany();
+  await prisma.userSkill.deleteMany();
+  await prisma.careerPathSkill.deleteMany();
+  await prisma.careerPath.deleteMany();
+  await prisma.skillPrerequisite.deleteMany();
+  await prisma.lessonSkill.deleteMany();
+  await prisma.skill.deleteMany();
   
   console.log('All existing data cleared.');
 }
@@ -485,6 +493,39 @@ async function main() {
   console.log(`Created: ${enrollmentsData.length} enrollments`);
   console.log(`Created: ${reviewData.length} reviews`);
   console.log(`Created: ${badges.length} badges`);
+
+  await seedSkills();
+}
+
+async function seedSkills() {
+  const fs = await import('fs');
+  const path = await import('path');
+  const __dirname = path.dirname(new URL(import.meta.url, 'file://').pathname.slice(1));
+  const skillsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'seed-data', 'skills.json'), 'utf-8'));
+  const prereqData = JSON.parse(fs.readFileSync(path.join(__dirname, 'seed-data', 'skill-prerequisites.json'), 'utf-8'));
+
+  console.log('Seeding skills...');
+  for (const s of skillsData) {
+    await prisma.skill.upsert({
+      where: { slug: s.slug },
+      update: {},
+      create: s,
+    });
+  }
+
+  console.log('Seeding skill prerequisites...');
+  for (const p of prereqData) {
+    const skill = await prisma.skill.findUnique({ where: { slug: p.skill } });
+    const prerequisite = await prisma.skill.findUnique({ where: { slug: p.prerequisite } });
+    if (!skill || !prerequisite) continue;
+    await prisma.skillPrerequisite.upsert({
+      where: { skillId_prerequisiteId: { skillId: skill.id, prerequisiteId: prerequisite.id } },
+      update: {},
+      create: { skillId: skill.id, prerequisiteId: prerequisite.id },
+    });
+  }
+
+  console.log(`Seeded ${skillsData.length} skills and ${prereqData.length} prerequisites.`);
 }
 
 main()

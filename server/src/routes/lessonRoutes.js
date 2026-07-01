@@ -1,31 +1,4 @@
-// import express from 'express';
-// import {
-//   createLesson,
-//   getSectionLessons,
-//   getLesson,
-//   updateLesson,
-//   deleteLesson,
-//   reorderLessons,
-//   getLessonWithProgress
-// } from '../controllers/lessonController.js';
-// import { protect, authorize } from '../middleware/auth.js';
 
-// const router = express.Router({ mergeParams: true });
-
-// // Public routes
-// router.get('/:id', getLesson);
-
-// // Student routes
-// router.get('/:id/progress', protect, getLessonWithProgress);
-
-// // Instructor routes
-// router.post('/', protect, authorize('INSTRUCTOR', 'ADMIN'), createLesson);
-// router.get('/', getSectionLessons);
-// router.put('/:id', protect, authorize('INSTRUCTOR', 'ADMIN'), updateLesson);
-// router.delete('/:id', protect, authorize('INSTRUCTOR', 'ADMIN'), deleteLesson);
-// router.put('/reorder', protect, authorize('INSTRUCTOR', 'ADMIN'), reorderLessons);
-
-// export default router;
 
 import express from 'express';
 import {
@@ -35,7 +8,9 @@ import {
   updateLesson,
   deleteLesson,
   reorderLessons,
-  getLessonWithProgress
+  getLessonWithProgress,
+  setLessonSkills,
+  getLessonSkills
 } from '../controllers/lessonController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
@@ -100,23 +75,19 @@ router.get('/:id/progress', protect, getLessonWithProgress);
 
 /**
  * @swagger
- * /courses/{courseId}/sections/{sectionId}/lessons:
- *   post:
- *     summary: Create a new lesson (Instructor only)
+ * /lessons/{id}/skills:
+ *   put:
+ *     summary: Set lesson skills (Instructor/Admin only)
  *     tags: [Lessons]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: id
  *         required: true
  *         schema:
  *           type: string
- *       - in: path
- *         name: sectionId
- *         required: true
- *         schema:
- *           type: string
+ *         description: Lesson ID
  *     requestBody:
  *       required: true
  *       content:
@@ -124,43 +95,23 @@ router.get('/:id/progress', protect, getLessonWithProgress);
  *           schema:
  *             type: object
  *             required:
- *               - title
- *               - contentType
+ *               - skillIds
  *             properties:
- *               title:
- *                 type: string
- *                 example: Introduction to Components
- *               contentType:
- *                 type: string
- *                 enum: [VIDEO, TEXT, QUIZ, ASSIGNMENT, DOCUMENT]
- *                 example: VIDEO
- *               contentUrl:
- *                 type: string
- *                 format: uri
- *               content:
- *                 type: string
- *               duration:
- *                 type: integer
- *                 example: 15
- *               orderNumber:
- *                 type: integer
- *               isPreview:
- *                 type: boolean
- *                 default: false
- *               resources:
+ *               skillIds:
  *                 type: array
  *                 items:
- *                   type: object
+ *                   type: string
  *     responses:
- *       201:
- *         description: Lesson created successfully
+ *       200:
+ *         description: Lesson skills updated successfully
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
- *       404:
- *         description: Section not found
  */
+router.put('/:id/skills', protect, authorize('INSTRUCTOR', 'ADMIN'), setLessonSkills);
+router.get('/:id/skills', protect, getLessonSkills);
+
 router.post('/', protect, authorize('INSTRUCTOR', 'ADMIN'), createLesson);
 
 /**

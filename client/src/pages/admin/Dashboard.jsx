@@ -19,7 +19,9 @@ import {
   ShieldCheck,
   Tag,
   Star,
-  Layers
+  Layers,
+  Wrench,
+  Map
 } from 'lucide-react';
 import {
   AreaChart,
@@ -257,6 +259,8 @@ const AdminDashboard = () => {
             <NavTool icon={<Users />} label={t('admin.dashboard.tools.users')} link="/admin/users" color="text-blue-600 dark:text-blue-400" bg="bg-blue-50 dark:bg-blue-900/30" />
             <NavTool icon={<BookOpen />} label={t('admin.dashboard.tools.courses')} link="/admin/courses" color="text-purple-600 dark:text-purple-400" bg="bg-purple-50 dark:bg-purple-900/30" />
             <NavTool icon={<Layers />} label={t('admin.dashboard.tools.categories')} link="/admin/categories" color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-50 dark:bg-indigo-900/30" />
+            <NavTool icon={<Wrench />} label="Skills" link="/admin/skills" color="text-amber-600 dark:text-amber-400" bg="bg-amber-50 dark:bg-amber-900/30" />
+            <NavTool icon={<Map />} label="Career Paths" link="/admin/career-paths" color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-50 dark:bg-emerald-900/30" />
             <NavTool icon={<DollarSign />} label={t('admin.dashboard.tools.payments')} link="/admin/transactions" color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-50 dark:bg-emerald-900/30" />
             <NavTool icon={<Tag />} label={t('admin.dashboard.tools.coupons')} link="/admin/coupons" color="text-rose-600 dark:text-rose-400" bg="bg-rose-50 dark:bg-rose-900/30" />
             <NavTool icon={<Settings />} label={t('admin.dashboard.tools.settings')} link="/settings" color="text-slate-600 dark:text-slate-400" bg="bg-slate-50 dark:bg-slate-800" />

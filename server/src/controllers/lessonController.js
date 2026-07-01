@@ -1,4 +1,5 @@
 import lessonService from '../services/lessonService.js';
+import prisma from '../config/database.js';
 
 // @desc    Create lesson
 // @route   POST /api/sections/:sectionId/lessons
@@ -175,5 +176,69 @@ export const getLessonWithProgress = async (req, res) => {
       success: false,
       message: error.message
     });
+  }
+};
+
+// @desc    Set lesson skills (associate/dissociate skills)
+// @route   PUT /api/lessons/:id/skills
+// @access  Private (Instructor/Admin)
+export const setLessonSkills = async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    const { skillIds } = req.body;
+
+    if (!Array.isArray(skillIds)) {
+      return res.status(400).json({
+        success: false,
+        message: 'skillIds must be an array'
+      });
+    }
+
+    const lesson = await lessonService.getLessonById(lessonId, req.user.id);
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.lessonSkill.deleteMany({ where: { lessonId } }),
+      ...skillIds.map(skillId =>
+        prisma.lessonSkill.create({
+          data: { lessonId, skillId, weight: 1 }
+        })
+      ),
+    ]);
+
+    const updated = await prisma.lessonSkill.findMany({
+      where: { lessonId },
+      include: { skill: true },
+    });
+
+    res.json({
+      success: true,
+      message: 'Lesson skills updated successfully',
+      data: { skills: updated }
+    });
+  } catch (error) {
+    console.error('Set lesson skills error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+export const getLessonSkills = async (req, res) => {
+  try {
+    const skills = await prisma.lessonSkill.findMany({
+      where: { lessonId: req.params.id },
+      include: { skill: true },
+    });
+    res.json({ success: true, data: { skills } });
+  } catch (error) {
+    console.error('Get lesson skills error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };

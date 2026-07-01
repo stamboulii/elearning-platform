@@ -10,6 +10,7 @@ import lessonService from '../../services/lessonService';
 import flashcardService from '../../services/flashcardService';
 import { generateQuiz as generateQuizAI } from '../../services/quizService';
 import { createQuiz } from '../../services/quizService';
+import skillService from '../../services/skillService';
 import {
   BookOpen,
   Plus,
@@ -34,7 +35,8 @@ import {
   Award,
   X,
   AlertCircle,
-  AlertTriangle
+  AlertTriangle,
+  Link as LinkIcon
 } from 'lucide-react';
 
 // Modern Confirmation Modal Component
@@ -309,7 +311,7 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
   const handleDeleteSection = async () => {
     try {
       setIsDeleting(true);
-      await sectionService.deleteSection(section.id);
+      await sectionService.deleteSection(courseId, section.id);
       toast.success('Section deleted successfully');
       onRefresh();
     } catch (error) {
@@ -359,10 +361,10 @@ const SectionCard = ({ section, index, courseId, onAddLesson, onRefresh, uploadP
             </div>
           </div>
           <div className="flex gap-3">
-            <button
-              onClick={onAddLesson}
-              className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm shadow-indigo-200 dark:shadow-indigo-900/20 flex items-center gap-2"
-            >
+<button
+               onClick={() => onAddLesson(section)}
+               className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm shadow-indigo-200 dark:shadow-indigo-900/20 flex items-center gap-2"
+             >
               <Plus className="w-4 h-4" />
               {t('instructor.course_builder.lesson_title')}
             </button>
@@ -758,7 +760,7 @@ const SectionModal = ({ courseId, onClose, onSuccess }) => {
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-all font-bold disabled:opacity-50 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20"
             >
-              {loading ? '...' : isEditing ? 'Update Lesson' : t('instructor.course_builder.create_module')}
+              {loading ? '...' : t('instructor.course_builder.create_module')}
             </button>
             <button
               type="button"
@@ -793,6 +795,10 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
   const [quizQuestions, setQuizQuestions] = useState([
     { questionText: '', questionType: 'MULTIPLE_CHOICE', options: ['', ''], correctAnswer: 0, points: 1 }
   ]);
+  const [availableSkills, setAvailableSkills] = useState([]);
+  const [selectedSkillIds, setSelectedSkillIds] = useState([]);
+  const [skillsLoading, setSkillsLoading] = useState(false);
+  const [savingSkills, setSavingSkills] = useState(false);
 
   const isCourseFullyFree = course ? (course.isFree || parseFloat(course.price || 0) === 0) : false;
   const isInitialized = useRef(false);
@@ -812,6 +818,48 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
     }
   }, [lesson]);
 
+  useEffect(() => {
+    const loadSkills = async () => {
+      try {
+        setSkillsLoading(true);
+        const data = await skillService.list();
+        setAvailableSkills(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error loading skills:', error);
+      } finally {
+        setSkillsLoading(false);
+      }
+    };
+    loadSkills();
+  }, []);
+
+  useEffect(() => {
+    const loadLessonSkills = async () => {
+      if (!lesson?.id) return;
+      try {
+        const data = await skillService.getLessonSkills(lesson.id);
+        setSelectedSkillIds(Array.isArray(data) ? data.map(s => s.skill?.id || s.id) : []);
+      } catch (error) {
+        console.error('Error loading lesson skills:', error);
+      }
+    };
+    loadLessonSkills();
+  }, [lesson?.id]);
+
+  const handleSaveLessonSkills = async () => {
+    if (!lesson?.id) return;
+    try {
+      setSavingSkills(true);
+      await skillService.setLessonSkills(lesson.id, selectedSkillIds);
+      toast.success('Skills associated successfully');
+    } catch (error) {
+      console.error('Error saving lesson skills:', error);
+      toast.error(error.response?.data?.message || 'Failed to save skills');
+    } finally {
+      setSavingSkills(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -830,7 +878,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
           sectionId: section.id,
         });
       } else {
-        savedLesson = await lessonService.createLesson(courseId, section.id, formData);
+        savedLesson = await lessonService.createLessonForSection(courseId, section.id, formData);
       }
 
       if (videoFile && formData.contentType === 'VIDEO') {
@@ -1168,6 +1216,67 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
               </label>
             </div>
           </div>
+
+          {isEditing && (
+            <div className="mb-6 border-t border-slate-200 dark:border-slate-800 pt-6">
+              <h4 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <LinkIcon className="w-5 h-5" />
+                Skills
+              </h4>
+
+              {skillsLoading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+              ) : (
+                <div className="space-y-2">
+                  {availableSkills.length === 0 ? (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">No skills available.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {availableSkills.map((skill) => (
+                        <label key={skill.id} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={selectedSkillIds.includes(skill.id)}
+                            onChange={(e) => {
+                              setSelectedSkillIds((prev) =>
+                                e.target.checked
+                                  ? [...prev, skill.id]
+                                  : prev.filter((id) => id !== skill.id)
+                              );
+                            }}
+                            className="w-4 h-4 text-indigo-600 rounded"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{skill.name}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{skill.slug}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleSaveLessonSkills}
+                    disabled={savingSkills}
+                    className="mt-4 w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-bold shadow-lg shadow-indigo-200 dark:shadow-indigo-900/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {savingSkills ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Save Skills
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex gap-6">
             <button

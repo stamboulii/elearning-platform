@@ -30,6 +30,8 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminCourses from './pages/admin/Courses';
 import AdminCategories from './pages/admin/Categories';
+import AdminSkills from './pages/admin/Skills';
+import AdminCareerPaths from './pages/admin/CareerPaths';
 import AdminSettings from './pages/admin/Settings';
 import UserSettings from './pages/admin/Settings';
 import WishlistPage from './pages/WishlistPage';
@@ -93,6 +95,24 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['ADMIN']}>
                     <AdminCategories />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin/skills"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminSkills />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin/career-paths"
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminCareerPaths />
                   </ProtectedRoute>
                 }
               />
