@@ -54,9 +54,7 @@ const lessonService = {
       formData.append('resources', file);
     });
     
-    const response = await api.post(`/upload/lesson/${lessonId}/resources`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const response = await api.post(`/upload/lesson/${lessonId}/resources`, formData);
     return response.data;
   }
 };

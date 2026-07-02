@@ -36,7 +36,8 @@ import {
   X,
   AlertCircle,
   AlertTriangle,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Search
 } from 'lucide-react';
 
 // Modern Confirmation Modal Component
@@ -799,6 +800,7 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
   const [selectedSkillIds, setSelectedSkillIds] = useState([]);
   const [skillsLoading, setSkillsLoading] = useState(false);
   const [savingSkills, setSavingSkills] = useState(false);
+  const [skillSearch, setSkillSearch] = useState('');
 
   const isCourseFullyFree = course ? (course.isFree || parseFloat(course.price || 0) === 0) : false;
   const isInitialized = useRef(false);
@@ -861,59 +863,79 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    if (!formData.title.trim()) {
-      toast.error('Lesson title is required');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      let savedLesson;
-      if (isEditing) {
-        savedLesson = await lessonService.updateLesson(lesson.id, {
-          ...formData,
-          sectionId: section.id,
-        });
-      } else {
-        savedLesson = await lessonService.createLessonForSection(courseId, section.id, formData);
+      if (!formData.title.trim()) {
+        toast.error('Lesson title is required');
+        return;
       }
 
-      if (videoFile && formData.contentType === 'VIDEO') {
-        await lessonService.uploadLessonVideo(savedLesson.id, videoFile, (progress) => {
-          setUploadProgress(prev => ({ ...prev, [savedLesson.id]: progress }));
-        });
-      }
+      try {
+        setLoading(true);
 
-      if (documentFile && formData.contentType === 'DOCUMENT') {
-        await lessonService.uploadLessonResources(savedLesson.id, [documentFile]);
-      }
-
-      if (formData.contentType === 'QUIZ' && quizQuestions.length > 0) {
-        try {
-          await createQuiz(savedLesson.id, {
-            title: formData.quizTitle || savedLesson.title,
-            passingScore: formData.passingScore,
-            questions: quizQuestions
+        let savedLesson;
+        if (isEditing) {
+          savedLesson = await lessonService.updateLesson(lesson.id, {
+            ...formData,
+            sectionId: section.id,
           });
-        } catch (error) {
-          console.error('Failed to save quiz:', error);
-          toast.error('Quiz created but questions failed to save');
+        } else {
+          savedLesson = await lessonService.createLessonForSection(courseId, section.id, formData);
         }
-      }
 
-      toast.success('Lesson created successfully! ✨');
-      onSuccess();
-      onClose();
-    } catch (error) {
-      console.error('Error creating lesson:', error);
-      toast.error('Failed to create lesson');
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (videoFile && formData.contentType === 'VIDEO') {
+          await lessonService.uploadLessonVideo(savedLesson.id, videoFile, (progress) => {
+            setUploadProgress(prev => ({ ...prev, [savedLesson.id]: progress }));
+          });
+        }
+
+        if (documentFile && formData.contentType === 'DOCUMENT') {
+          await lessonService.uploadLessonResources(savedLesson.id, [documentFile]);
+        }
+
+        if (formData.contentType === 'QUIZ' && quizQuestions.length > 0) {
+          try {
+            await createQuiz(savedLesson.id, {
+              title: formData.quizTitle || savedLesson.title,
+              passingScore: formData.passingScore,
+              questions: quizQuestions
+            });
+          } catch (error) {
+            console.error('Failed to save quiz:', error);
+            toast.error('Quiz created but questions failed to save');
+          }
+        }
+
+        // Save skills (works for both create and edit — savedLesson.id is available either way)
+        if (selectedSkillIds.length > 0) {
+          try {
+            await skillService.setLessonSkills(savedLesson.id, selectedSkillIds);
+          } catch (error) {
+            console.error('Failed to save lesson skills:', error);
+            toast.error('Lesson created but skills failed to save');
+          }
+        }
+
+        toast.success('Lesson created successfully! ✨');
+        onSuccess();
+        onClose();
+      } catch (error) {
+        console.error('Error creating lesson:', error);
+        const errorData = error.response?.data;
+        const fileExt = documentFile?.name?.split('.').pop()?.toLowerCase();
+        const fileSize = documentFile ? (documentFile.size / 1024 / 1024).toFixed(2) : 0;
+        
+        if (fileExt === 'doc') {
+          toast.error('DOC format not fully supported. Please convert to DOCX or PDF.');
+        } else if (parseFloat(fileSize) > 10) {
+          toast.error(`File too large (${fileSize}MB). Maximum size is 10MB.`);
+        } else {
+          toast.error(errorData?.message || t('instructor.course_builder.lesson_create_error'));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const getContentTypeIcon = (type) => {
     switch (type) {
@@ -1217,44 +1239,73 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
             </div>
           </div>
 
-          {isEditing && (
-            <div className="mb-6 border-t border-slate-200 dark:border-slate-800 pt-6">
-              <h4 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <LinkIcon className="w-5 h-5" />
-                Skills
-              </h4>
+          {/* Skills — available both when creating and editing a lesson */}
+          <div className="mb-6 border-t border-slate-200 dark:border-slate-800 pt-6">
+            <h4 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <LinkIcon className="w-5 h-5" />
+              Skills
+            </h4>
 
-              {skillsLoading ? (
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
-              ) : (
-                <div className="space-y-2">
-                  {availableSkills.length === 0 ? (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">No skills available.</p>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {availableSkills.map((skill) => (
-                        <label key={skill.id} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={selectedSkillIds.includes(skill.id)}
-                            onChange={(e) => {
-                              setSelectedSkillIds((prev) =>
-                                e.target.checked
-                                  ? [...prev, skill.id]
-                                  : prev.filter((id) => id !== skill.id)
-                              );
-                            }}
-                            className="w-4 h-4 text-indigo-600 rounded"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{skill.name}</p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">{skill.slug}</p>
-                          </div>
-                        </label>
-                      ))}
+            {skillsLoading ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+            ) : (
+              <div className="space-y-2">
+                {availableSkills.length === 0 ? (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">No skills available.</p>
+                ) : (
+                  <>
+                    <div className="relative mb-3">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      <input
+                        type="text"
+                        value={skillSearch}
+                        onChange={(e) => setSkillSearch(e.target.value)}
+                        placeholder="Search skills..."
+                        className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                      />
                     </div>
-                  )}
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                      {availableSkills
+                        .filter((skill) =>
+                          skill.name.toLowerCase().includes(skillSearch.toLowerCase()) ||
+                          skill.slug?.toLowerCase().includes(skillSearch.toLowerCase())
+                        )
+                        .map((skill) => (
+                          <label key={skill.id} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={selectedSkillIds.includes(skill.id)}
+                              onChange={(e) => {
+                                setSelectedSkillIds((prev) =>
+                                  e.target.checked
+                                    ? [...prev, skill.id]
+                                    : prev.filter((id) => id !== skill.id)
+                                );
+                              }}
+                              className="w-4 h-4 text-indigo-600 rounded"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{skill.name}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">{skill.slug}</p>
+                            </div>
+                          </label>
+                        ))}
+                      {availableSkills.filter((skill) =>
+                        skill.name.toLowerCase().includes(skillSearch.toLowerCase()) ||
+                        skill.slug?.toLowerCase().includes(skillSearch.toLowerCase())
+                      ).length === 0 && (
+                        <p className="text-sm text-slate-500 dark:text-slate-400 col-span-2 py-4 text-center">
+                          No skills match "{skillSearch}"
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Save Skills button only shown in edit mode — in create mode,
+                    skills are saved automatically as part of the main submit */}
+                {isEditing && (
                   <button
                     type="button"
                     onClick={handleSaveLessonSkills}
@@ -1273,10 +1324,15 @@ const LessonModal = ({ courseId, section, onClose, onSuccess, setUploadProgress,
                       </>
                     )}
                   </button>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+                {!isEditing && selectedSkillIds.length > 0 && (
+                  <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-3 font-medium">
+                    {selectedSkillIds.length} skill{selectedSkillIds.length > 1 ? 's' : ''} will be saved with this lesson.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-6">
             <button

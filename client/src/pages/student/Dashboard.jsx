@@ -298,6 +298,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Avatar from '../../components/common/Avatar';
+import SkillsWidget from '../../components/student/SkillsWidget';
 
 const StudentDashboard = () => {
   const { t } = useTranslation();
@@ -477,42 +478,8 @@ const StudentDashboard = () => {
             </Link>
           </div>
 
-          {/* Badges Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-500" />
-                {t('student.dashboard.my_badges')}
-              </h3>
-              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-800">
-                {user?.badges?.length || 0} {t('student.dashboard.earned')}
-              </span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {user?.badges && user.badges.length > 0 ? (
-                user.badges.map((ub) => (
-                  <div key={ub.id} className="flex-shrink-0 group relative">
-                    <div className="w-14 h-14 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl flex items-center justify-center text-2xl border-2 border-yellow-200 dark:border-yellow-800 group-hover:scale-110 group-hover:shadow-lg transition-all cursor-pointer">
-                      {ub.badge?.icon || '🏅'}
-                    </div>
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block w-40 bg-slate-900 dark:bg-slate-800 text-white text-xs p-3 rounded-xl text-center z-20 shadow-xl border border-slate-700">
-                      <div className="font-bold border-b border-slate-700 mb-2 pb-2">{ub.badge?.name}</div>
-                      <div className="text-slate-300 dark:text-slate-400">{ub.badge?.description}</div>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900 dark:border-t-slate-800"></div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex-1 flex items-center justify-center py-4">
-                  <p className="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
-                    <Star className="w-4 h-4" />
-                    {t('student.dashboard.complete_lessons_badge')}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Skills Widget - replaces Badges on dashboard */}
+          <SkillsWidget />
         </div>
 
         {/* My Courses Section */}

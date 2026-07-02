@@ -43,7 +43,7 @@ const CourseDetail = () => {
 
   const heroRef = useRef(null);
   const isInstructor = user?.id === course?.instructor?.id;
-
+console.log('DEBUG:', 'user.id =', user?.id, '| course.instructor.id =', course?.instructor?.id, '| isInstructor =', isInstructor);
   const fetchCourseDetails = async () => {
     try {
       setLoading(true);

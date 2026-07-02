@@ -75,10 +75,14 @@ const videoStorage = new CloudinaryStorage({
 // Storage for documents (resources, PDFs)
 const documentStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'elearning/documents',
-    resource_type: 'raw',
-    allowed_formats: ['pdf', 'doc', 'docx', 'txt', 'ppt', 'pptx', 'xls', 'xlsx']
+  params: (req, file) => {
+    const ext = path.extname(file.originalname).slice(1).toLowerCase(); // 'pdf', 'docx', etc.
+    return {
+      folder: 'elearning/documents',
+      resource_type: 'raw',
+      format: ext,           // ← on force explicitement le format détecté
+      public_id: path.basename(file.originalname, path.extname(file.originalname))
+    };
   }
 });
 

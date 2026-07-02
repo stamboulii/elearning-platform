@@ -41,6 +41,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
 import TransactionManager from './pages/admin/TransactionManager';
+import CareerPaths from './pages/student/CareerPaths';
 import AdminEnrollments from './pages/admin/Enrollments';
 import InstructorCourseDetail from './pages/instructor/CourseDetail';
 import InstructorCourseStats from './pages/instructor/InstructorCourseStats';
@@ -181,6 +182,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['STUDENT']}>
                     <CertificateView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/career-paths"
+                element={
+                  <ProtectedRoute allowedRoles={['STUDENT']}>
+                    <CareerPaths />
                   </ProtectedRoute>
                 }
               />

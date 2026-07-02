@@ -277,7 +277,11 @@ class ProgressService {
 
     // Issue certificate AFTER enrollment is marked COMPLETED
     if (becameCompleted) {
-      await certificateService.issueCertificate(enrollmentId);
+      try {
+        await certificateService.issueCertificate(enrollmentId);
+      } catch (certError) {
+        console.error('Certificate generation failed (non-critical):', certError.message);
+      }
     }
 
     return updatedEnrollment;

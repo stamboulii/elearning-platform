@@ -56,9 +56,29 @@ const skillService = {
     return response.data.data.entry;
   },
 
+  updateCareerPath: async (id, data) => {
+    const response = await api.put(`/career-paths/${id}`, data);
+    return response.data.data.careerPath;
+  },
+
+  deleteCareerPath: async (id) => {
+    const response = await api.delete(`/career-paths/${id}`);
+    return response.data;
+  },
+
+  removeSkillFromCareerPath: async (careerPathId, skillId) => {
+    const response = await api.delete(`/career-paths/${careerPathId}/skills/${skillId}`);
+    return response.data;
+  },
+
   getMyProgress: async (careerPathId) => {
     const response = await api.get(`/career-paths/${careerPathId}/my-progress`);
     return response.data.data.progress;
+  },
+
+  getMySkills: async () => {
+    const response = await api.get('/auth/me/skills');
+    return response.data.data.skills;
   },
 
   setLessonSkills: async (lessonId, skillIds) => {

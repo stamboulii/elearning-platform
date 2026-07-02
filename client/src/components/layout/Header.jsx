@@ -533,7 +533,7 @@ const Header = () => {
                                         </Link>
                                     )}
 
-                                    {user.role === 'STUDENT' && (
+{user.role === 'STUDENT' && (
                                         <>
                                             <Link
                                                 to="/cart"
@@ -577,6 +577,15 @@ const Header = () => {
                                                         <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                                     </span>
                                                 )}
+                                            </Link>
+
+                                            <Link
+                                                to="/student/career-paths"
+                                                className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors font-semibold"
+                                                onClick={() => setIsMenuOpen(false)}
+                                            >
+                                                <Target className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                                                Career Paths
                                             </Link>
                                         </>
                                     )}

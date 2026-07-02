@@ -91,8 +91,10 @@ export const getMyProgress = async (req, res) => {
 // @access  Private (Admin only)
 export const createCareerPath = async (req, res) => {
   try {
-    const { title, slug, description, targetRole, estimatedHours } = req.body;
-
+const { title, slug, description, targetRole } = req.body;
+const estimatedHours = req.body.estimatedHours
+  ? parseInt(req.body.estimatedHours)
+  : null;
     if (!title || !slug) {
       return res.status(400).json({
         success: false,
@@ -151,6 +153,106 @@ export const addSkillToCareerPath = async (req, res) => {
       return res.status(409).json({
         success: false,
         message: 'This skill is already part of this career path'
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Update career path
+// @route   PUT /api/career-paths/:id
+// @access  Private (Admin only)
+export const updateCareerPath = async (req, res) => {
+  try {
+    const { title, slug, description, targetRole, estimatedHours, isActive } = req.body;
+    const parsedEstimatedHours = estimatedHours ? parseInt(estimatedHours) : null;
+
+    const path = await prisma.careerPath.update({
+      where: { id: req.params.id },
+      data: { title, slug, description, targetRole, estimatedHours: parsedEstimatedHours, isActive },
+    });
+
+    res.json({
+      success: true,
+      message: 'Career path updated successfully',
+      data: { careerPath: path }
+    });
+  } catch (error) {
+    console.error('Update career path error:', error);
+    if (error.code === 'P2002') {
+      return res.status(409).json({
+        success: false,
+        message: 'A career path with this slug already exists'
+      });
+    }
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: 'Career path not found'
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Delete career path
+// @route   DELETE /api/career-paths/:id
+// @access  Private (Admin only)
+export const deleteCareerPath = async (req, res) => {
+  try {
+    await prisma.careerPath.delete({
+      where: { id: req.params.id },
+    });
+
+    res.json({
+      success: true,
+      message: 'Career path deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete career path error:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: 'Career path not found'
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// @desc    Remove skill from career path
+// @route   DELETE /api/career-paths/:id/skills/:skillId
+// @access  Private (Admin only)
+export const removeSkillFromCareerPath = async (req, res) => {
+  try {
+    await prisma.careerPathSkill.delete({
+      where: {
+        careerPathId_skillId: {
+          careerPathId: req.params.id,
+          skillId: req.params.skillId
+        }
+      },
+    });
+
+    res.json({
+      success: true,
+      message: 'Skill removed from career path'
+    });
+  } catch (error) {
+    console.error('Remove skill from career path error:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        success: false,
+        message: 'Skill not found in this career path'
       });
     }
     res.status(500).json({

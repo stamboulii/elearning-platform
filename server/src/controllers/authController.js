@@ -158,11 +158,31 @@ export const getMe = async (req, res) => {
       data: { user }
     });
   } catch (error) {
-    console.error('GetMe error:', error);
+    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error fetching user data.'
+      message: 'Server error.'
     });
+  }
+};
+
+/**
+ * @route   GET /api/auth/me/skills
+ * @desc    Get current user's skills with proficiency
+ * @access  Private
+ */
+export const getMySkills = async (req, res) => {
+  try {
+    const prisma = (await import('../config/database.js')).default;
+    const userSkills = await prisma.userSkill.findMany({
+      where: { userId: req.user.id },
+      include: { skill: true },
+      orderBy: { lastPracticedAt: 'desc' },
+    });
+    res.json({ success: true, data: { skills: userSkills } });
+  } catch (error) {
+    console.error('Get my skills error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

@@ -13,8 +13,27 @@ import toast from 'react-hot-toast';
 import StudyScheduleView from '../../components/course/StudyScheduleView';
 import FlashcardDeckView from '../../components/course/FlashcardDeckView';
 import QuizPlayer from '../../components/course/QuizPlayer';
+import LessonSkillsBadges from '../../components/student/LessonSkillsBadges';
 import flashcardService from '../../services/flashcardService';
+import skillService from '../../services/skillService';
 import { BrainCircuit, Calendar } from 'lucide-react';
+
+// Choisit le bon viewer selon le type de fichier
+const getViewerUrl = (fileUrl, fileName = '') => {
+  const ext = (fileName.split('.').pop() || fileUrl.split('.').pop() || '').toLowerCase();
+
+  if (ext === 'pdf' || ext === 'txt') {
+    // Le navigateur affiche nativement un PDF/TXT dans un iframe
+    return fileUrl;
+  }
+
+  if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(ext)) {
+    // Microsoft Office Online Viewer — plus fiable que Google gview pour Office
+    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+  }
+
+  return fileUrl;
+};
 
 const CoursePlayer = () => {
   const { t } = useTranslation();
@@ -33,6 +52,11 @@ const CoursePlayer = () => {
   const [flashcardDeck, setFlashcardDeck] = useState(null);
   const [flashcardLoading, setFlashcardLoading] = useState(false);
   const [certLoading, setCertLoading] = useState(false);
+  const [userSkills, setUserSkills] = useState([]);
+  const [textTimeSpent, setTextTimeSpent] = useState(0);
+  const [serverTimeLoaded, setServerTimeLoaded] = useState(false);
+  const [documentModalOpen, setDocumentModalOpen] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
 
   useEffect(() => {
     fetchCourseData();
@@ -44,6 +68,18 @@ const CoursePlayer = () => {
       fetchLessonProgress();
     }
   }, [currentLesson, enrollment]);
+
+  useEffect(() => {
+    // Fetch user skills for the LessonSkillsBadges widget
+    if (user) {
+      skillService.getMySkills()
+        .then(res => {
+          const skills = res.data?.data?.skills || res.data || [];
+          setUserSkills(skills);
+        })
+        .catch(err => console.error('Error loading user skills:', err));
+    }
+  }, [user]);
 
   const fetchCourseData = async () => {
     try {
@@ -105,10 +141,22 @@ const CoursePlayer = () => {
   const fetchLessonProgress = async () => {
     if (!currentLesson || !enrollment) return;
 
+    const isTextBased = currentLesson.contentType === 'TEXT' || currentLesson.contentType === 'DOCUMENT';
+    const storageKey = isTextBased ? `reading-time-${currentLesson.id}` : null;
+    
     try {
       const progress = await progressService.getLessonProgress(currentLesson.id);
       setVideoProgress(progress?.lastPosition || 0);
+      // For TEXT lessons: use server time if exists, otherwise localStorage
+      if (isTextBased) {
+        const serverTime = progress?.timeSpent || 0;
+        const localTime = parseInt(localStorage.getItem(storageKey) || '0');
+        setTextTimeSpent(Math.max(serverTime, localTime));
+      } else {
+        setTextTimeSpent(0);
+      }
       setIsCompleted(progress?.isCompleted || false);
+      setServerTimeLoaded(true);
     } catch (error) {
       console.error('Error fetching lesson progress:', error);
     }
@@ -181,6 +229,7 @@ const CoursePlayer = () => {
       return;
     }
 
+    setServerTimeLoaded(false);
     setCurrentLesson(lesson);
     setVideoProgress(0);
     // Don't reset isCompleted here — it causes a flash of "Mark as Complete"
@@ -193,6 +242,7 @@ const CoursePlayer = () => {
       try {
         const progress = await progressService.getLessonProgress(lesson.id);
         setVideoProgress(progress?.lastPosition || 0);
+        setTextTimeSpent(progress?.timeSpent || 0);
         setIsCompleted(progress?.isCompleted || false);
       } catch (error) {
         console.error('Error fetching lesson progress:', error);
@@ -215,10 +265,48 @@ const CoursePlayer = () => {
     }
   };
 
+  // Text/DOC time tracking (frontend only, persisted to localStorage)
+  useEffect(() => {
+    if (!currentLesson || !enrollment || isCompleted) return;
+    
+    const isTextBased = currentLesson.contentType === 'TEXT' || currentLesson.contentType === 'DOCUMENT';
+    if (!isTextBased || !serverTimeLoaded) return;
+
+    const storageKey = `reading-time-${currentLesson.id}`;
+    const savedTime = parseInt(localStorage.getItem(storageKey) || '0');
+    
+    // Set from localStorage if exists, otherwise from server
+    if (savedTime > textTimeSpent) {
+      setTextTimeSpent(savedTime);
+    }
+
+    const interval = setInterval(() => {
+      setTextTimeSpent(prev => {
+        const newTime = prev + 1;
+        localStorage.setItem(storageKey, String(newTime));
+        return newTime;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      localStorage.removeItem(storageKey);
+    };
+  }, [currentLesson?.id, enrollment, isCompleted, serverTimeLoaded]);
+
   const handleCompleteLesson = async () => {
     if (!currentLesson || !enrollment) {
       toast.error(t('student.course_player.track_prompt'));
       return;
+    }
+
+    // For TEXT/DOCUMENT lessons, send timeSpent to server before completion
+    if (currentLesson.contentType === 'TEXT' || currentLesson.contentType === 'DOCUMENT') {
+      try {
+        await progressService.updateVideoProgress(currentLesson.id, { timeSpent: textTimeSpent });
+      } catch (err) {
+        console.error('Failed to sync reading time:', err);
+      }
     }
 
     try {
@@ -258,7 +346,8 @@ const CoursePlayer = () => {
 
     } catch (error) {
       console.error('Error completing lesson:', error);
-      toast.error(t('student.course_player.failed_mark'));
+      const errorMsg = error.response?.data?.message || t('student.course_player.failed_mark');
+      toast.error(errorMsg);
     }
   };
 
@@ -288,9 +377,16 @@ const CoursePlayer = () => {
   const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
   const videoDuration = currentLesson?.duration ? currentLesson.duration * 60 : 0;
   const watchPercent = videoDuration > 0 ? Math.min(100, Math.round((videoProgress / videoDuration) * 100)) : 0;
+  
+  // Minimum time requirement for TEXT/DOCUMENT lessons
+  const textTimeRequirement = currentLesson?.duration ? Math.max(60, currentLesson.duration * 60 * 0.5) : 60;
+  const textTimeRemaining = Math.max(0, textTimeRequirement - textTimeSpent);
+  
   const canCompleteNow = currentLesson?.contentType === 'VIDEO'
     ? watchPercent >= 90
-    : true;
+    : (currentLesson?.contentType === 'TEXT' || currentLesson?.contentType === 'DOCUMENT')
+      ? textTimeSpent >= textTimeRequirement
+      : true;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -426,6 +522,14 @@ const CoursePlayer = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h2 className="text-2xl font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
+
+                    {/* Skills Badges for current lesson */}
+                    <LessonSkillsBadges
+                      lessonId={currentLesson?.id}
+                      userSkills={userSkills}
+                      isCompleted={isCompleted}
+                    />
+
                     <div className="flex items-center gap-4 mt-4 border-b dark:border-slate-800">
                       <button
                         onClick={() => setActiveTab('content')}
@@ -515,6 +619,24 @@ const CoursePlayer = () => {
                           </div>
                         )}
 
+                        {currentLesson.contentType === 'DOCUMENT' && currentLesson.resources?.length > 0 && (
+                          <div className="mb-6 flex flex-wrap gap-2">
+                            {currentLesson.resources.map((resource, idx) => (
+                              <button
+                                key={resource.publicId || idx}
+                                onClick={() => {
+                                  setSelectedResource(resource);
+                                  setDocumentModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-bold"
+                              >
+                                <span>📄</span>
+                                <span>{resource.originalName || `${t('student.course_player.view_document')} ${idx + 1}`}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
                         {currentLesson.contentType === 'QUIZ' && (
                           <QuizPlayer lesson={currentLesson} />
                         )}
@@ -531,6 +653,25 @@ const CoursePlayer = () => {
                                   <div
                                     className="bg-indigo-600 dark:bg-indigo-400 h-2.5 rounded-full transition-all duration-300"
                                     style={{ width: `${watchPercent}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {(currentLesson.contentType === 'TEXT' || currentLesson.contentType === 'DOCUMENT') && !isCompleted && (
+                              <div className="mb-4">
+                                <div className="flex items-center justify-between text-sm text-slate-600 mb-1">
+                                  <span>Reading time: {textTimeSpent}s / {textTimeRequirement}s required</span>
+                                  <span className="font-bold text-slate-900">
+                                    {textTimeRemaining > 0 
+                                      ? `${Math.ceil(textTimeRemaining)}s remaining` 
+                                      : 'Ready to complete'}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                                  <div
+                                    className="bg-indigo-600 dark:bg-indigo-400 h-2.5 rounded-full transition-all duration-300"
+                                    style={{ width: `${Math.min(100, (textTimeSpent / textTimeRequirement) * 100)}%` }}
                                   ></div>
                                 </div>
                               </div>
@@ -577,6 +718,53 @@ const CoursePlayer = () => {
           </div>
         </div>
       </div>
+
+      {documentModalOpen && selectedResource?.url && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setDocumentModalOpen(false);
+            setSelectedResource(null);
+          }}
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-6xl h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b dark:border-slate-700">
+              <h3 className="font-bold text-slate-900 dark:text-white">
+                {selectedResource.originalName || t('student.course_player.document_viewer')}
+              </h3>
+              <div className="flex items-center gap-3">
+                <a
+                  href={selectedResource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                >
+                  Ouvrir dans un nouvel onglet
+                </a>
+                <button
+                  onClick={() => {
+                    setDocumentModalOpen(false);
+                    setSelectedResource(null);
+                  }}
+                  className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 p-4 overflow-hidden">
+              <iframe
+                src={getViewerUrl(selectedResource.url, selectedResource.originalName)}
+                className="w-full h-full rounded-lg border-0"
+                title={selectedResource.originalName}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
