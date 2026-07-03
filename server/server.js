@@ -34,7 +34,7 @@ import flashcardRoutes from './src/routes/flashcardRoutes.js';
 import quizRoutes from './src/routes/quizRoutes.js';
 import studyScheduleRoutes from './src/routes/studyScheduleRoutes.js';
 import lessonRoutes from './src/routes/lessonRoutes.js';
-
+import reviewRoutes from './src/routes/reviewRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -123,6 +123,7 @@ app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/study-schedules', studyScheduleRoutes);
 app.use('/api/lessons', lessonRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 
 // Health check

@@ -147,65 +147,6 @@ class AdminService {
     };
   }
 
-  // async getAllCourses({ search, status, category, page = 1, limit = 20 }) {
-  //   const where = {};
-    
-  //   if (status && status.trim() !== '') {
-  //     where.status = status;
-  //   }
-    
-  //   if (category && category.trim() !== '') {
-  //     where.categoryId = category;
-  //   }
-
-  //   if (search && search.trim() !== '') {
-  //     where.OR = [
-  //       { title: { contains: search, mode: 'insensitive' } },
-  //       { shortDescription: { contains: search, mode: 'insensitive' } }
-  //     ];
-  //   }
-
-  //   const skip = (page - 1) * limit;
-
-  //   const [courses, total] = await Promise.all([
-  //     prisma.course.findMany({
-  //       where,
-  //       skip,
-  //       take: Number(limit),
-  //       orderBy: { createdAt: 'desc' },
-  //       include: {
-  //         instructor: {
-  //           select: {
-  //             id: true,
-  //             firstName: true,
-  //             lastName: true,
-  //             profilePicture: true
-  //           }
-  //         },
-  //         category: {
-  //           select: {
-  //             id: true,
-  //             name: true
-  //           }
-  //         },
-  //         _count: {
-  //           select: {
-  //             enrollments: true,
-  //             sections: true,
-  //             reviews: true
-  //           }
-  //         }
-  //       }
-  //     }),
-  //     prisma.course.count({ where })
-  //   ]);
-
-  //   return {
-  //     courses,
-  //     totalPages: Math.ceil(total / limit)
-  //   };
-  // }
-
   async getAllCourses({ search, status, category, page = 1, limit = 20 }) {
   const where = {};
   
@@ -356,6 +297,74 @@ class AdminService {
 
   async deleteEnrollment(id) {
     return prisma.enrollment.delete({ where: { id } });
+  }
+
+  // Review Management
+  async getAllReviews({ search, courseId, rating, isApproved, page = 1, limit = 20 }) {
+    const parsedRating = rating && rating !== 'undefined' && !isNaN(Number(rating))
+      ? Number(rating)
+      : null;
+
+    const parsedIsApproved =
+      isApproved === 'true' ? true
+      : isApproved === 'false' ? false
+      : null;
+
+    const cleanSearch = search && search.trim() !== '' && search !== 'undefined'
+      ? search.trim()
+      : null;
+
+    const where = {
+      ...(courseId && courseId.trim() !== '' && courseId !== 'undefined' && { courseId }),
+      ...(parsedRating !== null && { rating: parsedRating }),
+      ...(parsedIsApproved !== null && { isApproved: parsedIsApproved }),
+      ...(cleanSearch && {
+        OR: [
+          { reviewText: { contains: cleanSearch, mode: 'insensitive' } },
+          { user: { firstName: { contains: cleanSearch, mode: 'insensitive' } } },
+          { user: { lastName: { contains: cleanSearch, mode: 'insensitive' } } },
+          { course: { title: { contains: cleanSearch, mode: 'insensitive' } } }
+        ]
+      })
+    };
+
+    const skip = (page - 1) * limit;
+
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        skip,
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { id: true, firstName: true, lastName: true, email: true, profilePicture: true }
+          },
+          course: {
+            select: {
+              id: true,
+              title: true,
+              instructor: { select: { firstName: true, lastName: true } }
+            }
+          }
+        }
+      }),
+      prisma.review.count({ where })
+    ]);
+
+    return { reviews, total, totalPages: Math.ceil(total / limit), currentPage: Number(page) };
+  }
+
+  async approveReview(id) {
+    return prisma.review.update({ where: { id }, data: { isApproved: true } });
+  }
+
+  async disapproveReview(id) {
+    return prisma.review.update({ where: { id }, data: { isApproved: false } });
+  }
+
+  async deleteReview(id) {
+    return prisma.review.delete({ where: { id } });
   }
 }
 

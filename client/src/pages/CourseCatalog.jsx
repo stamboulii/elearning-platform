@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import courseService from '../services/courseService';
 import categoryService from '../services/categoryService';
 
 const CourseCatalog = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -12,7 +14,6 @@ const CourseCatalog = () => {
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Filters
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
@@ -21,10 +22,7 @@ const CourseCatalog = () => {
     limit: 12
   });
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
+  useEffect(() => { fetchCategories(); }, []);
   useEffect(() => {
     fetchCourses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,15 +40,11 @@ const CourseCatalog = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const params = {
-        status: 'PUBLISHED',
-        ...filters
-      };
+      const params = { status: 'PUBLISHED', ...filters };
       const data = await courseService.getAllCourses(params);
       setCourses(data.data.courses);
       setTotalPages(data.totalPages);
 
-      // Update URL params
       const newParams = {};
       if (filters.search) newParams.search = filters.search;
       if (filters.category) newParams.category = filters.category;
@@ -65,11 +59,7 @@ const CourseCatalog = () => {
   };
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value,
-      page: 1 // Reset to first page when filter changes
-    }));
+    setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
   };
 
   const handlePageChange = (newPage) => {
@@ -78,13 +68,7 @@ const CourseCatalog = () => {
   };
 
   const clearFilters = () => {
-    setFilters({
-      search: '',
-      category: '',
-      level: '',
-      page: 1,
-      limit: 12
-    });
+    setFilters({ search: '', category: '', level: '', page: 1, limit: 12 });
     setSearchParams({});
   };
 
@@ -93,9 +77,11 @@ const CourseCatalog = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">All Courses</h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+            {t('course_catalog.title')}
+          </h1>
           <p className="text-gray-600">
-            Explore {courses.length} courses to expand your knowledge
+            {courses.length} {t('course_catalog.courses_found')}
           </p>
         </div>
 
@@ -106,7 +92,7 @@ const CourseCatalog = () => {
             <div className="md:col-span-2">
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder={t('course_catalog.search_placeholder')}
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -120,7 +106,7 @@ const CourseCatalog = () => {
                 onChange={(e) => handleFilterChange('category', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Categories</option>
+                <option value="">{t('course_catalog.all_categories')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -136,11 +122,11 @@ const CourseCatalog = () => {
                 onChange={(e) => handleFilterChange('level', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Levels</option>
-                <option value="BEGINNER">Beginner</option>
-                <option value="INTERMEDIATE">Intermediate</option>
-                <option value="ADVANCED">Advanced</option>
-                <option value="ALL_LEVELS">All Levels</option>
+                <option value="">{t('course_catalog.all_levels')}</option>
+                <option value="BEGINNER">{t('course_catalog.level_beginner')}</option>
+                <option value="INTERMEDIATE">{t('course_catalog.level_intermediate')}</option>
+                <option value="ADVANCED">{t('course_catalog.level_advanced')}</option>
+                <option value="ALL_LEVELS">{t('course_catalog.all_levels')}</option>
               </select>
             </div>
           </div>
@@ -148,45 +134,27 @@ const CourseCatalog = () => {
           {/* Active Filters */}
           {(filters.search || filters.category || filters.level) && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-600">Active filters:</span>
+              <span className="text-sm text-gray-600">{t('course_catalog.active_filters')}</span>
               {filters.search && (
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                  Search: "{filters.search}"
-                  <button
-                    onClick={() => handleFilterChange('search', '')}
-                    className="ml-2 text-blue-900 hover:text-blue-950"
-                  >
-                    ×
-                  </button>
+                  {t('course_catalog.filter_search')} "{filters.search}"
+                  <button onClick={() => handleFilterChange('search', '')} className="ml-2 text-blue-900 hover:text-blue-950">×</button>
                 </span>
               )}
               {filters.category && (
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                  Category
-                  <button
-                    onClick={() => handleFilterChange('category', '')}
-                    className="ml-2 text-blue-900 hover:text-blue-950"
-                  >
-                    ×
-                  </button>
+                  {t('course_catalog.filter_category')} {categories.find(c => c.id === filters.category)?.name}
+                  <button onClick={() => handleFilterChange('category', '')} className="ml-2 text-blue-900 hover:text-blue-950">×</button>
                 </span>
               )}
               {filters.level && (
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                  Level: {filters.level}
-                  <button
-                    onClick={() => handleFilterChange('level', '')}
-                    className="ml-2 text-blue-900 hover:text-blue-950"
-                  >
-                    ×
-                  </button>
+                  {filters.level}
+                  <button onClick={() => handleFilterChange('level', '')} className="ml-2 text-blue-900 hover:text-blue-950">×</button>
                 </span>
               )}
-              <button
-                onClick={clearFilters}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Clear all
+              <button onClick={clearFilters} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                {t('course_catalog.clear_all')}
               </button>
             </div>
           )}
@@ -200,25 +168,25 @@ const CourseCatalog = () => {
         ) : courses.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">No courses found</h3>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+              {t('course_catalog.no_courses_title')}
+            </h3>
             <p className="text-gray-600 mb-6">
-              Try adjusting your filters or search query
+              {t('course_catalog.no_courses_subtitle')}
             </p>
             <button
               onClick={clearFilters}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
             >
-              Clear Filters
+              {t('course_catalog.clear_filters')}
             </button>
           </div>
         ) : (
           <>
-            {/* Results count */}
             <div className="mb-4 text-gray-600">
-              Showing {courses.length} courses
+              {courses.length} {courses.length === 1 ? t('course_catalog.course_found') : t('course_catalog.courses_found')}
             </div>
 
-            {/* Courses Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
               {courses.map((course) => (
                 <CourseCard key={course.id} course={course} navigate={navigate} />
@@ -233,17 +201,14 @@ const CourseCatalog = () => {
                   disabled={filters.page === 1}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Previous
+                  {t('course_catalog.previous')}
                 </button>
 
                 {[...Array(totalPages)].map((_, index) => (
                   <button
                     key={index + 1}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-4 py-2 border rounded-lg ${filters.page === index + 1
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 hover:bg-gray-50'
-                      }`}
+                    className={`px-4 py-2 border rounded-lg ${filters.page === index + 1 ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 hover:bg-gray-50'}`}
                   >
                     {index + 1}
                   </button>
@@ -254,7 +219,7 @@ const CourseCatalog = () => {
                   disabled={filters.page === totalPages}
                   className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Next
+                  {t('course_catalog.next')}
                 </button>
               </div>
             )}
@@ -265,8 +230,9 @@ const CourseCatalog = () => {
   );
 };
 
-// Course Card Component
 const CourseCard = ({ course, navigate }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       onClick={() => navigate(`/courses/${course.id}`)}
@@ -279,7 +245,7 @@ const CourseCard = ({ course, navigate }) => {
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <span className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-          {course.level}
+          {t(`course_catalog.level_${course.level?.toLowerCase()}`) || course.level}
         </span>
       </div>
       <div className="p-4">
@@ -298,9 +264,7 @@ const CourseCard = ({ course, navigate }) => {
             <span className="text-sm font-semibold text-gray-700">
               {course.averageRating?.toFixed(1) || '0.0'}
             </span>
-            <span className="text-sm text-gray-500">
-              ({course.totalReviews || 0})
-            </span>
+            <span className="text-sm text-gray-500">({course.totalReviews || 0})</span>
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-500">
             <span>👥</span>
@@ -311,21 +275,15 @@ const CourseCard = ({ course, navigate }) => {
           <div>
             {course.discountPrice && course.discountPrice < course.price ? (
               <>
-                <span className="text-lg font-bold text-blue-600">
-                  {course.discountPrice}€
-                </span>
-                <span className="text-sm text-gray-500 dark:text-slate-400 line-through ml-2">
-                  {course.price}€
-                </span>
+                <span className="text-lg font-bold text-blue-600">{course.discountPrice}€</span>
+                <span className="text-sm text-gray-500 line-through ml-2">{course.price}€</span>
               </>
             ) : (
-              <span className="text-lg font-bold text-blue-600">
-                {course.price}€
-              </span>
+              <span className="text-lg font-bold text-blue-600">{course.price}€</span>
             )}
           </div>
           <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-            View →
+            {t('course_catalog.view')} →
           </button>
         </div>
       </div>

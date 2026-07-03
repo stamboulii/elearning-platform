@@ -232,7 +232,7 @@ const CourseDetail = () => {
                 <div className="flex items-center gap-2 bg-amber-500/20 px-4 py-2 rounded-xl border border-amber-400/30">
                   <Star className="w-4 h-4 text-amber-300 fill-amber-300" />
                   <span className="font-bold text-amber-100">
-                    {course.averageRating?.toFixed(1) || '0.0'} ({course.totalReviews || 0} {t('student.course_detail.reviews')})
+                    {course.averageRating?.toFixed(1) || '0.0'} {t('student.course_detail.reviews')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-indigo-200">
@@ -417,7 +417,15 @@ const CourseDetail = () => {
             </div>
 
             {/* Instructor */}
-            <InstructorInfo instructor={course.instructor} />
+            {/* <InstructorInfo instructor={course.instructor} /> */}
+            <InstructorInfo instructor={{
+              ...course.instructor,
+              totalStudents: course.totalStudents,
+              totalReviews: course.totalReviews
+            }} />
+
+
+
           </div>
 
           {/* Sidebar */}
@@ -635,11 +643,11 @@ const InstructorInfo = ({ instructor }) => {
           />
           <div className="text-center space-y-2">
             <div className="flex items-center gap-1 justify-center">
-              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-              <span className="text-sm font-bold text-slate-900 dark:text-white">4.8 {t('student.course_detail.rating')}</span>
+              {/* <Star className="w-4 h-4 text-amber-400 fill-amber-400" /> */}
+              {/* <span className="text-sm font-bold text-slate-900 dark:text-white">4.8 {t('student.course_detail.rating')}</span> */}
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">1,240 {t('student.course_detail.reviews')}</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">10,500 {t('student.course_detail.students')}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">{instructor?.totalReviews} {t('student.course_detail.reviews')}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">{instructor?.totalStudents} {t('student.course_detail.students')}</div>
           </div>
         </div>
         <div className="flex-1">

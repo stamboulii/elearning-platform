@@ -47,6 +47,11 @@ const NotificationsPage = () => {
       markAsRead(notification.id);
     }
 
+    if (notification.type === 'REVIEW') {
+      navigate('/admin/reviews');
+      return;
+    }
+
     // If it's an enrollment notification for an instructor, go to stats
     if (notification.type === 'ENROLLMENT' && user?.role === 'INSTRUCTOR' && notification.data?.courseId) {
       navigate(`/instructor/courses/${notification.data.courseId}/stats`);

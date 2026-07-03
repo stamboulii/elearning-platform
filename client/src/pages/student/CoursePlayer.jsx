@@ -15,6 +15,8 @@ import FlashcardDeckView from '../../components/course/FlashcardDeckView';
 import QuizPlayer from '../../components/course/QuizPlayer';
 import flashcardService from '../../services/flashcardService';
 import { BrainCircuit, Calendar } from 'lucide-react';
+import ReviewModal from '../../components/course/ReviewModal';
+import reviewService from '../../services/reviewService';
 
 const CoursePlayer = () => {
   const { t } = useTranslation();
@@ -34,6 +36,8 @@ const CoursePlayer = () => {
   const [flashcardLoading, setFlashcardLoading] = useState(false);
   const [certLoading, setCertLoading] = useState(false);
 
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewEligibility, setReviewEligibility] = useState(null);
   useEffect(() => {
     fetchCourseData();
   }, [courseId]);
@@ -44,6 +48,14 @@ const CoursePlayer = () => {
       fetchLessonProgress();
     }
   }, [currentLesson, enrollment]);
+
+  useEffect(() => {
+    if (!enrollment || overallProgress !== 100) return;
+
+    reviewService.checkEligibility(courseId)
+      .then(setReviewEligibility)
+      .catch((err) => console.error('Review eligibility error:', err));
+  }, [enrollment?.progressPercentage, courseId]);
 
   const fetchCourseData = async () => {
     try {
@@ -398,7 +410,7 @@ const CoursePlayer = () => {
         <div className="lg:col-span-3 space-y-4">
 
           {/* Certificate Banner — always visible when course is 100% complete */}
-          {enrollment && overallProgress === 100 && enrollment.certificate && (
+          {/* {enrollment && overallProgress === 100 && enrollment.certificate && (
             <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="flex items-center gap-4">
                 <div className="text-5xl">🏆</div>
@@ -418,7 +430,52 @@ const CoursePlayer = () => {
                 </Link>
               </div>
             </div>
-          )}
+          )} */}
+          {enrollment && overallProgress === 100 && enrollment.certificate && (
+  <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
+    <div className="flex items-center gap-4">
+      <div className="text-5xl">🏆</div>
+      <div className="flex-1">
+        <h3 className="text-lg font-black text-amber-900 dark:text-amber-300">
+          {t('common.congratulations') || 'Congratulations!'}
+        </h3>
+        <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+          {t('student.course_player.course_completed_desc') || 'You have completed this course. Your certificate is ready!'}
+        </p>
+      </div>
+      <div className="flex gap-2 shrink-0">
+        {reviewEligibility?.eligible && (
+          <button
+            onClick={() => setShowReviewModal(true)}
+            className="bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 font-bold px-5 py-3 rounded-xl border border-amber-200 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-slate-700 transition text-sm"
+          >
+            ⭐ {reviewEligibility.alreadyReviewed
+              ? (t('student.review.edit') || 'Edit your review')
+              : (t('student.review.rate_course') || 'Rate this course')}
+          </button>
+        )}
+        <Link
+          to={`/student/certificates/${enrollment.certificate.id}`}
+          className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-100 dark:shadow-none flex items-center gap-2 text-sm"
+        >
+          📜 {t('common.certificate') || 'View Certificate'}
+        </Link>
+      </div>
+    </div>
+  </div>
+)}
+
+{showReviewModal && (
+  <ReviewModal
+    courseId={courseId}
+    courseTitle={course.title}
+    existingReview={reviewEligibility?.existingReview}
+    onClose={() => setShowReviewModal(false)}
+    onSubmitted={(review) =>
+      setReviewEligibility((prev) => ({ ...prev, alreadyReviewed: true, existingReview: review }))
+    }
+  />
+)}
 
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
             {currentLesson ? (

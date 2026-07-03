@@ -42,6 +42,7 @@ import TransactionManager from './pages/admin/TransactionManager';
 import AdminEnrollments from './pages/admin/Enrollments';
 import InstructorCourseDetail from './pages/instructor/CourseDetail';
 import InstructorCourseStats from './pages/instructor/InstructorCourseStats';
+import AdminReviews from './pages/admin/AdminReviews';
 import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
@@ -114,6 +115,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              <Route path="/admin/reviews" element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminReviews />
+                </ProtectedRoute>
+              } />
+
 
               {/* Student Routes */}
               <Route
