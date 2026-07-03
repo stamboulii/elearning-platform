@@ -261,3 +261,65 @@ export const removeSkillFromCareerPath = async (req, res) => {
     });
   }
 };
+
+export const reorderCareerPathSkills = async (req, res) => {
+  try {
+    const { skillIds } = req.body;
+
+    if (!Array.isArray(skillIds)) {
+      return res.status(400).json({
+        success: false,
+        message: 'skillIds must be an array'
+      });
+    }
+
+    const careerPathId = req.params.id;
+
+    const existingSkills = await prisma.careerPathSkill.findMany({
+      where: { careerPathId },
+      select: { skillId: true }
+    });
+
+    const existingSkillIds = new Set(existingSkills.map(s => s.skillId));
+    const invalidSkills = skillIds.filter(id => !existingSkillIds.has(id));
+
+    if (invalidSkills.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid skill IDs: ${invalidSkills.join(', ')}`
+      });
+    }
+
+    const updates = skillIds.map((skillId, index) => {
+      return prisma.careerPathSkill.update({
+        where: {
+          careerPathId_skillId: {
+            careerPathId,
+            skillId
+          }
+        },
+        data: { orderNumber: index + 1 }
+      });
+    });
+
+    await prisma.$transaction(updates);
+
+    const updatedSkills = await prisma.careerPathSkill.findMany({
+      where: { careerPathId },
+      include: { skill: true },
+      orderBy: { orderNumber: 'asc' }
+    });
+
+    res.json({
+      success: true,
+      message: 'Skills reordered successfully',
+      data: { skills: updatedSkills }
+    });
+  } catch (error) {
+    console.error('Reorder career path skills error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

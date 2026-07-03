@@ -42,12 +42,23 @@ const AdminSkills = () => {
     category: '',
     difficultyLevel: 'BEGINNER'
   });
+  const [allCategories, setAllCategories] = useState([]);
 
   const fetchSkills = async () => {
     try {
       setLoading(true);
       const data = await skillService.list();
-      setSkills(Array.isArray(data) ? data : []);
+      const skillsList = Array.isArray(data) ? data : [];
+      setSkills(skillsList);
+
+      const cats = Array.from(
+        new Set(
+          skillsList
+            .map(s => s.category)
+            .filter(c => c && c.trim())
+        )
+      ).sort((a, b) => a.localeCompare(b));
+      setAllCategories(cats);
     } catch (error) {
       console.error('Error fetching skills:', error);
       setSkills([]);
@@ -200,11 +211,22 @@ const AdminSkills = () => {
   const groupedSkills = useMemo(() => {
     const map = {};
     skills.forEach(skill => {
-      const cat = skill.category || 'Uncategorized';
+      const raw = (skill.category || '').trim();
+      const cat = raw || 'Uncategorized';
       if (!map[cat]) map[cat] = [];
       map[cat].push(skill);
     });
-    return map;
+
+    const sortedEntries = Object.entries(map).sort((a, b) => {
+      if (a[0] === 'Uncategorized') return 1;
+      if (b[0] === 'Uncategorized') return -1;
+      return a[0].localeCompare(b[0]);
+    });
+
+    return sortedEntries.reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
   }, [skills]);
 
   if (loading) {
@@ -252,14 +274,18 @@ const AdminSkills = () => {
           <div className="space-y-8">
             {Object.entries(groupedSkills).map(([category, categorySkills]) => (
               <div key={category} className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    {category}
-                    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
-                      {categorySkills.length}
-                    </span>
-                  </h2>
-                </div>
+                 <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+                   <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                     {category === 'Uncategorized' ? (
+                       <span className="text-slate-500">No category</span>
+                     ) : (
+                       category
+                     )}
+                     <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                       {categorySkills.length}
+                     </span>
+                   </h2>
+                 </div>
                 <div className="divide-y divide-slate-100 dark:divide-slate-800">
                   {categorySkills.map((skill) => (
                     <div key={skill.id} className="p-6 flex items-start justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
@@ -371,7 +397,15 @@ const AdminSkills = () => {
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                       placeholder="e.g., Frontend"
+                      list="skill-categories-list"
                     />
+                    <datalist id="skill-categories-list">
+                      <option value="" />
+                      {allCategories.map(cat => (
+                        <option key={cat} value={cat} />
+                      ))}
+                    </datalist>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Type to create a new category or select an existing one.</p>
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-slate-900 dark:text-slate-300 mb-2">Difficulty</label>

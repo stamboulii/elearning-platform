@@ -2,8 +2,8 @@ import api from './api';
 
 const adminService = {
   // Dashboard Stats
-  getDashboardStats: async () => {
-    const response = await api.get('/admin/dashboard/stats');
+  getDashboardStats: async (period = '30d') => {
+    const response = await api.get(`/admin/dashboard/stats`, { params: { period } });
     return response.data.data;
   },
 

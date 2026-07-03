@@ -46,6 +46,8 @@ const AdminCareerPaths = () => {
     estimatedHours: '',
     isActive: true
   });
+  const [reorderingPathId, setReorderingPathId] = useState(null);
+  const [reorderingSkills, setReorderingSkills] = useState([]);
 
   const fetchCareerPaths = async () => {
     try {
@@ -190,6 +192,37 @@ toast.success('Skill added to career path');
     }
   };
 
+  const handleToggleReorder = (path, skills) => {
+    if (reorderingPathId === path.id) {
+      setReorderingPathId(null);
+      setReorderingSkills([]);
+    } else {
+      setReorderingPathId(path.id);
+      setReorderingSkills([...skills].sort((a, b) => a.orderNumber - b.orderNumber));
+    }
+  };
+
+  const handleMoveSkill = async (index, direction) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= reorderingSkills.length) return;
+
+    const newSkills = [...reorderingSkills];
+    [newSkills[index], newSkills[newIndex]] = [newSkills[newIndex], newSkills[index]];
+
+    setReorderingSkills(newSkills);
+
+    try {
+      const skillIds = newSkills.map(s => s.skillId);
+      await skillService.reorderCareerPathSkills(reorderingPathId, skillIds);
+      toast.success('Skills reordered');
+      fetchCareerPaths();
+    } catch (error) {
+      console.error('Error reordering skills:', error);
+      toast.error(error.response?.data?.message || 'Failed to reorder skills');
+      setReorderingSkills([...reorderingSkills].sort((a, b) => a.orderNumber - b.orderNumber));
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -299,19 +332,37 @@ toast.success('Skill added to career path');
                         <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">
                           Skills in this path
                         </h3>
-                        <button
-                          onClick={() => {
-                            setAddingToPathId(path.id);
-                            handleToggleExpand(path.id);
-                          }}
-                          className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm font-bold border border-indigo-100 dark:border-indigo-800"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Skill
-                        </button>
+                        <div className="flex gap-2">
+                          {reorderingPathId === path.id ? (
+                            <button
+                              onClick={() => handleToggleReorder(path, path.skills)}
+                              className="inline-flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all text-sm font-bold border border-emerald-100 dark:border-emerald-800"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Done
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleExpand(path.id)}
+                              className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm font-bold border border-indigo-100 dark:border-indigo-800"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add Skill
+                            </button>
+                          )}
+                          {path.skills?.length > 1 && reorderingPathId !== path.id && (
+                            <button
+                              onClick={() => handleToggleReorder(path, path.skills)}
+                              className="inline-flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-bold border border-slate-200 dark:border-slate-700"
+                            >
+                              <Edit className="w-4 h-4" />
+                              Reorder
+                            </button>
+                          )}
+                        </div>
                       </div>
 
-                      {addingToPathId === path.id && (
+                      {addingToPathId === path.id && reorderingPathId !== path.id && (
                         <div className="mb-6 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
                           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                             <div className="sm:col-span-2">
@@ -367,35 +418,68 @@ toast.success('Skill added to career path');
                         </div>
                       )}
 
-{path.skills && path.skills.length > 0 ? (
+                      {path.skills && path.skills.length > 0 ? (
                          <div className="space-y-2">
-                           {path.skills.map((ps) => (
-                             <div key={ps.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                               <div className="flex items-center gap-3">
-                                 <span className="flex items-center justify-center w-6 h-6 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-bold">
-                                   {ps.orderNumber}
-                                 </span>
-                                 <span className="text-sm font-medium text-slate-900 dark:text-white">{ps.skill.name}</span>
-                                 {!ps.isMandatory && (
-                                   <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Optional</span>
-                                 )}
-                               </div>
-                               <div className="flex items-center gap-2">
-                                 {ps.skill.difficultyLevel && (
-                                   <span className={`px-2 py-1 rounded-md font-bold ${ps.skill.difficultyLevel === 'BEGINNER' ? 'bg-emerald-100 text-emerald-700' : ps.skill.difficultyLevel === 'INTERMEDIATE' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
-                                     {ps.skill.difficultyLevel}
-                                   </span>
-                                 )}
-                                 <button
-                                   onClick={() => handleRemoveSkillFromPath(path.id, ps.skillId)}
-                                   className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors"
-                                   title="Remove skill"
-                                 >
-                                   <X className="w-4 h-4" />
-                                 </button>
-                               </div>
-                             </div>
-                           ))}
+                           {reorderingPathId === path.id && reorderingSkills.length > 0
+                             ? reorderingSkills.map((ps, index) => (
+                                 <div key={ps.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                                   <div className="flex items-center gap-3">
+                                     <span className="flex items-center justify-center w-6 h-6 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-bold">
+                                       {index + 1}
+                                     </span>
+                                     <span className="text-sm font-medium text-slate-900 dark:text-white">{ps.skill.name}</span>
+                                     {!ps.isMandatory && (
+                                       <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Optional</span>
+                                     )}
+                                   </div>
+                                   <div className="flex items-center gap-1">
+                                     <button
+                                       onClick={() => handleMoveSkill(index, -1)}
+                                       disabled={index === 0}
+                                       className="p-1 rounded-lg text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30"
+                                       title="Move up"
+                                     >
+                                       <ChevronUp className="w-4 h-4" />
+                                     </button>
+                                     <button
+                                       onClick={() => handleMoveSkill(index, 1)}
+                                       disabled={index === reorderingSkills.length - 1}
+                                       className="p-1 rounded-lg text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-30"
+                                       title="Move down"
+                                     >
+                                       <ChevronDown className="w-4 h-4" />
+                                     </button>
+                                   </div>
+                                 </div>
+                               ))
+                             : path.skills.map((ps) => (
+                                 <div key={ps.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                                   <div className="flex items-center gap-3">
+                                     <span className="flex items-center justify-center w-6 h-6 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 rounded-lg text-xs font-bold">
+                                       {ps.orderNumber}
+                                     </span>
+                                     <span className="text-sm font-medium text-slate-900 dark:text-white">{ps.skill.name}</span>
+                                     {!ps.isMandatory && (
+                                       <span className="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Optional</span>
+                                     )}
+                                   </div>
+                                   <div className="flex items-center gap-2">
+                                     {ps.skill.difficultyLevel && (
+                                       <span className={`px-2 py-1 rounded-md font-bold ${ps.skill.difficultyLevel === 'BEGINNER' ? 'bg-emerald-100 text-emerald-700' : ps.skill.difficultyLevel === 'INTERMEDIATE' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>
+                                         {ps.skill.difficultyLevel}
+                                       </span>
+                                     )}
+                                     <button
+                                       onClick={() => handleRemoveSkillFromPath(path.id, ps.skillId)}
+                                       className="p-1 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors"
+                                       title="Remove skill"
+                                     >
+                                       <X className="w-4 h-4" />
+                                     </button>
+                                   </div>
+                                 </div>
+                               ))
+                           }
                          </div>
                        ) : (
                          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">

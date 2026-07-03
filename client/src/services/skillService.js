@@ -71,6 +71,11 @@ const skillService = {
     return response.data;
   },
 
+  reorderCareerPathSkills: async (careerPathId, skillIds) => {
+    const response = await api.put(`/career-paths/${careerPathId}/skills/reorder`, { skillIds });
+    return response.data.data.skills;
+  },
+
   getMyProgress: async (careerPathId) => {
     const response = await api.get(`/career-paths/${careerPathId}/my-progress`);
     return response.data.data.progress;

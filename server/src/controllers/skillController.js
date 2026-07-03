@@ -9,6 +9,10 @@ export const listSkills = async (req, res) => {
     const skills = await prisma.skill.findMany({
       where: category ? { category } : undefined,
       orderBy: { name: 'asc' },
+      include: {
+        prerequisites: { include: { prerequisite: true } },
+        requiredFor: { include: { skill: true } },
+      },
     });
 
     res.json({

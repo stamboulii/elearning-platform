@@ -8,7 +8,8 @@ import {
   addSkillToCareerPath,
   updateCareerPath,
   deleteCareerPath,
-  removeSkillFromCareerPath
+  removeSkillFromCareerPath,
+  reorderCareerPathSkills
 } from '../controllers/careerPathController.js';
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.post('/:id/skills', protect, authorize('ADMIN'), addSkillToCareerPath);
 router.put('/:id', protect, authorize('ADMIN'), updateCareerPath);
 router.delete('/:id', protect, authorize('ADMIN'), deleteCareerPath);
 router.delete('/:id/skills/:skillId', protect, authorize('ADMIN'), removeSkillFromCareerPath);
+router.put('/:id/skills/reorder', protect, authorize('ADMIN'), reorderCareerPathSkills);
 
 export default router;
