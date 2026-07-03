@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import courseService from '../../services/courseService';
 import sectionService from '../../services/sectionService';
@@ -16,7 +16,8 @@ import QuizPlayer from '../../components/course/QuizPlayer';
 import LessonSkillsBadges from '../../components/student/LessonSkillsBadges';
 import flashcardService from '../../services/flashcardService';
 import skillService from '../../services/skillService';
-import { BrainCircuit, Calendar } from 'lucide-react';
+import { BrainCircuit, Calendar, Brain } from 'lucide-react';
+import reviewService from '../../services/reviewService';
 
 // Choisit le bon viewer selon le type de fichier
 const getViewerUrl = (fileUrl, fileName = '') => {
@@ -57,6 +58,12 @@ const CoursePlayer = () => {
   const [serverTimeLoaded, setServerTimeLoaded] = useState(false);
   const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
+  const [dueReviews, setDueReviews] = useState([]);
+  const [actualVideoDuration, setActualVideoDuration] = useState(0);
+  const [autoCompleting, setAutoCompleting] = useState(false);
+  const [totalTimeWatched, setTotalTimeWatched] = useState(0);
+  const totalTimeWatchedRef = useRef(0);
+  const lastPositionRef = useRef(0);
 
   useEffect(() => {
     fetchCourseData();
@@ -80,6 +87,14 @@ const CoursePlayer = () => {
         .catch(err => console.error('Error loading user skills:', err));
     }
   }, [user]);
+
+  useEffect(() => {
+    if (enrollment) {
+      reviewService.getSessionReviews(enrollment.id)
+        .then(res => setDueReviews(res.data?.data?.reviews || []))
+        .catch(() => {});
+    }
+  }, [enrollment]);
 
   const fetchCourseData = async () => {
     try {
@@ -143,11 +158,18 @@ const CoursePlayer = () => {
 
     const isTextBased = currentLesson.contentType === 'TEXT' || currentLesson.contentType === 'DOCUMENT';
     const storageKey = isTextBased ? `reading-time-${currentLesson.id}` : null;
-    
+
     try {
       const progress = await progressService.getLessonProgress(currentLesson.id);
       setVideoProgress(progress?.lastPosition || 0);
-      // For TEXT lessons: use server time if exists, otherwise localStorage
+
+      if (currentLesson.contentType === 'VIDEO') {
+        const serverTime = progress?.timeSpent || 0;
+        setTotalTimeWatched(serverTime);
+        totalTimeWatchedRef.current = serverTime;
+        lastPositionRef.current = progress?.lastPosition || 0;
+      }
+
       if (isTextBased) {
         const serverTime = progress?.timeSpent || 0;
         const localTime = parseInt(localStorage.getItem(storageKey) || '0');
@@ -250,20 +272,34 @@ const CoursePlayer = () => {
     }
   };
 
-  const handleVideoProgress = async (position) => {
-    if (!currentLesson || currentLesson.contentType !== 'VIDEO' || !enrollment) return;
+const handleVideoProgress = async (position) => {
+  if (!currentLesson || currentLesson.contentType !== 'VIDEO' || !enrollment) return;
 
-    setVideoProgress(position);
+  const elapsed = position - lastPositionRef.current;
+  if (elapsed > 0 && elapsed < 5) {
+    totalTimeWatchedRef.current += elapsed;
+    setTotalTimeWatched(totalTimeWatchedRef.current);
+  }
+  lastPositionRef.current = position;
 
-    try {
-      await progressService.updateVideoProgress(currentLesson.id, {
-        lastPosition: position,
-        timeSpent: position
-      });
-    } catch (error) {
-      console.error('Error updating video progress:', error);
+  setVideoProgress(position);
+
+  if (actualVideoDuration > 0 && !isCompleted && !autoCompleting) {
+    const percent = Math.round((position / actualVideoDuration) * 100);
+    if (percent >= 90) {
+      setAutoCompleting(true);
     }
-  };
+  }
+
+  try {
+    await progressService.updateVideoProgress(currentLesson.id, {
+      lastPosition: position,
+      timeSpent: Math.max(totalTimeWatchedRef.current, position),
+    });
+  } catch (err) {
+    console.error('Error updating video progress:', err);
+  }
+};
 
   // Text/DOC time tracking (frontend only, persisted to localStorage)
   useEffect(() => {
@@ -375,9 +411,9 @@ const CoursePlayer = () => {
   const overallProgress = enrollment?.progressPercentage || 0;
   const isCourseOwner = course?.instructorId === user?.id;
   const isCourseFullyFree = course?.isFree || parseFloat(course?.price || 0) === 0;
-  const videoDuration = currentLesson?.duration ? currentLesson.duration * 60 : 0;
-  const watchPercent = videoDuration > 0 ? Math.min(100, Math.round((videoProgress / videoDuration) * 100)) : 0;
-  
+  const watchPercent = actualVideoDuration > 0 
+  ? Math.min(100, Math.round((videoProgress / actualVideoDuration) * 100)) 
+  : 0;
   // Minimum time requirement for TEXT/DOCUMENT lessons
   const textTimeRequirement = currentLesson?.duration ? Math.max(60, currentLesson.duration * 60 * 0.5) : 60;
   const textTimeRemaining = Math.max(0, textTimeRequirement - textTimeSpent);
@@ -516,6 +552,28 @@ const CoursePlayer = () => {
             </div>
           )}
 
+          {dueReviews.length > 0 && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Brain className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-purple-900 dark:text-purple-300 text-sm">
+                    {dueReviews.length} révision{dueReviews.length > 1 ? 's' : ''} en attente
+                  </p>
+                  <p className="text-purple-700 dark:text-purple-400 text-xs">
+                    ~{dueReviews.length * 3} min — avant de continuer ?
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/student/reviews')}
+                className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-purple-700 transition-all flex-shrink-0"
+              >
+                Réviser
+              </button>
+            </div>
+          )}
+
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8">
             {currentLesson ? (
               <>
@@ -605,10 +663,18 @@ const CoursePlayer = () => {
                                 handleVideoProgress(Math.floor(e.target.currentTime))
                               }
                               onLoadedMetadata={(e) => {
-                                if (videoProgress > 0 && enrollment) {
-                                  e.target.currentTime = videoProgress;
-                                }
-                              }}
+  const realDuration = e.target.duration;
+  setActualVideoDuration(realDuration);
+  if (videoProgress > 0 && enrollment) {
+    e.target.currentTime = videoProgress;
+  }
+  // Mettre à jour la durée réelle en base si différente
+  if (currentLesson && Math.ceil(realDuration / 60) !== currentLesson.duration) {
+    lessonService.updateLesson(currentLesson.id, {
+      duration: Math.ceil(realDuration / 60)
+    }).catch(() => {}); // Silencieux, non bloquant
+  }
+}}
                             />
                           </div>
                         )}

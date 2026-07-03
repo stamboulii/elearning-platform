@@ -48,14 +48,22 @@ class ProgressService {
 
     // Validate content consumption based on lesson type
     const timeSpent = existingProgress?.timeSpent || 0;
+    const lastPosition = existingProgress?.lastPosition || 0;
 
     if (lesson.contentType === 'VIDEO') {
-      const durationInSeconds = (lesson.duration || 0) * 60;
-      const minRequiredTime = Math.floor(durationInSeconds * 0.9);
+      const declaredDuration = (lesson.duration || 0) * 60;
+      const effectiveTimeSpent = Math.max(timeSpent, lastPosition);
 
-      if (timeSpent < minRequiredTime) {
-        const watchedPercent = durationInSeconds > 0 ? Math.round((timeSpent / durationInSeconds) * 100) : 0;
-        throw new Error(`You must watch at least 90% of this video before marking it as complete. Currently watched: ${watchedPercent}%`);
+      if (declaredDuration === 0) {
+        // No declared duration -> accept completion
+      } else if (effectiveTimeSpent >= declaredDuration) {
+        // Watched more than declared -> accept
+      } else {
+        const minRequiredTime = Math.floor(declaredDuration * 0.9);
+        if (effectiveTimeSpent < minRequiredTime) {
+          const watchedPercent = Math.round((effectiveTimeSpent / declaredDuration) * 100);
+          throw new Error(`You must watch at least 90% of this video before marking it as complete. Currently watched: ${watchedPercent}%`);
+        }
       }
     }
 
@@ -140,6 +148,14 @@ class ProgressService {
           acquiredAt: existing?.acquiredAt || (newProficiency >= ACQUISITION_THRESHOLD ? new Date() : null),
         },
       });
+    }
+
+    // Spaced Repetition hook
+    try {
+      const { scheduleReview } = await import('./spacedRepetitionService.js');
+      await scheduleReview(userId, lessonId, enrollment.id);
+    } catch (srError) {
+      console.error('SpacedRepetition scheduleReview error:', srError);
     }
 
     // Update overall course progress

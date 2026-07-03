@@ -38,6 +38,8 @@ import sectionRoutes from './src/routes/sectionRoutes.js';
 import skillRoutes from './src/routes/skillRoutes.js';
 import skillPrerequisiteRoutes from './src/routes/skillPrerequisiteRoutes.js';
 import careerPathRoutes from './src/routes/careerPathRoutes.js';
+import groqRoutes from './src/routes/groqRoutes.js';
+import reviewRoutes from './src/routes/reviewRoutes.js';
 
 
 const app = express();
@@ -130,7 +132,9 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/skill-prerequisites', skillPrerequisiteRoutes);
 app.use('/api/career-paths', careerPathRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/sections', sectionRoutes);
+app.use('/api/groq', groqRoutes);
 
 
 // Health check

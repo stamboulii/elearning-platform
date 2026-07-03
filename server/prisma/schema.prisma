@@ -46,6 +46,7 @@ model User {
   userSkills    UserSkill[]
   skillAssessments SkillAssessment[]
   xpEvents      XpEvent[]
+  reviewSchedules ReviewSchedule[]
 
   @@map("users")
 }
@@ -203,6 +204,7 @@ model Lesson {
   quiz            Quiz?
   flashcardDeck   FlashcardDeck?
   lessonSkills    LessonSkill[]
+  reviewSchedules ReviewSchedule[]
 
   @@map("course_lessons")
 }
@@ -246,6 +248,7 @@ model Enrollment {
   xpEarned        Int             @default(0) @map("xp_earned")
 
   studySchedule   StudySchedule?
+  reviewSchedules ReviewSchedule[]
 
   @@unique([userId, courseId])
   @@map("enrollments")
@@ -620,6 +623,8 @@ enum NotificationType {
   WISHLIST_UPDATE
   SYSTEM
   OTHER
+  REVIEW_DUE
+  SKILL_UNLOCKED
 }
 // ============================================
 // FLASHCARDS
@@ -792,4 +797,29 @@ enum XpSource {
   SKILL_LEVELED_UP
   BADGE_AWARDED
   REVIEW_COMPLETED
+}
+
+// ============================================
+// SPACED REPETITION
+// ============================================
+
+model ReviewSchedule {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  lessonId     String    @map("lesson_id")
+  enrollmentId String?   @map("enrollment_id")
+  easeFactor   Float     @default(2.5) @map("ease_factor")
+  interval     Int       @default(1)
+  repetitions  Int       @default(0)
+  nextReviewAt DateTime  @map("next_review_at")
+  lastReviewAt DateTime? @map("last_review_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson   Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  enrollment Enrollment? @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, lessonId])
+  @@map("review_schedules")
 }

@@ -75,6 +75,7 @@ class CourseService {
       search,
       status = 'PUBLISHED',
       isFree, // NEW: Filter by free/paid
+      sortBy,
       page = 1,
       limit = 10
     } = filters;
@@ -102,37 +103,63 @@ class CourseService {
       ];
     }
 
+    // Build orderBy
+    let orderBy = { createdAt: 'desc' };
+    if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
+    else if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
+    else if (sortBy === 'price-low') orderBy = { price: 'asc' };
+    else if (sortBy === 'price-high') orderBy = { price: 'desc' };
+
     // Get courses and total count
-    const [courses, total] = await Promise.all([
-      prisma.course.findMany({
-        where,
-        include: {
-          category: true,
-          instructor: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              profilePicture: true
-            }
-          },
-          _count: {
-            select: {
-              enrollments: true,
-              reviews: true
-            }
+    const queryOptions = {
+      where,
+      include: {
+        category: true,
+        instructor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profilePicture: true
           }
         },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: parseInt(limit)
-      }),
+        _count: {
+          select: {
+            enrollments: true,
+            reviews: true
+          }
+        }
+      }
+    };
+
+    if (sortBy === 'popular') {
+      queryOptions.orderBy = undefined;
+      queryOptions.skip = 0;
+      queryOptions.take = undefined;
+    } else {
+      queryOptions.orderBy = orderBy;
+      queryOptions.skip = skip;
+      queryOptions.take = parseInt(limit);
+    }
+
+    const [courses, total] = await Promise.all([
+      prisma.course.findMany(queryOptions),
       prisma.course.count({ where })
     ]);
 
+    // Sort by popularity client-side when sortBy is popular
+    const sortedCourses = sortBy === 'popular'
+      ? courses.sort((a, b) => (b._count.enrollments || 0) - (a._count.enrollments || 0))
+      : courses;
+
+    // Apply pagination after sorting for popularity
+    const paginatedCourses = sortBy === 'popular'
+      ? sortedCourses.slice(skip, skip + parseInt(limit))
+      : sortedCourses;
+
     // Calculate ratings and add pricing info
     const coursesWithRatings = await Promise.all(
-      courses.map(async (course) => {
+      paginatedCourses.map(async (course) => {
         const avgRating = await prisma.review.aggregate({
           where: { courseId: course.id },
           _avg: { rating: true }

@@ -8,6 +8,7 @@ import courseService from '../../services/courseService';
 import sectionService from '../../services/sectionService';
 import lessonService from '../../services/lessonService';
 import flashcardService from '../../services/flashcardService';
+import api from '../../services/api';
 import { generateQuiz as generateQuizAI } from '../../services/quizService';
 import { createQuiz } from '../../services/quizService';
 import skillService from '../../services/skillService';
@@ -429,6 +430,45 @@ const LessonRow = ({ lesson, section, index, onDelete, onEdit, uploadProgress, s
   const [generatingFlashcards, setGeneratingFlashcards] = useState(false);
   const [generatingQuiz, setGeneratingQuiz] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSummaryInput, setShowSummaryInput] = useState(false);
+  const [keywords, setKeywords] = useState('');
+  const [generatedSummary, setGeneratedSummary] = useState('');
+  const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [generatingFlashcardsFromSummary, setGeneratingFlashcardsFromSummary] = useState(false);
+
+  const handleGenerateSummary = async () => {
+    if (!keywords.trim()) return;
+    try {
+      setGeneratingSummary(true);
+      const response = await api.post('/groq/generate-summary', {
+        title: lesson.title,
+        keywords: keywords,
+      });
+      setGeneratedSummary(response.data.data.summary);
+    } catch (error) {
+      toast.error('Erreur lors de la génération du résumé');
+    } finally {
+      setGeneratingSummary(false);
+    }
+  };
+
+  const handleGenerateFlashcardsFromSummary = async () => {
+    if (!generatedSummary.trim()) return;
+    try {
+      setGeneratingFlashcardsFromSummary(true);
+      await api.post(`/flashcards/generate-from-summary/${lesson.id}`, {
+        summary: generatedSummary,
+      });
+      toast.success('Flashcards générées avec succès ! 🧠');
+      setShowSummaryInput(false);
+      setKeywords('');
+      setGeneratedSummary('');
+    } catch (error) {
+      toast.error('Erreur lors de la génération des flashcards');
+    } finally {
+      setGeneratingFlashcardsFromSummary(false);
+    }
+  };
 
   const handleGenerateFlashcards = async () => {
     try {
@@ -586,22 +626,110 @@ const LessonRow = ({ lesson, section, index, onDelete, onEdit, uploadProgress, s
                 AI Quiz
               </button>
             )}
-            <button
-             onClick={handleGenerateFlashcards}
-            disabled={generatingFlashcards}
-            title="Generate AI Flashcards"
-            className={`p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm ${generatingFlashcards
-              ? 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-              : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800'
-              }`}
-          >
-            {generatingFlashcards ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+            {(lesson.contentType === 'VIDEO' || lesson.contentType === 'DOCUMENT') ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowSummaryInput(!showSummaryInput)}
+                  className="p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 border border-indigo-100 dark:border-indigo-800"
+                >
+                  <BrainCircuit className="w-4 h-4" />
+                  AI Cards
+                </button>
+
+                {showSummaryInput && (
+                  <div className="absolute right-0 top-12 z-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-4 w-80">
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-3">
+                      Générer des flashcards
+                    </h4>
+
+                    {!generatedSummary && (
+                      <>
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                          Étape 1 — Mots clés ou concepts principaux
+                        </label>
+                        <textarea
+                          value={keywords}
+                          onChange={(e) => setKeywords(e.target.value)}
+                          placeholder="ex: hooks React, useState, useEffect, gestion état..."
+                          rows="3"
+                          className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none mb-3"
+                        />
+                        <button
+                          onClick={handleGenerateSummary}
+                          disabled={generatingSummary || !keywords.trim()}
+                          className="w-full py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {generatingSummary ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                          ) : (
+                            <Sparkles className="w-4 h-4" />
+                          )}
+                          Générer le résumé
+                        </button>
+                      </>
+                    )}
+
+                    {generatedSummary && (
+                      <>
+                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                          Étape 2 — Résumé généré (modifiable)
+                        </label>
+                        <textarea
+                          value={generatedSummary}
+                          onChange={(e) => setGeneratedSummary(e.target.value)}
+                          rows="4"
+                          className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none mb-3"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleGenerateFlashcardsFromSummary}
+                            disabled={generatingFlashcardsFromSummary}
+                            className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                          >
+                            {generatingFlashcardsFromSummary ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                            ) : (
+                              <BrainCircuit className="w-4 h-4" />
+                            )}
+                            Créer les flashcards
+                          </button>
+                          <button
+                            onClick={() => setGeneratedSummary('')}
+                            className="px-3 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-xl text-sm font-bold hover:bg-slate-50"
+                          >
+                            ↩
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    <button
+                      onClick={() => { setShowSummaryInput(false); setKeywords(''); setGeneratedSummary(''); }}
+                      className="w-full mt-2 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <BrainCircuit className="w-4 h-4" />
+              <button
+                onClick={handleGenerateFlashcards}
+                disabled={generatingFlashcards}
+                title="Generate AI Flashcards"
+                className={`p-2.5 rounded-xl flex items-center gap-2 transition-all font-bold text-sm ${generatingFlashcards
+                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                  : 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800'
+                  }`}
+              >
+                {generatingFlashcards ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+                ) : (
+                  <BrainCircuit className="w-4 h-4" />
+                )}
+                AI Cards
+              </button>
             )}
-            AI Cards
-          </button>
           <button
             onClick={() => onEdit(lesson)}
             className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-4 py-2.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm font-bold shadow-sm border border-indigo-100 dark:border-indigo-800 flex items-center gap-2"

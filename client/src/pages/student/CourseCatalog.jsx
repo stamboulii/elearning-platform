@@ -232,29 +232,14 @@ const CourseCatalog = () => {
   
   const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const fetchCategories = async () => {
     try {
-      const [coursesData, categoriesData] = await Promise.all([
-        courseService.getAllCourses(),
-        categoryService.getAllCategories()
-      ]);
-      setCourses(coursesData.data?.courses || coursesData || []);
-      setCategories(categoriesData || []);
-
-      if (isAuthenticated) {
-        await fetchUserFavorites();
-      }
+      const data = await categoryService.getAllCategories();
+      setCategories(data || []);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Failed to load courses');
-    } finally {
-      setLoading(false);
+      console.error('Error fetching categories:', error);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const fetchUserFavorites = async () => {
     if (!isAuthenticated) return;
@@ -285,6 +270,10 @@ const CourseCatalog = () => {
 
       const data = await courseService.getAllCourses(filters);
       setCourses(data.data?.courses || data || []);
+
+      if (isAuthenticated) {
+        await fetchUserFavorites();
+      }
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast.error('Failed to search courses');
@@ -292,6 +281,10 @@ const CourseCatalog = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     fetchCourses();
