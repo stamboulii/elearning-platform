@@ -66,7 +66,9 @@ const allowedOrigins = [
   'https://first-formation.fr',
   'https://www.first-formation.fr',
   'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'https://elearning-platform-chi-liard.vercel.app',
+  'https://elearning-platform-chi-liard.vercel.app/'
 ];
 
 app.use(cors({

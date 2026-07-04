@@ -15,6 +15,9 @@ export const connectSocket = (userId) => {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
+    extraHeaders: {
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
 
   socket.on('connect', () => {
