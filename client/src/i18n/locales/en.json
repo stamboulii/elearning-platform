@@ -59,7 +59,21 @@
     "warning": "Warning",
     "info": "Information",
     "join": "Join",
-    "leave": "Leave"
+    "leave": "Leave",
+    "skip": "Skip for now",
+    "header": {
+      "cart": "Cart",
+      "favorites": "Favorites",
+      "notifications": "Notifications",
+      "no_notifications": "No notifications yet",
+      "view_all_notifications": "View all notifications",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout",
+      "role_admin": "Admin",
+      "role_instructor": "Instructor",
+      "role_student": "Student"
+    }
   },
   "home": {
     "hero": {
@@ -133,13 +147,15 @@
         "total_courses": "Total Courses",
         "in_progress": "In Progress",
         "completed": "Completed",
+        "certificates": "Certificates",
         "avg_progress": "Avg Progress"
       },
       "my_badges": "My Badges",
       "earned": "Earned",
       "complete_lessons_badge": "Complete lessons to earn badges!",
       "no_courses": "You haven't enrolled in any courses yet",
-      "continue_journey": "Continue your learning journey"
+      "continue_journey": "Continue your learning journey",
+      "view_all_certificates": "View all certificates"
     },
     "my_courses": {
       "title": "My Courses",
@@ -152,6 +168,15 @@
       "review_course": "Review Course",
       "continue_learning": "Continue Learning",
       "browse_available": "Browse available courses →"
+    },
+    "certificates": {
+      "title": "My Certificates",
+      "count_singular": "certificate",
+      "count_plural": "certificates",
+      "empty_title": "No certificates yet",
+      "empty_desc": "Complete courses to earn certificates",
+      "search_placeholder": "Search certificates...",
+      "view": "View"
     },
     "course_player": {
       "back_to_course": "Back to Course",
@@ -217,6 +242,21 @@
       "certificate": "Professional Certificate",
       "resources": "Downloadable Resources",
       "course_rating": "Course Rating"
+    },
+     "review": {
+      "title": "How was the course?",
+      "rating_required": "Please select a rating",
+      "thanks": "Thanks for your review!",
+      "placeholder": "Share your experience with this course (optional)",
+      "rate_course": "Rate this course",
+      "edit": "Edit your review",
+      "delete": "Delete review",
+      "delete_confirm": "Are you sure you want to delete your review?",
+      "already_reviewed": "You've already reviewed this course",
+      "must_complete": "Complete the course to leave a review",
+      "your_review": "Your review",
+      "submit_error": "Failed to submit your review",
+      "delete_error": "Failed to delete your review"
     }
   },
   "instructor": {
@@ -451,6 +491,7 @@
       "title": "Course Management",
       "subtitle": "Manage all platform courses and approvals",
       "search_placeholder": "Search courses...",
+       "go_to_reviews": "Manage Reviews",
       "stats": {
         "total_courses": "Total Courses",
         "published": "Published",
@@ -864,5 +905,73 @@
       "initializing": "Initializing...",
       "processing": "Processing..."
     }
+  },
+  "course_catalog": {
+    "title": "Course Catalog",
+    "subtitle": "Discover and enroll in courses that interest you",
+    "my_favorites": "My Favorites",
+    "search_placeholder": "Search for courses, topics, or instructors...",
+    "search_button": "Search",
+    "all_categories": "All Categories",
+    "all_levels": "All Levels",
+    "sort_newest": "Newest First",
+    "sort_oldest": "Oldest First",
+    "sort_price_low": "Price: Low to High",
+    "sort_price_high": "Price: High to Low",
+    "sort_popular": "Most Popular",
+    "active_filters": "Active Filters:",
+    "filter_search": "Search:",
+    "filter_category": "Category:",
+    "clear_all": "Clear all",
+    "loading": "Loading courses...",
+    "courses_found": "courses found",
+    "course_found": "course found",
+    "sign_in_favorites": "Sign in to save favorites",
+    "no_courses_title": "No courses found",
+    "no_courses_subtitle": "Try adjusting your filters or search query",
+    "clear_filters": "Clear Filters",
+    "published": "Published",
+    "off": "OFF",
+    "level_beginner": "Beginner",
+    "level_intermediate": "Intermediate",
+    "level_advanced": "Advanced",
+    "add_favorite": "Add to favorites",
+    "remove_favorite": "Remove from favorites",
+    "adding_favorite": "Adding to favorites...",
+    "removing_favorite": "Removing from favorites...",
+    "added_favorite": "Added to favorites",
+    "removed_favorite": "Removed from favorites",
+    "already_favorite": "Already in favorites",
+    "login_for_favorites": "Please login to add to favorites",
+    "session_expired": "Session expired. Please login again.",
+    "error_load": "Failed to load courses",
+    "error_search": "Failed to search courses",
+    "error_favorite": "Failed to update favorites"
+  },
+  "admin_reviews": {
+    "title": "Review Moderation",
+    "subtitle": "Reviews are approved by default — disapprove to hide them, or delete permanently.",
+    "search_placeholder": "Search by reviewer, course, or text...",
+    "all_ratings": "All ratings",
+    "stars": "stars",
+    "all_statuses": "All statuses",
+    "approved": "Approved",
+    "disapproved": "Disapproved",
+    "no_reviews": "No reviews found.",
+    "on_course": "on",
+    "hidden": "Hidden",
+    "approve_hint": "Approve",
+    "disapprove_hint": "Disapprove (hide)",
+    "delete_hint": "Delete permanently",
+    "confirm_delete_title": "Delete this review?",
+    "confirm_delete_text": "This permanently removes the review. This can't be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "approved_success": "Review approved",
+    "hidden_success": "Review hidden from public view",
+    "deleted_success": "Review deleted",
+    "action_failed": "Action failed",
+    "error_load": "Failed to load reviews",
+    "error_delete": "Failed to delete review"
   }
 }

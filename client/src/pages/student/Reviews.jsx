@@ -51,7 +51,8 @@ const FlashcardReview = ({ flashcard, onRate, submitting }) => {
       {!revealed ? (
         <button
           onClick={() => setRevealed(true)}
-          className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+          disabled={submitting}
+          className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Eye className="w-5 h-5" />
           Révéler la réponse
@@ -60,7 +61,7 @@ const FlashcardReview = ({ flashcard, onRate, submitting }) => {
         <div className="space-y-4">
           <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800 p-6 text-center">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-              {flashcard.back}
+              {flashcard.back || 'Réponse indisponible pour le moment.'}
             </p>
           </div>
 
@@ -192,7 +193,7 @@ const Reviews = () => {
     if (!currentReview) return;
     setSubmitting(true);
     try {
-      await reviewService.submitReview(currentReview.lessonId, quality);
+      await reviewService.submitLessonReview(currentReview.lessonId, quality);
       setResults(prev => [...prev, {
         title: currentReview.lesson.title,
         quality,

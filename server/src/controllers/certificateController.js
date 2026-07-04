@@ -95,3 +95,19 @@ export const getCertificateByEnrollment = async (req, res) => {
     });
   }
 };
+
+export const getMyCertificates = async (req, res) => {
+  try {
+    const certificates = await certificateService.getMyCertificates(req.user.id);
+    res.json({
+      success: true,
+      data: { certificates }
+    });
+  } catch (error) {
+    console.error('Get my certificates error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching certificates'
+    });
+  }
+};

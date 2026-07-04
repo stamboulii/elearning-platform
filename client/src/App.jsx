@@ -23,6 +23,7 @@ import CreateCourse from './pages/instructor/CreateCourse';
 import EditCourse from './pages/instructor/EditCourse';
 import Checkout from './pages/student/Checkout';
 import CertificateView from './pages/student/CertificateView';
+import MyCertificates from './pages/student/MyCertificates';
 import NotificationsPage from './pages/Notifications';
 
 // Admin Pages
@@ -42,6 +43,7 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentCancelPage from './pages/PaymentCancelPage';
 import TransactionManager from './pages/admin/TransactionManager';
 import CareerPaths from './pages/student/CareerPaths';
+import AdminReviews from './pages/admin/AdminReviews';
 import Reviews from './pages/student/Reviews';
 import AdminEnrollments from './pages/admin/Enrollments';
 import InstructorCourseDetail from './pages/instructor/CourseDetail';
@@ -137,6 +139,12 @@ function App() {
                 }
               />
 
+              <Route path="/admin/reviews" element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <AdminReviews />
+                </ProtectedRoute>
+              } />
+
               {/* Student Routes */}
               <Route
                 path="/student/dashboard"
@@ -178,6 +186,14 @@ function App() {
                 </ProtectedRoute>
               }
             /> */}
+              <Route
+                path="/student/certificates"
+                element={
+                  <ProtectedRoute allowedRoles={['STUDENT']}>
+                    <MyCertificates />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/student/certificates/:id"
                 element={

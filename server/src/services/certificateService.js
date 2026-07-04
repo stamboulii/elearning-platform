@@ -239,6 +239,29 @@ class CertificateService {
   async getCertificateByEnrollment(enrollmentId) {
     return await prisma.certificate.findUnique({ where: { enrollmentId } });
   }
+
+  async getMyCertificates(userId) {
+    return await prisma.certificate.findMany({
+      where: { enrollment: { userId } },
+      include: {
+        enrollment: {
+          include: {
+            course: {
+              select: {
+                id: true,
+                title: true,
+                thumbnailImage: true,
+                instructor: {
+                  select: { firstName: true, lastName: true }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: { issuedAt: 'desc' }
+    });
+  }
 }
 
 export default new CertificateService();

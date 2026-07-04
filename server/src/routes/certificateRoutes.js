@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/enrollment/:enrollmentId', protect, certificateController.getCertificateByEnrollment);
 router.get('/my', protect, certificateController.getMyCertificate);
+router.get('/my/list', protect, certificateController.getMyCertificates);
 
 router.get('/:id', protect, certificateController.getCertificate);
 

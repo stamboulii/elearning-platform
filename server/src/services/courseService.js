@@ -299,6 +299,20 @@ class CourseService {
       }))
     }));
 
+    const instructorStats = await prisma.enrollment.aggregate({
+      where: {
+        course: { instructorId: course.instructorId }
+      },
+      _count: { id: true }
+    });
+
+    const instructorReviewCount = await prisma.review.aggregate({
+      where: {
+        course: { instructorId: course.instructorId }
+      },
+      _count: { id: true }
+    });
+
     return {
       ...course,
       sections: sectionsWithAccess,
@@ -311,7 +325,9 @@ class CourseService {
       discountPercentage,
       userEnrollment,
       hasAccess,
-      requiresPayment: !course.isFree && parseFloat(course.price) > 0
+      requiresPayment: !course.isFree && parseFloat(course.price) > 0,
+      totalStudents: instructorStats._count.id,
+      totalReviews: instructorReviewCount._count.id
     };
   }
 

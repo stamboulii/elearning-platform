@@ -56,6 +56,26 @@ class AdminController {
     await adminService.deleteEnrollment(req.params.id);
     res.json({ success: true, message: 'Enrollment revoked successfully' });
   }
+
+  async getAllReviews(req, res) {
+    const data = await adminService.getAllReviews(req.query);
+    res.json({ success: true, data });
+  }
+
+  async approveReview(req, res) {
+    const review = await adminService.approveReview(req.params.id);
+    res.json({ success: true, data: { review } });
+  }
+
+  async disapproveReview(req, res) {
+    const review = await adminService.disapproveReview(req.params.id);
+    res.json({ success: true, data: { review } });
+  }
+
+  async deleteReview(req, res) {
+    await adminService.deleteReview(req.params.id);
+    res.json({ success: true, message: 'Review deleted successfully' });
+  }
 }
 
 export default new AdminController();

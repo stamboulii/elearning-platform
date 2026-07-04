@@ -170,6 +170,16 @@ const StudentDashboard = () => {
             borderColor="border-emerald-100"
             trend={t('course.status.completed')}
           />
+          <Link to="/student/certificates">
+            <StatCard
+              title={t('student.dashboard.stats.certificates')}
+              value={stats.completedCourses}
+              icon={<Award className="w-6 h-6 text-amber-600" />}
+              bgColor="bg-amber-50"
+              borderColor="border-amber-100"
+              trend={t('student.dashboard.view_all_certificates')}
+            />
+          </Link>
           <StatCard
             title={t('student.dashboard.stats.avg_progress')}
             value={`${stats.averageProgress}%`}

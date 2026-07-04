@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import skillService from '../../services/skillService';
 import toast from '../../utils/toast';
+import ConfirmModal from '../../components/common/ConfirmModal';
+
 import {
   Plus,
   X,
@@ -48,6 +50,18 @@ const AdminCareerPaths = () => {
   });
   const [reorderingPathId, setReorderingPathId] = useState(null);
   const [reorderingSkills, setReorderingSkills] = useState([]);
+
+  const [confirmModal, setConfirmModal] = useState({
+  isOpen: false,
+  title: '',
+  message: '',
+  onConfirm: null,
+  isLoading: false
+});
+
+const closeConfirmModal = () => {
+  setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null, isLoading: false });
+};
 
   const fetchCareerPaths = async () => {
     try {
@@ -99,11 +113,17 @@ const AdminCareerPaths = () => {
   const handleToggleExpand = async (pathId) => {
     if (expandedPathId === pathId) {
       setExpandedPathId(null);
+      setAddingToPathId(null);
       return;
     }
     setExpandedPathId(pathId);
+    setAddingToPathId(null);
     await fetchAvailableSkills();
     setNewSkillEntry({ skillId: '', orderNumber: 1, isMandatory: true });
+  };
+
+  const handleToggleAddSkill = (pathId) => {
+    setAddingToPathId(prev => prev === pathId ? null : pathId);
   };
 
   const handleAddSkillToPath = async (careerPathId) => {
@@ -165,32 +185,76 @@ toast.success('Skill added to career path');
     }
   };
 
-  const handleDeleteCareerPath = async (pathId) => {
-    if (!window.confirm('Are you sure you want to delete this career path?')) return;
-    try {
-      setActionLoading(true);
-      await skillService.deleteCareerPath(pathId);
-      toast.success('Career path deleted successfully');
-      fetchCareerPaths();
-    } catch (error) {
-      console.error('Error deleting career path:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete career path');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // const handleDeleteCareerPath = async (pathId) => {
+  //   if (!window.confirm('Are you sure you want to delete this career path?')) return;
+  //   try {
+  //     setActionLoading(true);
+  //     await skillService.deleteCareerPath(pathId);
+  //     toast.success('Career path deleted successfully');
+  //     fetchCareerPaths();
+  //   } catch (error) {
+  //     console.error('Error deleting career path:', error);
+  //     toast.error(error.response?.data?.message || 'Failed to delete career path');
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
 
-  const handleRemoveSkillFromPath = async (careerPathId, skillId) => {
-    if (!window.confirm('Remove this skill from the path?')) return;
-    try {
-      await skillService.removeSkillFromCareerPath(careerPathId, skillId);
-      toast.success('Skill removed from career path');
-      fetchCareerPaths();
-    } catch (error) {
-      console.error('Error removing skill:', error);
-      toast.error(error.response?.data?.message || 'Failed to remove skill');
+  const handleDeleteCareerPath = (pathId) => {
+  setConfirmModal({
+    isOpen: true,
+    title: 'Delete career path',
+    message: 'Are you sure you want to delete this career path? This action cannot be undone.',
+    onConfirm: async () => {
+      try {
+        setConfirmModal((prev) => ({ ...prev, isLoading: true }));
+        setActionLoading(true);
+        await skillService.deleteCareerPath(pathId);
+        toast.success('Career path deleted successfully');
+        fetchCareerPaths();
+      } catch (error) {
+        console.error('Error deleting career path:', error);
+        toast.error(error.response?.data?.message || 'Failed to delete career path');
+      } finally {
+        setActionLoading(false);
+        closeConfirmModal();
+      }
     }
-  };
+  });
+};
+
+  // const handleRemoveSkillFromPath = async (careerPathId, skillId) => {
+  //   if (!window.confirm('Remove this skill from the path?')) return;
+  //   try {
+  //     await skillService.removeSkillFromCareerPath(careerPathId, skillId);
+  //     toast.success('Skill removed from career path');
+  //     fetchCareerPaths();
+  //   } catch (error) {
+  //     console.error('Error removing skill:', error);
+  //     toast.error(error.response?.data?.message || 'Failed to remove skill');
+  //   }
+  // };
+
+  const handleRemoveSkillFromPath = (careerPathId, skillId) => {
+  setConfirmModal({
+    isOpen: true,
+    title: 'Remove skill',
+    message: 'Remove this skill from the path?',
+    onConfirm: async () => {
+      try {
+        setConfirmModal((prev) => ({ ...prev, isLoading: true }));
+        await skillService.removeSkillFromCareerPath(careerPathId, skillId);
+        toast.success('Skill removed from career path');
+        fetchCareerPaths();
+      } catch (error) {
+        console.error('Error removing skill:', error);
+        toast.error(error.response?.data?.message || 'Failed to remove skill');
+      } finally {
+        closeConfirmModal();
+      }
+    }
+  });
+};
 
   const handleToggleReorder = (path, skills) => {
     if (reorderingPathId === path.id) {
@@ -343,7 +407,7 @@ toast.success('Skill added to career path');
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleToggleExpand(path.id)}
+                              onClick={() => handleToggleAddSkill(path.id)}
                               className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all text-sm font-bold border border-indigo-100 dark:border-indigo-800"
                             >
                               <Plus className="w-4 h-4" />
@@ -680,6 +744,18 @@ toast.success('Skill added to career path');
             </div>
           </div>
         )}
+
+        {/* Confirm Modal */}
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          onClose={closeConfirmModal}
+          onConfirm={confirmModal.onConfirm}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.title.toLowerCase().includes('delete') ? 'Delete' : 'Remove'}
+          type="danger"
+          isLoading={confirmModal.isLoading}
+        />
       </div>
     </div>
   );

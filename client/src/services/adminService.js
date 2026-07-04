@@ -97,7 +97,10 @@ const adminService = {
 
   // Review Management
   getAllReviews: async (filters = {}) => {
-    const params = new URLSearchParams(filters).toString();
+    const cleanFilters = Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+    );
+    const params = new URLSearchParams(cleanFilters).toString();
     const response = await api.get(`/admin/reviews?${params}`);
     return response.data;
   },
@@ -112,6 +115,11 @@ const adminService = {
     return response.data;
   },
 
+  disapproveReview: async (reviewId) => {
+    const response = await api.patch(`/admin/reviews/${reviewId}/disapprove`);
+    return response.data.data.review;
+  },
+  
   // Coupon Management
   getAllCoupons: async () => {
     const response = await api.get('/admin/coupons');

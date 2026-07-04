@@ -135,6 +135,13 @@ const AdminCourses = () => {
               <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">{t('admin.courses.subtitle')}</p>
             </div>
           </div>
+           <button
+            onClick={() => navigate('/admin/reviews')}
+            className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-5 py-3 rounded-2xl font-bold text-sm shadow-sm hover:shadow-md hover:border-amber-200 dark:hover:border-amber-800 hover:text-amber-700 dark:hover:text-amber-400 transition-all"
+          >
+            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            {t('admin.courses.go_to_reviews') || 'Manage Reviews'}
+          </button>
         </div>
 
         {/* Stats */}

@@ -87,7 +87,19 @@ Focus on the most important concepts, definitions, or key facts from the content
     }
 
     const parsed = JSON.parse(content);
-    return parsed.flashcards || [];
+    const raw = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
+    const sanitized = raw
+      .map((card) => ({
+        front: (card.front || '').toString().trim(),
+        back: (card.back || '').toString().trim(),
+      }))
+      .filter((card) => card.front.length > 0 && card.back.length > 0);
+
+    if (sanitized.length === 0) {
+      throw new Error('AI generated no usable flashcards');
+    }
+
+    return sanitized;
   } catch (error) {
     console.error('Groq flashcard generation error:', error);
     throw new Error('Failed to generate flashcards. Please try again.');

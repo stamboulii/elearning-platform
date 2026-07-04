@@ -202,4 +202,74 @@ router.delete(
   adminController.revokeEnrollment
 );
 
+
+/**
+ * @swagger
+ * /admin/reviews:
+ *   get:
+ *     summary: Get all reviews (Admin only)
+ *     tags: [Admin - Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: courseId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: rating
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: isApproved
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ */
+router.get('/reviews', protect, authorize('ADMIN'), adminController.getAllReviews);
+
+/**
+ * @swagger
+ * /admin/reviews/{id}/approve:
+ *   patch:
+ *     summary: Approve a review (Admin only)
+ *     tags: [Admin - Reviews]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch('/reviews/:id/approve', protect, authorize('ADMIN'), adminController.approveReview);
+
+/**
+ * @swagger
+ * /admin/reviews/{id}/disapprove:
+ *   patch:
+ *     summary: Disapprove (hide) a review (Admin only)
+ *     tags: [Admin - Reviews]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch('/reviews/:id/disapprove', protect, authorize('ADMIN'), adminController.disapproveReview);
+
+/**
+ * @swagger
+ * /admin/reviews/{id}:
+ *   delete:
+ *     summary: Permanently delete a review (Admin only)
+ *     tags: [Admin - Reviews]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete('/reviews/:id', protect, authorize('ADMIN'), adminController.deleteReview);
+
 export default router;

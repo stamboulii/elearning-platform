@@ -17,6 +17,7 @@ import LessonSkillsBadges from '../../components/student/LessonSkillsBadges';
 import flashcardService from '../../services/flashcardService';
 import skillService from '../../services/skillService';
 import { BrainCircuit, Calendar, Brain } from 'lucide-react';
+import ReviewModal from '../../components/course/ReviewModal';
 import reviewService from '../../services/reviewService';
 
 // Choisit le bon viewer selon le type de fichier
@@ -52,6 +53,8 @@ const CoursePlayer = () => {
   const [activeTab, setActiveTab] = useState('content'); // 'content' or 'flashcards'
   const [flashcardDeck, setFlashcardDeck] = useState(null);
   const [flashcardLoading, setFlashcardLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewEligibility, setReviewEligibility] = useState(null);
   const [certLoading, setCertLoading] = useState(false);
   const [userSkills, setUserSkills] = useState([]);
   const [textTimeSpent, setTextTimeSpent] = useState(0);
@@ -76,6 +79,14 @@ const CoursePlayer = () => {
     }
   }, [currentLesson, enrollment]);
 
+   useEffect(() => {
+    if (!enrollment || overallProgress !== 100) return;
+
+    reviewService.checkEligibility(courseId)
+      .then(setReviewEligibility)
+      .catch((err) => console.error('Review eligibility error:', err));
+  }, [enrollment?.progressPercentage, courseId]);
+
   useEffect(() => {
     // Fetch user skills for the LessonSkillsBadges widget
     if (user) {
@@ -95,6 +106,8 @@ const CoursePlayer = () => {
         .catch(() => {});
     }
   }, [enrollment]);
+
+ 
 
   const fetchCourseData = async () => {
     try {
@@ -530,7 +543,7 @@ const handleVideoProgress = async (position) => {
         <div className="lg:col-span-3 space-y-4">
 
           {/* Certificate Banner — always visible when course is 100% complete */}
-          {enrollment && overallProgress === 100 && enrollment.certificate && (
+          {/* {enrollment && overallProgress === 100 && enrollment.certificate && (
             <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="flex items-center gap-4">
                 <div className="text-5xl">🏆</div>
@@ -550,7 +563,53 @@ const handleVideoProgress = async (position) => {
                 </Link>
               </div>
             </div>
-          )}
+          )} */}
+
+ {enrollment && overallProgress === 100 && enrollment.certificate && (
+  <div className="p-5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl shadow-md animate-in fade-in slide-in-from-top-2 duration-500">
+    <div className="flex items-center gap-4">
+      <div className="text-5xl">🏆</div>
+      <div className="flex-1">
+        <h3 className="text-lg font-black text-amber-900 dark:text-amber-300">
+          {t('common.congratulations') || 'Congratulations!'}
+        </h3>
+        <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+          {t('student.course_player.course_completed_desc') || 'You have completed this course. Your certificate is ready!'}
+        </p>
+      </div>
+      <div className="flex gap-2 shrink-0">
+        {reviewEligibility?.eligible && (
+          <button
+            onClick={() => setShowReviewModal(true)}
+            className="bg-white dark:bg-slate-800 text-amber-700 dark:text-amber-300 font-bold px-5 py-3 rounded-xl border border-amber-200 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-slate-700 transition text-sm"
+          >
+            ⭐ {reviewEligibility.alreadyReviewed
+              ? (t('student.review.edit') || 'Edit your review')
+              : (t('student.review.rate_course') || 'Rate this course')}
+          </button>
+        )}
+        <Link
+          to={`/student/certificates/${enrollment.certificate.id}`}
+          className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-100 dark:shadow-none flex items-center gap-2 text-sm"
+        >
+          📜 {t('common.certificate') || 'View Certificate'}
+        </Link>
+      </div>
+    </div>
+  </div>
+)}
+
+{showReviewModal && (
+  <ReviewModal
+    courseId={courseId}
+    courseTitle={course.title}
+    existingReview={reviewEligibility?.existingReview}
+    onClose={() => setShowReviewModal(false)}
+    onSubmitted={(review) =>
+      setReviewEligibility((prev) => ({ ...prev, alreadyReviewed: true, existingReview: review }))
+    }
+  />
+)}
 
           {dueReviews.length > 0 && (
             <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 flex items-center justify-between">
