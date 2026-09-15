@@ -3,9 +3,20 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+// By default this script is ADDITIVE: it never deletes anything, and it
+// skips any record that already exists (matched by its natural key), so
+// it's safe to run over and over as you add new users/courses/etc. to the
+// data arrays below.
+//
+// If you ever genuinely want to wipe and reseed from scratch, run:
+//   node prisma/seed.js --reset
+// or:
+//   SEED_RESET=true node prisma/seed.js
+const shouldReset = process.argv.includes('--reset') || process.env.SEED_RESET === 'true';
+
 async function clearExistingData() {
   console.log('Clearing existing data...');
-  
+
   await prisma.couponUsage.deleteMany();
   await prisma.coupon.deleteMany();
   await prisma.quizAnswer.deleteMany();
@@ -40,17 +51,21 @@ async function clearExistingData() {
   await prisma.skillPrerequisite.deleteMany();
   await prisma.lessonSkill.deleteMany();
   await prisma.skill.deleteMany();
-  
+
   console.log('All existing data cleared.');
 }
 
 async function main() {
-  await clearExistingData();
-  
-  console.log('Seeding new data...');
-  
+  if (shouldReset) {
+    await clearExistingData();
+  } else {
+    console.log('Additive mode: existing data is kept, only missing records will be created. Pass --reset to wipe first.');
+  }
+
+  console.log('Seeding data...');
+
   const hashedPassword = await bcrypt.hash('password123', 10);
-  
+
   const usersData = [
     { email: 'admin@elearning.com', firstName: 'Super', lastName: 'Admin', role: 'ADMIN', bio: 'Platform administrator', xp: 0, level: 1 },
     { email: 'sarah.chen@elearning.com', firstName: 'Sarah', lastName: 'Chen', role: 'INSTRUCTOR', bio: 'Senior Software Engineer at Google with 12 years of experience in web development. Passionate about teaching modern JavaScript frameworks and helping students launch their tech careers.', xp: 2500, level: 12 },
@@ -70,29 +85,40 @@ async function main() {
   ];
 
   const users = [];
+  const newUserIds = new Set();
   for (const userData of usersData) {
-    const user = await prisma.user.create({
-      data: {
-        email: userData.email,
-        password: hashedPassword,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: userData.role,
-        bio: userData.bio,
-        emailVerified: true,
-        xp: userData.xp,
-        level: userData.level,
-      },
-    });
+    const existing = await prisma.user.findFirst({ where: { email: userData.email } });
+    let user;
+    if (existing) {
+      user = existing;
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          password: hashedPassword,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          role: userData.role,
+          bio: userData.bio,
+          emailVerified: true,
+          xp: userData.xp,
+          level: userData.level,
+        },
+      });
+      newUserIds.add(user.id);
+    }
     users.push(user);
-    
-    await prisma.userProfile.create({
-      data: {
-        userId: user.id,
-        country: ['US', 'UK', 'CA', 'AU', 'DE'][Math.floor(Math.random() * 5)],
-        city: ['New York', 'London', 'Toronto', 'Sydney', 'Berlin'][Math.floor(Math.random() * 5)],
-      },
-    });
+
+    const existingProfile = await prisma.userProfile.findFirst({ where: { userId: user.id } });
+    if (!existingProfile) {
+      await prisma.userProfile.create({
+        data: {
+          userId: user.id,
+          country: ['US', 'UK', 'CA', 'AU', 'DE'][Math.floor(Math.random() * 5)],
+          city: ['New York', 'London', 'Toronto', 'Sydney', 'Berlin'][Math.floor(Math.random() * 5)],
+        },
+      });
+    }
   }
 
   const admins = users.filter(u => u.role === 'ADMIN');
@@ -110,10 +136,8 @@ async function main() {
 
   const categories = [];
   for (const catData of categoriesData) {
-    const category = await prisma.category.create({
-      data: catData,
-    });
-    categories.push(category);
+    const existing = await prisma.category.findFirst({ where: { slug: catData.slug } });
+    categories.push(existing || await prisma.category.create({ data: catData }));
   }
 
   const coursesData = [
@@ -229,7 +253,13 @@ async function main() {
   ];
 
   const courses = [];
+  const newCourseIds = new Set();
   for (const courseData of coursesData) {
+    const existing = await prisma.course.findFirst({ where: { slug: courseData.slug } });
+    if (existing) {
+      courses.push(existing);
+      continue;
+    }
     const course = await prisma.course.create({
       data: {
         ...courseData,
@@ -240,8 +270,12 @@ async function main() {
       },
     });
     courses.push(course);
+    newCourseIds.add(course.id);
   }
 
+  // Requirements, outcomes, sections & lessons: only seeded for courses that
+  // were just created above. Existing courses keep whatever content they
+  // already have (which may have been edited since seeding).
   const requirementsData = [
     { courseId: courses[0].id, requirements: ['Basic JavaScript knowledge', 'Understanding of HTML/CSS', 'Computer with internet'] },
     { courseId: courses[2].id, requirements: ['JavaScript fundamentals', 'Basic understanding of APIs', 'Node.js installed'] },
@@ -249,6 +283,7 @@ async function main() {
   ];
 
   for (const req of requirementsData) {
+    if (!newCourseIds.has(req.courseId)) continue;
     for (const r of req.requirements) {
       await prisma.courseRequirement.create({
         data: { courseId: req.courseId, requirement: r },
@@ -263,6 +298,7 @@ async function main() {
   ];
 
   for (const outcome of outcomesData) {
+    if (!newCourseIds.has(outcome.courseId)) continue;
     for (const o of outcome.outcomes) {
       await prisma.courseOutcome.create({
         data: { courseId: outcome.courseId, outcome: o },
@@ -318,6 +354,7 @@ async function main() {
   ];
 
   for (const sectionData of sectionsData) {
+    if (!newCourseIds.has(sectionData.courseId)) continue;
     for (let i = 0; i < sectionData.sections.length; i++) {
       const section = await prisma.courseSection.create({
         data: {
@@ -361,9 +398,8 @@ async function main() {
   ];
 
   for (const review of reviewData) {
-    await prisma.review.create({
-      data: review,
-    });
+    const existing = await prisma.review.findFirst({ where: { courseId: review.courseId, userId: review.userId } });
+    if (!existing) await prisma.review.create({ data: review });
   }
 
   const enrollmentsData = [
@@ -384,9 +420,8 @@ async function main() {
   ];
 
   for (const enrollment of enrollmentsData) {
-    await prisma.enrollment.create({
-      data: enrollment,
-    });
+    const existing = await prisma.enrollment.findFirst({ where: { userId: enrollment.userId, courseId: enrollment.courseId } });
+    if (!existing) await prisma.enrollment.create({ data: enrollment });
   }
 
   const transactionData = enrollmentsData
@@ -403,19 +438,17 @@ async function main() {
       completedAt: new Date(),
     }));
 
-  for (let i = 0; i < transactionData.length; i++) {
-    const txn = await prisma.transaction.create({
-      data: transactionData[i],
-    });
+  for (const txnData of transactionData) {
     const enrollment = await prisma.enrollment.findFirst({
-      where: { userId: txn.userId, courseId: txn.courseId },
+      where: { userId: txnData.userId, courseId: txnData.courseId },
     });
-    if (enrollment) {
-      await prisma.enrollment.update({
-        where: { id: enrollment.id },
-        data: { transactionId: txn.id, isPaid: true, paidAmount: txn.amount },
-      });
-    }
+    if (!enrollment || enrollment.transactionId) continue; // already paid/linked, skip
+
+    const txn = await prisma.transaction.create({ data: txnData });
+    await prisma.enrollment.update({
+      where: { id: enrollment.id },
+      data: { transactionId: txn.id, isPaid: true, paidAmount: txn.amount },
+    });
   }
 
   const badgesData = [
@@ -431,17 +464,15 @@ async function main() {
 
   const badges = [];
   for (const badgeData of badgesData) {
-    const badge = await prisma.badge.create({ data: badgeData });
-    badges.push(badge);
+    const existing = await prisma.badge.findFirst({ where: { name: badgeData.name } });
+    badges.push(existing || await prisma.badge.create({ data: badgeData }));
   }
 
   for (let i = 0; i < 5; i++) {
-    await prisma.userBadge.create({
-      data: {
-        userId: students[i].id,
-        badgeId: badges[i % badges.length].id,
-      },
-    });
+    const userId = students[i].id;
+    const badgeId = badges[i % badges.length].id;
+    const existing = await prisma.userBadge.findFirst({ where: { userId, badgeId } });
+    if (!existing) await prisma.userBadge.create({ data: { userId, badgeId } });
   }
 
   const couponsData = [
@@ -451,7 +482,8 @@ async function main() {
   ];
 
   for (const couponData of couponsData) {
-    await prisma.coupon.create({ data: couponData });
+    const existing = await prisma.coupon.findFirst({ where: { code: couponData.code } });
+    if (!existing) await prisma.coupon.create({ data: couponData });
   }
 
   const discussionData = [
@@ -462,7 +494,8 @@ async function main() {
   ];
 
   for (const discData of discussionData) {
-    await prisma.discussion.create({ data: discData });
+    const existing = await prisma.discussion.findFirst({ where: { courseId: discData.courseId, userId: discData.userId, title: discData.title } });
+    if (!existing) await prisma.discussion.create({ data: discData });
   }
 
   const cartData = [
@@ -472,7 +505,8 @@ async function main() {
   ];
 
   for (const cartItem of cartData) {
-    await prisma.cartItem.create({ data: cartItem });
+    const existing = await prisma.cartItem.findFirst({ where: cartItem });
+    if (!existing) await prisma.cartItem.create({ data: cartItem });
   }
 
   const wishlistData = [
@@ -483,16 +517,15 @@ async function main() {
   ];
 
   for (const wishlistItem of wishlistData) {
-    await prisma.wishlist.create({ data: wishlistItem });
+    const existing = await prisma.wishlist.findFirst({ where: wishlistItem });
+    if (!existing) await prisma.wishlist.create({ data: wishlistItem });
   }
 
   console.log('Seed completed successfully!');
-  console.log(`Created: ${users.length} users (${instructors.length} instructors, ${students.length} students, ${admins.length} admin)`);
-  console.log(`Created: ${categories.length} categories`);
-  console.log(`Created: ${courses.length} courses`);
-  console.log(`Created: ${enrollmentsData.length} enrollments`);
-  console.log(`Created: ${reviewData.length} reviews`);
-  console.log(`Created: ${badges.length} badges`);
+  console.log(`Users: ${users.length} total (${newUserIds.size} newly created), ${instructors.length} instructors, ${students.length} students, ${admins.length} admin`);
+  console.log(`Categories: ${categories.length} total`);
+  console.log(`Courses: ${courses.length} total (${newCourseIds.size} newly created)`);
+  console.log(`Badges: ${badges.length} total`);
 
   await seedSkills();
 }
