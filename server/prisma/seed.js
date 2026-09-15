@@ -3,15 +3,6 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-// By default this script is ADDITIVE: it never deletes anything, and it
-// skips any record that already exists (matched by its natural key), so
-// it's safe to run over and over as you add new users/courses/etc. to the
-// data arrays below.
-//
-// If you ever genuinely want to wipe and reseed from scratch, run:
-//   node prisma/seed.js --reset
-// or:
-//   SEED_RESET=true node prisma/seed.js
 const shouldReset = process.argv.includes('--reset') || process.env.SEED_RESET === 'true';
 
 async function clearExistingData() {
